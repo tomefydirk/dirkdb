@@ -1,11 +1,15 @@
 use crate::{
-    atom_parser::{expr_function::parse_expr, expr_struct::BinOp}, general_const::{PARENS_0, PARENS_1}, general_struct::PrimitiveElement, logic_parser::{
+    atom_parser::{expr_function::parse_expr, expr_struct::BinOp},
+    general_const::{PARENS_0, PARENS_1},
+    general_struct::PrimitiveElement,
+    logic_parser::{
         cond_constant::{
             AND_SIGN, EQ_SIGN, GT_E_SIGN, GT_SIGN, IS_NOT_SIGN, IS_SIGN, LT_E_SIGN, LT_SIGN,
             NOT_EQ_SIGN, NOT_SIGN, NULL_SIGN, OR_SIGN,
         },
         tokentool::*,
-    }, tokenizer::Token
+    },
+    tokenizer::Token,
 };
 use nom::{
     IResult,
@@ -110,6 +114,7 @@ fn err(input: &str) -> IResult<&str, Box<Condition>> {
 }
 
 pub fn parse_logical(input: &str) -> IResult<&str, Box<Condition>> {
+    println!("LOGICAL {input}");
     let (mut input_rem, mut current) = parse_compare(input)?;
 
     while !input_rem.is_empty() && !input_rem.starts_with(PARENS_1) {
@@ -168,20 +173,7 @@ pub fn parse_compare(input: &str) -> IResult<&str, Box<Condition>> {
 }
 
 pub fn parse_atom(input: &str) -> IResult<&str, Box<Condition>> {
-    let (new_input, token) = scan_token(input.trim())?;
-    match token {
-        Token::Other(a) if a.eq_ignore_ascii_case(NOT_SIGN) => {
-            let (rest, c) = parse_logical(new_input)?;
-            Ok((rest, Box::new(Condition::Not(c))))
-        }
-        Token::Other(PARENS_0) => {
-            let (after_paren, _) = scan_token(input)?;
-            parse_logical_factor(after_paren)
-        }
-        _ =>{
-             parse_expr(input)
-        },
-    }
+    parse_expr(input)
 }
 
 pub fn and_ification(
@@ -201,12 +193,3 @@ pub fn and_ification(
     }
 }
 
-pub fn parse_logical_factor(input: &str) -> IResult<&str, Box<Condition>> {
-    let (after_condition, condition) = parse_logical(input)?;
-    let (after_paren, token) = scan_token(after_condition)?;
-
-    match token {
-        Token::Other(PARENS_1) => Ok((after_paren, condition)),
-        _ => err(after_paren),
-    }
-}

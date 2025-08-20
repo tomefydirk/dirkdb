@@ -1,8 +1,8 @@
 #[derive(Debug, Clone)]
-pub enum PrimitiveElement{
+pub enum PrimitiveElement {
     Identifier(String),
     Number(f64),
-    String(String)
+    String(String),
 }
 impl From<f64> for PrimitiveElement {
     fn from(value: f64) -> Self {
@@ -15,7 +15,7 @@ impl From<String> for PrimitiveElement {
     }
 }
 impl PrimitiveElement {
-    pub fn from_id(value:String)->Self{
+    pub fn from_id(value: String) -> Self {
         PrimitiveElement::Identifier(value)
     }
 }

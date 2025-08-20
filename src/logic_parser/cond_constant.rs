@@ -13,4 +13,3 @@ pub const NOT_SIGN: &str = "not";
 pub const NULL_SIGN: &str = "null";
 pub const AND_SIGN: &str = "and";
 
-pub const TERMINALS:&[&str]=&[EQ_SIGN,NOT_EQ_SIGN,LT_SIGN,LT_E_SIGN,GT_SIGN,GT_E_SIGN,IS_SIGN,IS_NOT_SIGN,OR_SIGN,NOT_SIGN,AND_SIGN];

@@ -1,10 +1,8 @@
-use crate::atom_parser::expr_struct::{BinOp};
-use crate::atom_parser::tokentool::{ scan_token};
+use crate::atom_parser::expr_struct::BinOp;
 use crate::general_const::{PARENS_0, PARENS_1};
-use crate::general_struct::PrimitiveElement;
-use crate::logic_parser::cond_constant::TERMINALS;
-use crate::logic_parser::cond_source::{parse_logical, Condition};
-use crate::tokenizer::{is_terminal, Token};
+use crate::logic_parser::cond_source::{Condition, parse_logical};
+use crate::logic_parser::tokentool::scan_token;
+use crate::tokenizer::{Token, };
 use nom::IResult;
 use nom::error::Error;
 /*
@@ -35,7 +33,7 @@ where
                 let (after_rhs, rhs) = lower_parser(next_input)?;
                 current_expr = Condition::box_binop_from(current_expr, rhs, BinOp::from_str(op));
                 input_rem = after_rhs;
-            },
+            }
             _ => return Condition::result_from_current(input_rem, current_expr),
         }
     }
@@ -57,13 +55,16 @@ pub fn parse_factor(input: &str) -> IResult<&str, Box<Condition>> {
     let (next_input, token) = scan_token(input)?;
     match token {
         Token::Number(n) => Condition::result_number(next_input, n),
-        Token::String(s)=>Condition::result_string(next_input, s),
-        Token::FieldName(f)=>Condition::result_name(input,f),
+        Token::String(s) => Condition::result_string(next_input, s),
+        Token::FieldName(f) =>{
+            println!("{f} {next_input}");
+            Condition::result_name(next_input, f)
+        } ,
         Token::Other(str_token) => {
             if str_token == PARENS_0 {
                 parse_real_factor(next_input)
             } else if Condition::is_factor_op(str_token) {
-                 let (after, real_perm) = parse_logical(next_input)?;
+                let (after, real_perm) = parse_factor(next_input)?;
                 Ok((after, Condition::box_factorop_from(real_perm, str_token)))
             } else {
                 Err(nom::Err::Error(Error::new(
@@ -72,17 +73,15 @@ pub fn parse_factor(input: &str) -> IResult<&str, Box<Condition>> {
                 )))
             }
         }
-        _=>{
-             Err(nom::Err::Error(Error::new(
-                    input,
-                    nom::error::ErrorKind::Digit,
-                )))
-        }
+        _ => Err(nom::Err::Error(Error::new(
+            input,
+            nom::error::ErrorKind::Digit,
+        ))),
     }
 }
 
 pub fn parse_real_factor(input: &str) -> IResult<&str, Box<Condition>> {
-    let (after_expr, expr) =parse_logical(input)?;
+    let (after_expr, expr) = parse_logical(input)?;
     let (after_paren, token) = scan_token(after_expr)?;
 
     match token {

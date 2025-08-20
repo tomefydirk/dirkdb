@@ -46,8 +46,8 @@ impl Condition {
         match token.to_uppercase().as_str() {
             val if val == MINUS_SIGN.to_uppercase().as_str() => {
                 Box::new(Condition::Negate(current_expr))
-            },
-            val if val==NOT_SIGN.to_ascii_uppercase().as_str()=>{
+            }
+            val if val == NOT_SIGN.to_ascii_uppercase().as_str() => {
                 Box::new(Condition::Not(current_expr))
             }
 
@@ -81,6 +81,6 @@ impl Condition {
         IResult::Ok((input, current_expr))
     }
     pub fn is_factor_op(str_token: &str) -> bool {
-        str_token.eq_ignore_ascii_case(MINUS_SIGN) && str_token.eq_ignore_ascii_case(NOT_SIGN)
+        str_token.eq_ignore_ascii_case(MINUS_SIGN) || str_token.eq_ignore_ascii_case(NOT_SIGN)
     }
 }

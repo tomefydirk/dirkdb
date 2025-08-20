@@ -1,25 +1,25 @@
-use crate::{atom_parser::expr_function::parse_expr, logic_parser::{ cond_source::parse_logical}};
+use crate::{atom_parser::expr_function::parse_expr, logic_parser::cond_source::parse_logical};
 //use std::collections::HashMap;
 
 mod atom_parser;
 mod general_const;
-mod logic_parser;
 mod general_struct;
+mod logic_parser;
 mod tokenizer;
 
 fn main() {
     // -------------------
     // Jeu de données
     // -------------------
- /*   let mut ctx = HashMap::new();
-    ctx.insert("age".to_string(), TableCell::Null);
-    ctx.insert("nom".to_string(), TableCell::String("Alice".to_string()));
-    ctx.insert("ville".to_string(), TableCell::String("Paris".to_string()));
- */
+    /*   let mut ctx = HashMap::new();
+       ctx.insert("age".to_string(), TableCell::Null);
+       ctx.insert("nom".to_string(), TableCell::String("Alice".to_string()));
+       ctx.insert("ville".to_string(), TableCell::String("Paris".to_string()));
+    */
     // -------------------
     // Chaîne de condition
     // -------------------
-    let input = "name=2";
+    let input = "not name<2=3";
 
     //
     // -------------------
@@ -28,12 +28,8 @@ fn main() {
     let (a, cond) = parse_logical(input).expect("Erreur de parsing");
 
     println!("{:?}", a);
-    
-    println!("AST = {:?}", cond); 
 
-    
-   // println!("{:?}",tokenizer::is_terminal("a", &["A"]));
+    println!("AST = {:?}", cond);
 
-    
-
+    // println!("{:?}",tokenizer::is_terminal("a", &["A"]));
 }
