@@ -1,12 +1,11 @@
 use crate::{
-    general_const::{PARENS_0, PARENS_1},
-    logic_parser::{
+    general_const::{PARENS_0, PARENS_1}, general_struct::PrimitiveElement, logic_parser::{
         cond_constant::{
             AND_SIGN, EQ_SIGN, GT_E_SIGN, GT_SIGN, IS_NOT_SIGN, IS_SIGN, LT_E_SIGN, LT_SIGN,
             NOT_EQ_SIGN, NOT_SIGN, NULL_SIGN, OR_SIGN,
         },
         tokentool::*,
-    },
+    }
 };
 use nom::{
     IResult,
@@ -27,9 +26,7 @@ pub enum Condition {
         right: Box<Condition>,
     },
     Not(Box<Condition>),
-    Identifier(String),
-    Number(f64),
-    String(String),
+    Primitive(PrimitiveElement),
     Null,
 }
 

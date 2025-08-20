@@ -6,6 +6,7 @@ use nom::combinator::opt;
 use nom::error::Error;
 use nom::{IResult, Parser, bytes::complete::take_while1};
 
+use crate::general_struct::PrimitiveElement;
 use crate::logic_parser::cond_constant::{
     AND_SIGN, EQ_SIGN, GT_E_SIGN, GT_SIGN, IS_NOT_SIGN, IS_SIGN, LT_E_SIGN, LT_SIGN, NOT_EQ_SIGN,
     NOT_SIGN, NULL_SIGN, OR_SIGN,
@@ -138,9 +139,18 @@ pub fn scan_token(input: &str) -> IResult<&str, Token> {
 impl Token<'_> {
     pub fn to_condition<'a>(&self, input: &'a str) -> IResult<&'a str, Box<Condition>> {
         match self {
-            Token::Number(n) => Ok((input, Box::new(Condition::Number(*n)))),
-            Token::String(f) => Ok((input, Box::new(Condition::String(f.clone())))),
-            Token::FieldName(a) => Ok((input, Box::new(Condition::Identifier(a.clone())))),
+            Token::Number(n) => {
+                let val:PrimitiveElement=PrimitiveElement::from(*n);
+                Ok((input, Box::new(Condition::Primitive(val))))
+            },
+            Token::String(f) =>{
+                let val:PrimitiveElement=PrimitiveElement::from(f.clone());
+                Ok((input, Box::new(Condition::Primitive(val))))
+            } ,
+            Token::FieldName(a) =>{
+                let val:PrimitiveElement=PrimitiveElement::from_id(a.clone());
+                Ok((input, Box::new(Condition::Primitive(val))))
+            },
             Token::Other(a) if a.eq_ignore_ascii_case(NULL_SIGN) => {
                 Ok((input, Box::new(Condition::Null)))
             }

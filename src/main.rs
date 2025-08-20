@@ -1,19 +1,20 @@
-use crate::{atom_parser::expr_function::parse_expr, logic_parser::{cond_eval::TableCell, cond_source::parse_logical}};
-use std::collections::HashMap;
+use crate::{atom_parser::expr_function::parse_expr, logic_parser::{ cond_source::parse_logical}};
+//use std::collections::HashMap;
 
 mod atom_parser;
 mod general_const;
 mod logic_parser;
+mod general_struct;
 
 fn main() {
     // -------------------
     // Jeu de données
     // -------------------
-    let mut ctx = HashMap::new();
+ /*   let mut ctx = HashMap::new();
     ctx.insert("age".to_string(), TableCell::Null);
     ctx.insert("nom".to_string(), TableCell::String("Alice".to_string()));
     ctx.insert("ville".to_string(), TableCell::String("Paris".to_string()));
-
+ */
     // -------------------
     // Chaîne de condition
     // -------------------
@@ -28,30 +29,13 @@ fn main() {
     println!("{:?}", a);
     println!("AST = {:?}", cond);
 
-    // -------------------
-    // Évaluation
-    // -------------------
-    let result = cond.evaluate(&ctx);
-
-    println!("Résultat = {}", result);
+    
 
     //other testing :
      let a = "---1";
 
-    // RESULTAT / OUTPUT:
     let v = parse_expr(a);
-    /*
-       vous pouver aussi tester:
-
-
-            let v = parse_term(a);
-                   ou
-            let v = parse_factor(a);
-                   ou
-            let v = parse_power(a);
-
-       quels est la différence d'après vous ?
-    */
+  
 
     match v {
         Ok((rest, expr)) => {

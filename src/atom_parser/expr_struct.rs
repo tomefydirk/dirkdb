@@ -1,8 +1,9 @@
 use crate::atom_parser::expr_constant::{ADD_SIGN, DIV_SIGN, MINUS_SIGN, MUL_SIGN, POWER_SIGN};
 use nom::IResult;
 
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub enum Expr {
+
     Number(f64),
     BinaryOp {
         left: Box<Expr>,
@@ -12,7 +13,7 @@ pub enum Expr {
     Negate(Box<Expr>),
 }
 
-#[derive(Debug)]
+#[derive(Debug,Clone)]
 pub enum BinOp {
     Add,
     Sub,
