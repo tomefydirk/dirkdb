@@ -1,7 +1,4 @@
-use crate::atom_parser::expr_constant::{
-    ABS_SIGN, ADD_SIGN, COS_SIGN, DIV_SIGN, LN_SIGN, MINUS_SIGN, MUL_SIGN, POWER_SIGN, SIN_SIGN,
-    SQRT_SIGN,
-};
+use crate::atom_parser::expr_constant::{ADD_SIGN, DIV_SIGN, MINUS_SIGN, MUL_SIGN, POWER_SIGN};
 use nom::IResult;
 
 #[derive(Debug)]
@@ -13,11 +10,6 @@ pub enum Expr {
         right: Box<Expr>,
     },
     Negate(Box<Expr>),
-    Ln(Box<Expr>),
-    Sqrt(Box<Expr>),
-    Cos(Box<Expr>),
-    Sin(Box<Expr>),
-    Abs(Box<Expr>),
 }
 
 #[derive(Debug)]
@@ -58,14 +50,9 @@ impl Expr {
     //factor operation
     pub fn box_factorop_from(current_expr: Box<Expr>, token: &str) -> Box<Expr> {
         match token.to_uppercase().as_str() {
-            val if val == SQRT_SIGN.to_uppercase().as_str() => Box::new(Expr::Sqrt(current_expr)),
-            val if val == LN_SIGN.to_uppercase().as_str() => Box::new(Expr::Ln(current_expr)),
             val if val == MINUS_SIGN.to_uppercase().as_str() => {
                 Box::new(Expr::Negate(current_expr))
             }
-            val if val == COS_SIGN.to_uppercase().as_str() => Box::new(Expr::Cos(current_expr)),
-            val if val == SIN_SIGN.to_uppercase().as_str() => Box::new(Expr::Sin(current_expr)),
-            val if val == ABS_SIGN.to_uppercase().as_str() => Box::new(Expr::Abs(current_expr)),
             a => {
                 println!("operateur non trouvé :: {a}");
                 Box::new(Expr::Negate(current_expr))
@@ -82,11 +69,6 @@ impl Expr {
     }
     pub fn is_factor_op(str_token: &str) -> bool {
         str_token.eq_ignore_ascii_case(MINUS_SIGN)
-            || str_token.eq_ignore_ascii_case(SQRT_SIGN)
-            || str_token.eq_ignore_ascii_case(LN_SIGN)
-            || str_token.eq_ignore_ascii_case(COS_SIGN)
-            || str_token.eq_ignore_ascii_case(SIN_SIGN)
-            || str_token.eq_ignore_ascii_case(ABS_SIGN)
     }
 }
 impl Expr {
@@ -111,11 +93,6 @@ impl Expr {
                 }
             }
             Expr::Negate(expr) => -expr.eval(),
-            Expr::Ln(expr) => expr.eval().ln(),
-            Expr::Sqrt(expr) => expr.eval().sqrt(),
-            Expr::Cos(expr) => expr.eval().cos(),
-            Expr::Sin(expr) => expr.eval().sin(),
-            Expr::Abs(expr) => expr.eval().abs(),
         }
     }
 }

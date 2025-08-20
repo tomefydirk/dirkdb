@@ -1,14 +1,13 @@
 use crate::atom_parser::expr_struct::{BinOp, Expr};
 use crate::atom_parser::tokentool::{Token, scan_token};
+use crate::general_const::{PARENS_0, PARENS_1};
 use nom::IResult;
 use nom::error::Error;
 /*
 rhs:Right hand side
 lhs:Left hand side
 */
-use crate::atom_parser::expr_constant::{
-    ADD_SIGN, DIV_SIGN, MINUS_SIGN, MUL_SIGN, PARENS_0, PARENS_1, POWER_SIGN,
-};
+use crate::atom_parser::expr_constant::{ADD_SIGN, DIV_SIGN, MINUS_SIGN, MUL_SIGN, POWER_SIGN};
 
 fn parse_binop_level<'a, F>(
     input: &'a str,
@@ -72,20 +71,11 @@ pub fn parse_factor(input: &str) -> IResult<&str, Box<Expr>> {
     match token {
         Token::Number(n) => Expr::result_number(next_input, n),
         Token::Other(str_token) => {
-            if str_token == "(" {
+            if str_token == PARENS_0 {
                 parse_real_factor(next_input)
             } else if Expr::is_factor_op(str_token) {
-                let (next_input, token) = scan_token(next_input)?;
-                match token {
-                    Token::Other("(") => {
-                        let (after, real_perm) = parse_real_factor(next_input)?;
-                        Ok((after, Expr::box_factorop_from(real_perm, str_token)))
-                    }
-                    _ => Err(nom::Err::Error(Error::new(
-                        input,
-                        nom::error::ErrorKind::Digit,
-                    ))),
-                }
+                 let (after, real_perm) = parse_factor(next_input)?;
+                Ok((after, Expr::box_factorop_from(real_perm, str_token)))
             } else {
                 Err(nom::Err::Error(Error::new(
                     input,

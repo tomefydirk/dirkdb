@@ -6,6 +6,10 @@ use nom::combinator::opt;
 use nom::error::Error;
 use nom::{IResult, Parser, bytes::complete::take_while1};
 
+use crate::logic_parser::cond_constant::{
+    AND_SIGN, EQ_SIGN, GT_E_SIGN, GT_SIGN, IS_NOT_SIGN, IS_SIGN, LT_E_SIGN, LT_SIGN, NOT_EQ_SIGN,
+    NOT_SIGN, NULL_SIGN, OR_SIGN,
+};
 use crate::logic_parser::cond_source::Condition;
 
 fn is_ident_start(c: char) -> bool {
@@ -96,29 +100,30 @@ pub fn scan_string(input: &str) -> IResult<&str, Token> {
 }
 pub fn tag_is_not(input: &str) -> IResult<&str, &str> {
     let (input, _) = (
-        tag_no_case("is"),
+        tag_no_case(IS_SIGN),
         multispace1,
-        tag_no_case("not"),
+        tag_no_case(NOT_SIGN),
         multispace1,
-    ).parse(input)?;
-    Ok((input, ("is not")))
+    )
+        .parse(input)?;
+    Ok((input, (IS_NOT_SIGN)))
 }
 pub fn scan_other(input: &str) -> IResult<&str, Token> {
     let a = alt((
-        tag("<="),
-        tag(">="),
-        tag("!="),
-        tag("="),
-        tag("<"),
-        tag(">"),
+        tag(LT_E_SIGN),
+        tag(GT_E_SIGN),
+        tag(NOT_EQ_SIGN),
+        tag(EQ_SIGN),
+        tag(LT_SIGN),
+        tag(GT_SIGN),
         tag("("),
         tag(")"),
         tag_is_not,
-        tag_no_case("or"),
-        tag_no_case("and"),
-        tag_no_case("is"),
-        tag_no_case("not"),
-        tag_no_case("null"),
+        tag_no_case(OR_SIGN),
+        tag_no_case(AND_SIGN),
+        tag_no_case(IS_SIGN),
+        tag_no_case(NOT_SIGN),
+        tag_no_case(NULL_SIGN),
     ))
     .parse(input)?;
 
@@ -136,7 +141,7 @@ impl Token<'_> {
             Token::Number(n) => Ok((input, Box::new(Condition::Number(*n)))),
             Token::String(f) => Ok((input, Box::new(Condition::String(f.clone())))),
             Token::FieldName(a) => Ok((input, Box::new(Condition::Identifier(a.clone())))),
-            Token::Other(a) if a.eq_ignore_ascii_case("null") => {
+            Token::Other(a) if a.eq_ignore_ascii_case(NULL_SIGN) => {
                 Ok((input, Box::new(Condition::Null)))
             }
             a => {

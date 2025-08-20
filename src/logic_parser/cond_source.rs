@@ -1,4 +1,13 @@
-use crate::logic_parser::tokentool::*;
+use crate::{
+    general_const::{PARENS_0, PARENS_1},
+    logic_parser::{
+        cond_constant::{
+            AND_SIGN, EQ_SIGN, GT_E_SIGN, GT_SIGN, IS_NOT_SIGN, IS_SIGN, LT_E_SIGN, LT_SIGN,
+            NOT_EQ_SIGN, NOT_SIGN, NULL_SIGN, OR_SIGN,
+        },
+        tokentool::*,
+    },
+};
 use nom::{
     IResult,
     error::{Error, ErrorKind},
@@ -69,14 +78,14 @@ impl FromStr for CompareOp {
     type Err = ();
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_ascii_lowercase().as_str() {
-            "=" => Ok(Self::Eq),
-            "!=" => Ok(Self::Neq),
-            "<" => Ok(Self::Lt),
-            "<=" => Ok(Self::Lte),
-            ">" => Ok(Self::Gt),
-            ">=" => Ok(Self::Gte),
-            "is" => Ok(Self::Is),
-            "is not" => Ok(Self::IsNot),
+            EQ_SIGN => Ok(Self::Eq),
+            NOT_EQ_SIGN => Ok(Self::Neq),
+            LT_SIGN => Ok(Self::Lt),
+            LT_E_SIGN => Ok(Self::Lte),
+            GT_SIGN => Ok(Self::Gt),
+            GT_E_SIGN => Ok(Self::Gte),
+            IS_SIGN => Ok(Self::Is),
+            IS_NOT_SIGN => Ok(Self::IsNot),
             _ => Err(()),
         }
     }
@@ -86,8 +95,8 @@ impl FromStr for LogicalOp {
     type Err = ();
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_ascii_lowercase().as_str() {
-            "or" => Ok(Self::Or),
-            "and" => Ok(Self::And),
+            OR_SIGN => Ok(Self::Or),
+            AND_SIGN => Ok(Self::And),
             _ => Err(()),
         }
     }
@@ -100,7 +109,7 @@ fn err(input: &str) -> IResult<&str, Box<Condition>> {
 pub fn parse_logical(input: &str) -> IResult<&str, Box<Condition>> {
     let (mut input_rem, mut current) = parse_compare(input)?;
 
-    while !input_rem.is_empty() && !input_rem.starts_with(')') {
+    while !input_rem.is_empty() && !input_rem.starts_with(PARENS_1) {
         let (next, token) = scan_token(input_rem)?;
         match token {
             Token::Other(a) if LogicalOp::from_str(a).is_ok() => {
@@ -116,9 +125,9 @@ pub fn parse_logical(input: &str) -> IResult<&str, Box<Condition>> {
 
 pub fn parse_compare(input: &str) -> IResult<&str, Box<Condition>> {
     let (mut new_input, mut current) = parse_atom(input)?;
-    let mut comparisons = Vec::new();
+    let mut comparisons = Vec::<Condition>::new();
 
-    while !new_input.trim().is_empty() && !new_input.trim().starts_with(")") {
+    while !new_input.trim().is_empty() && !new_input.trim().starts_with(PARENS_1) {
         let (next, token) = scan_token(new_input)?;
         match token {
             Token::Other(op) if CompareOp::from_str(op).is_ok() => {
@@ -127,21 +136,20 @@ pub fn parse_compare(input: &str) -> IResult<&str, Box<Condition>> {
                 if matches!(cop, CompareOp::Is | CompareOp::IsNot) {
                     let (after_rhs, rhs_token) = scan_token(next)?;
                     match rhs_token {
-                        Token::Other(r) if r.eq_ignore_ascii_case("null") => {
+                        Token::Other(r) if r.eq_ignore_ascii_case(NULL_SIGN) => {
                             let rhs = Box::new(Condition::Null);
                             current = CompareOp::build(current, rhs, cop);
-                            comparisons.push(current.clone());
+                            comparisons.push(*current.clone());
                             new_input = after_rhs;
                         }
                         _ => {
-                           return  err(next);
+                            return err(next);
                         }
                     }
                 } else {
-                    
                     let (after_rhs, rhs) = parse_atom(next)?;
                     current = CompareOp::build(current, rhs, cop);
-                    comparisons.push(current.clone());
+                    comparisons.push(*current.clone());
                     new_input = after_rhs;
                 }
             }
@@ -156,15 +164,14 @@ pub fn parse_compare(input: &str) -> IResult<&str, Box<Condition>> {
     }
 }
 
-
 pub fn parse_atom(input: &str) -> IResult<&str, Box<Condition>> {
     let (new_input, token) = scan_token(input.trim())?;
     match token {
-        Token::Other(a) if a.eq_ignore_ascii_case("not") => {
+        Token::Other(a) if a.eq_ignore_ascii_case(NOT_SIGN) => {
             let (rest, c) = parse_logical(new_input)?;
             Ok((rest, Box::new(Condition::Not(c))))
         }
-        Token::Other("(") => {
+        Token::Other(PARENS_0) => {
             let (after_paren, _) = scan_token(input)?;
             parse_logical_factor(after_paren)
         }
@@ -173,16 +180,16 @@ pub fn parse_atom(input: &str) -> IResult<&str, Box<Condition>> {
 }
 
 pub fn and_ification(
-    mut comparisons: Vec<Box<Condition>>,
+    mut comparisons: Vec<Condition>,
     input: &str,
 ) -> IResult<&str, Box<Condition>> {
     match comparisons.len() {
         0 => err(input),
-        1 => Ok((input, comparisons.pop().unwrap())),
+        1 => Ok((input, Box::new(comparisons.pop().unwrap()))),
         _ => {
-            let mut current = comparisons.remove(0);
+            let mut current = Box::new(comparisons.remove(0));
             for cmp in comparisons {
-                current = LogicalOp::build(current, cmp, LogicalOp::And);
+                current = LogicalOp::build(current, Box::new(cmp), LogicalOp::And);
             }
             Ok((input, current))
         }
@@ -194,7 +201,7 @@ pub fn parse_logical_factor(input: &str) -> IResult<&str, Box<Condition>> {
     let (after_paren, token) = scan_token(after_condition)?;
 
     match token {
-        Token::Other(")") => Ok((after_paren, condition)),
+        Token::Other(PARENS_1) => Ok((after_paren, condition)),
         _ => err(after_paren),
     }
 }

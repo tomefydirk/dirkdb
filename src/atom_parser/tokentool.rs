@@ -1,12 +1,13 @@
 use nom::branch::alt;
-use nom::bytes::complete::{tag, tag_no_case};
+use nom::bytes::complete::tag;
 use nom::character::complete::{digit1, space0};
 use nom::combinator::opt;
 use nom::error::Error;
 use nom::{IResult, Parser};
 use std::f64::consts::{E, PI};
 
-use crate::atom_parser::expr_constant::{ABS_SIGN, ADD_SIGN, COS_SIGN, DIV_SIGN, LN_SIGN, MINUS_SIGN, MUL_SIGN, PARENS_0, PARENS_1, POWER_SIGN, SIN_SIGN, SQRT_SIGN};
+use crate::atom_parser::expr_constant::{ADD_SIGN, DIV_SIGN, MINUS_SIGN, MUL_SIGN, POWER_SIGN};
+use crate::general_const::{PARENS_0, PARENS_1};
 /*
 Explication :
     un "token" peut etre un "float"(f64) ou ('-','+','*','/','(',')','ln','V') appelé "other_token"
@@ -51,11 +52,6 @@ pub fn scan_constant(input: &str) -> IResult<&str, Token> {
         )))
     }
 }
-pub fn tag_function(input: &str) -> IResult<&str, Token> {
-    let a = alt((tag_no_case(LN_SIGN), tag_no_case(SQRT_SIGN), tag_no_case(COS_SIGN), tag_no_case(SIN_SIGN), tag_no_case(ABS_SIGN))).parse(input)?;
-
-    Ok((a.0, Token::Other(a.1)))
-}
 pub fn tag_other_token(input: &str) -> IResult<&str, Token> {
     let a = alt((
         tag(MINUS_SIGN),
@@ -74,7 +70,7 @@ pub fn tag_other_token(input: &str) -> IResult<&str, Token> {
 
 pub fn scan_token(mut input: &str) -> IResult<&str, Token> {
     input = input.trim();
-    let a = alt((scan_float, scan_constant, tag_function, tag_other_token)).parse(input)?;
+    let a = alt((scan_float, scan_constant, tag_other_token)).parse(input)?;
 
     Ok((a.0.trim(), a.1))
 }
