@@ -5,6 +5,7 @@ mod atom_parser;
 mod general_const;
 mod logic_parser;
 mod general_struct;
+mod tokenizer;
 
 fn main() {
     // -------------------
@@ -38,13 +39,8 @@ fn main() {
   
 
     match v {
-        Ok((rest, expr)) => {
+        Ok((_, expr)) => {
             println!("Expr : {:?}", expr);
-            let result = expr.eval();
-            println!("Result : {}", result);
-            if !rest.is_empty() {
-                println!("input_reste : \"{rest}\"");
-            }
         }
         Err(_) => {
             println!("Parsing impossible")

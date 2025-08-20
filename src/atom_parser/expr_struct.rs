@@ -1,10 +1,9 @@
-use crate::atom_parser::expr_constant::{ADD_SIGN, DIV_SIGN, MINUS_SIGN, MUL_SIGN, POWER_SIGN};
+use crate::{atom_parser::expr_constant::{ADD_SIGN, DIV_SIGN, MINUS_SIGN, MUL_SIGN, POWER_SIGN}, general_struct::PrimitiveElement};
 use nom::IResult;
 
 #[derive(Debug,Clone)]
 pub enum Expr {
-
-    Number(f64),
+    Primitive(PrimitiveElement),
     BinaryOp {
         left: Box<Expr>,
         op: BinOp,
@@ -60,8 +59,11 @@ impl Expr {
             }
         }
     }
+
+    //transfrome un nombre --> result
     pub fn result_number(input: &str, number: f64) -> IResult<&str, Box<Expr>> {
-        let result = (input, Box::new(Expr::Number(number)));
+        let a:PrimitiveElement=number.into();
+        let result = (input, Box::new(Expr::Primitive(a)));
         IResult::Ok(result)
     }
 
@@ -70,30 +72,5 @@ impl Expr {
     }
     pub fn is_factor_op(str_token: &str) -> bool {
         str_token.eq_ignore_ascii_case(MINUS_SIGN)
-    }
-}
-impl Expr {
-    /*Expr to float*/
-    pub fn eval(&self) -> f64 {
-        match self {
-            Expr::Number(n) => *n,
-            Expr::BinaryOp { left, op, right } => {
-                let l = left.eval();
-                let r = right.eval();
-                match op {
-                    BinOp::Add => l + r,
-                    BinOp::Sub => l - r,
-                    BinOp::Mul => l * r,
-                    BinOp::Div => {
-                        if r == 0.0 {
-                            panic!("Division par zéro !");
-                        }
-                        l / r
-                    }
-                    BinOp::Pow => l.powf(r),
-                }
-            }
-            Expr::Negate(expr) => -expr.eval(),
-        }
     }
 }

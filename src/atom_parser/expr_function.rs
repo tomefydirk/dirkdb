@@ -1,6 +1,7 @@
 use crate::atom_parser::expr_struct::{BinOp, Expr};
 use crate::atom_parser::tokentool::{Token, scan_token};
 use crate::general_const::{PARENS_0, PARENS_1};
+use crate::general_struct::PrimitiveElement;
 use nom::IResult;
 use nom::error::Error;
 /*
@@ -36,8 +37,9 @@ where
             //pour les cas implicite de multiplication (2)2 ou 2(2)
             Token::Number(n) => {
                 if ops.contains(&MUL_SIGN) {
+                let a:PrimitiveElement=n.into();       
                     current_expr =
-                        Expr::box_binop_from(current_expr, Box::new(Expr::Number(n)), BinOp::Mul);
+                        Expr::box_binop_from(current_expr, Box::new(Expr::Primitive(a)), BinOp::Mul);
                     input_rem = next_input;
                 } else {
                     return Expr::result_from_current(input_rem, current_expr);

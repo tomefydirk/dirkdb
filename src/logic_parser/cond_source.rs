@@ -5,7 +5,7 @@ use crate::{
             NOT_EQ_SIGN, NOT_SIGN, NULL_SIGN, OR_SIGN,
         },
         tokentool::*,
-    }
+    }, tokenizer::Token
 };
 use nom::{
     IResult,
