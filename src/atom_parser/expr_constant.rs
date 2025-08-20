@@ -1,0 +1,12 @@
+pub const MINUS_SIGN:&str="-";
+pub const ADD_SIGN:&str="+";
+pub const MUL_SIGN:&str="*";
+pub const DIV_SIGN:&str="/";
+pub const POWER_SIGN:&str="^";
+pub const PARENS_0:&str="(";
+pub const PARENS_1:&str=")";
+pub const LN_SIGN:&str="ln";
+pub const SQRT_SIGN:&str="sqrt";
+pub const COS_SIGN:&str="cos";
+pub const SIN_SIGN:&str="sin";
+pub const ABS_SIGN:&str="abs";
