@@ -57,7 +57,6 @@ pub fn parse_factor(input: &str) -> IResult<&str, Box<Condition>> {
         Token::Number(n) => Condition::result_number(next_input, n),
         Token::String(s) => Condition::result_string(next_input, s),
         Token::FieldName(f) =>{
-            println!("{f} {next_input}");
             Condition::result_name(next_input, f)
         } ,
         Token::Other(str_token) => {

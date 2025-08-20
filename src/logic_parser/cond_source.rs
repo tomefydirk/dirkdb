@@ -114,7 +114,6 @@ fn err(input: &str) -> IResult<&str, Box<Condition>> {
 }
 
 pub fn parse_logical(input: &str) -> IResult<&str, Box<Condition>> {
-    println!("LOGICAL {input}");
     let (mut input_rem, mut current) = parse_compare(input)?;
 
     while !input_rem.is_empty() && !input_rem.starts_with(PARENS_1) {
