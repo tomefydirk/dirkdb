@@ -8,6 +8,7 @@ use std::f64::consts::{E, PI};
 
 use crate::atom_parser::expr_constant::{ADD_SIGN, DIV_SIGN, MINUS_SIGN, MUL_SIGN, POWER_SIGN};
 use crate::general_const::{PARENS_0, PARENS_1};
+use crate::tokenizer::{scan_float, Token};
 /*
 Explication :
     un "token" peut etre un "float"(f64) ou ('-','+','*','/','(',')','ln','V') appelé "other_token"
@@ -16,26 +17,7 @@ Explication :
     space0 est utilisé ici par convention
 */
 
-pub fn scan_float(input: &str) -> IResult<&str, Token> {
-    let (rest, first_part) = digit1(input)?;
-    let (rest2, point) = opt(tag(".")).parse(rest)?;
-    if point.is_some() {
-        let (rest3, second_part) = digit1(rest2)?;
-        Ok((
-            rest3,
-            Token::Number(format!("{first_part}.{second_part}").parse().map_err(|_| {
-                nom::Err::Error(nom::error::Error::new(input, nom::error::ErrorKind::Digit))
-            })?),
-        ))
-    } else {
-        Ok((
-            rest,
-            Token::Number(format!("{first_part}.0").parse().map_err(|_| {
-                nom::Err::Error(nom::error::Error::new(input, nom::error::ErrorKind::Digit))
-            })?),
-        ))
-    }
-}
+
 pub fn scan_constant(input: &str) -> IResult<&str, Token> {
     let a = alt((tag("E"), tag("PI"))).parse(input)?;
 
@@ -74,12 +56,7 @@ pub fn scan_token(mut input: &str) -> IResult<&str, Token> {
 
     Ok((a.0.trim(), a.1))
 }
-//Enum pour les token :
-#[derive(Debug)]
-pub enum Token<'a> {
-    Number(f64),
-    Other(&'a str),
-}
+
 
 #[cfg(test)]
 mod test {

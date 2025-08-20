@@ -1,7 +1,8 @@
 use crate::atom_parser::expr_struct::{BinOp, Expr};
-use crate::atom_parser::tokentool::{Token, scan_token};
+use crate::atom_parser::tokentool::{ scan_token};
 use crate::general_const::{PARENS_0, PARENS_1};
 use crate::general_struct::PrimitiveElement;
+use crate::tokenizer::Token;
 use nom::IResult;
 use nom::error::Error;
 /*
@@ -84,6 +85,12 @@ pub fn parse_factor(input: &str) -> IResult<&str, Box<Expr>> {
                     nom::error::ErrorKind::Digit,
                 )))
             }
+        }
+        _=>{
+             Err(nom::Err::Error(Error::new(
+                    input,
+                    nom::error::ErrorKind::Digit,
+                )))
         }
     }
 }

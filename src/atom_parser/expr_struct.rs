@@ -60,7 +60,7 @@ impl Expr {
         }
     }
 
-    //transfrome un nombre --> result
+    //transfrome un nombre -->
     pub fn result_number(input: &str, number: f64) -> IResult<&str, Box<Expr>> {
         let a:PrimitiveElement=number.into();
         let result = (input, Box::new(Expr::Primitive(a)));
