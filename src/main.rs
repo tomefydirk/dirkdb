@@ -1,4 +1,4 @@
-use crate::{atom_parser::expr_function::parse_expr, logic_parser::cond_source::parse_logical};
+use crate::{logic_parser::cond_source::parse_logical};
 //use std::collections::HashMap;
 
 mod atom_parser;
@@ -19,7 +19,7 @@ fn main() {
     // -------------------
     // Chaîne de condition
     // -------------------
-    let input = "not name<2=3";
+    let input = "(name is Null)+1*2";
 
     //
     // -------------------
