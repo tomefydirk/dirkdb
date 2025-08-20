@@ -1,11 +1,8 @@
-use crate::atom_parser::expr_struct::Expr;
-
 #[derive(Debug, Clone)]
 pub enum PrimitiveElement{
     Identifier(String),
     Number(f64),
-    String(String),
-    Other(Box<Expr>)
+    String(String)
 }
 impl From<f64> for PrimitiveElement {
     fn from(value: f64) -> Self {

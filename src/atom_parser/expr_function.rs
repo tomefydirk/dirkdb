@@ -1,8 +1,10 @@
-use crate::atom_parser::expr_struct::{BinOp, Expr};
+use crate::atom_parser::expr_struct::{BinOp};
 use crate::atom_parser::tokentool::{ scan_token};
 use crate::general_const::{PARENS_0, PARENS_1};
 use crate::general_struct::PrimitiveElement;
-use crate::tokenizer::Token;
+use crate::logic_parser::cond_constant::TERMINALS;
+use crate::logic_parser::cond_source::{parse_logical, Condition};
+use crate::tokenizer::{is_terminal, Token};
 use nom::IResult;
 use nom::error::Error;
 /*
@@ -15,14 +17,14 @@ fn parse_binop_level<'a, F>(
     input: &'a str,
     lower_parser: F,
     ops: &[&str],
-) -> IResult<&'a str, Box<Expr>>
+) -> IResult<&'a str, Box<Condition>>
 where
-    F: Fn(&'a str) -> IResult<&'a str, Box<Expr>>,
+    F: Fn(&'a str) -> IResult<&'a str, Box<Condition>>,
 {
     let (mut input_rem, mut current_expr) = lower_parser(input)?;
 
     if input_rem.starts_with(')') {
-        return Expr::result_from_current(input_rem, current_expr);
+        return Condition::result_from_current(input_rem, current_expr);
     }
 
     loop {
@@ -31,54 +33,38 @@ where
         match token {
             Token::Other(op) if ops.contains(&op) => {
                 let (after_rhs, rhs) = lower_parser(next_input)?;
-                current_expr = Expr::box_binop_from(current_expr, rhs, BinOp::from_str(op));
+                current_expr = Condition::box_binop_from(current_expr, rhs, BinOp::from_str(op));
                 input_rem = after_rhs;
-            }
-
-            //pour les cas implicite de multiplication (2)2 ou 2(2)
-            Token::Number(n) => {
-                if ops.contains(&MUL_SIGN) {
-                let a:PrimitiveElement=n.into();       
-                    current_expr =
-                        Expr::box_binop_from(current_expr, Box::new(Expr::Primitive(a)), BinOp::Mul);
-                    input_rem = next_input;
-                } else {
-                    return Expr::result_from_current(input_rem, current_expr);
-                }
-            }
-            Token::Other(PARENS_0) if ops.contains(&MUL_SIGN) => {
-                let (after_rhs, rhs) = lower_parser(next_input)?;
-                current_expr = Expr::box_binop_from(current_expr, rhs, BinOp::Mul);
-                input_rem = after_rhs;
-            }
-            _ => return Expr::result_from_current(input_rem, current_expr),
+            },
+            _ => return Condition::result_from_current(input_rem, current_expr),
         }
     }
 }
 
-pub fn parse_expr(input: &str) -> IResult<&str, Box<Expr>> {
+pub fn parse_expr(input: &str) -> IResult<&str, Box<Condition>> {
     parse_binop_level(input, parse_term, &[ADD_SIGN, MINUS_SIGN])
 }
 
-pub fn parse_term(input: &str) -> IResult<&str, Box<Expr>> {
+pub fn parse_term(input: &str) -> IResult<&str, Box<Condition>> {
     parse_binop_level(input, parse_power, &[MUL_SIGN, DIV_SIGN])
 }
 
-pub fn parse_power(input: &str) -> IResult<&str, Box<Expr>> {
+pub fn parse_power(input: &str) -> IResult<&str, Box<Condition>> {
     parse_binop_level(input, parse_factor, &[POWER_SIGN])
 }
 
-pub fn parse_factor(input: &str) -> IResult<&str, Box<Expr>> {
+pub fn parse_factor(input: &str) -> IResult<&str, Box<Condition>> {
     let (next_input, token) = scan_token(input)?;
-
     match token {
-        Token::Number(n) => Expr::result_number(next_input, n),
+        Token::Number(n) => Condition::result_number(next_input, n),
+        Token::String(s)=>Condition::result_string(next_input, s),
+        Token::FieldName(f)=>Condition::result_name(input,f),
         Token::Other(str_token) => {
             if str_token == PARENS_0 {
                 parse_real_factor(next_input)
-            } else if Expr::is_factor_op(str_token) {
-                 let (after, real_perm) = parse_factor(next_input)?;
-                Ok((after, Expr::box_factorop_from(real_perm, str_token)))
+            } else if Condition::is_factor_op(str_token) {
+                 let (after, real_perm) = parse_logical(next_input)?;
+                Ok((after, Condition::box_factorop_from(real_perm, str_token)))
             } else {
                 Err(nom::Err::Error(Error::new(
                     input,
@@ -95,12 +81,12 @@ pub fn parse_factor(input: &str) -> IResult<&str, Box<Expr>> {
     }
 }
 
-pub fn parse_real_factor(input: &str) -> IResult<&str, Box<Expr>> {
-    let (after_expr, expr) = parse_expr(input)?;
+pub fn parse_real_factor(input: &str) -> IResult<&str, Box<Condition>> {
+    let (after_expr, expr) =parse_logical(input)?;
     let (after_paren, token) = scan_token(after_expr)?;
 
     match token {
-        Token::Other(PARENS_1) => Expr::result_from_current(after_paren, expr),
+        Token::Other(PARENS_1) => Condition::result_from_current(after_paren, expr),
         _ => Err(nom::Err::Error(Error::new(
             after_paren,
             nom::error::ErrorKind::Digit,

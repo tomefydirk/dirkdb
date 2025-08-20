@@ -19,7 +19,7 @@ fn main() {
     // -------------------
     // Chaîne de condition
     // -------------------
-    let input = "not (age is not null) and 'Alice'=nom";
+    let input = "name=2";
 
     //
     // -------------------
@@ -28,23 +28,12 @@ fn main() {
     let (a, cond) = parse_logical(input).expect("Erreur de parsing");
 
     println!("{:?}", a);
-    println!("AST = {:?}", cond);
+    
+    println!("AST = {:?}", cond); 
 
     
+   // println!("{:?}",tokenizer::is_terminal("a", &["A"]));
 
-    //other testing :
-     let a = "---1";
-
-    let v = parse_expr(a);
-  
-
-    match v {
-        Ok((_, expr)) => {
-            println!("Expr : {:?}", expr);
-        }
-        Err(_) => {
-            println!("Parsing impossible")
-        }
-    }
+    
 
 }

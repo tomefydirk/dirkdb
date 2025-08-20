@@ -1,5 +1,5 @@
 use crate::{
-    general_const::{PARENS_0, PARENS_1}, general_struct::PrimitiveElement, logic_parser::{
+    atom_parser::{expr_function::parse_expr, expr_struct::BinOp}, general_const::{PARENS_0, PARENS_1}, general_struct::PrimitiveElement, logic_parser::{
         cond_constant::{
             AND_SIGN, EQ_SIGN, GT_E_SIGN, GT_SIGN, IS_NOT_SIGN, IS_SIGN, LT_E_SIGN, LT_SIGN,
             NOT_EQ_SIGN, NOT_SIGN, NULL_SIGN, OR_SIGN,
@@ -25,6 +25,12 @@ pub enum Condition {
         op: LogicalOp,
         right: Box<Condition>,
     },
+    BinaryOp {
+        left: Box<Condition>,
+        op: BinOp,
+        right: Box<Condition>,
+    },
+    Negate(Box<Condition>),
     Not(Box<Condition>),
     Primitive(PrimitiveElement),
     Null,
@@ -172,7 +178,9 @@ pub fn parse_atom(input: &str) -> IResult<&str, Box<Condition>> {
             let (after_paren, _) = scan_token(input)?;
             parse_logical_factor(after_paren)
         }
-        _ => Token::to_condition(&token, new_input),
+        _ =>{
+             parse_expr(input)
+        },
     }
 }
 

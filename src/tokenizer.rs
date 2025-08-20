@@ -1,5 +1,5 @@
 // tokentools.rs
-use nom::bytes::complete::{tag};
+use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::{digit1};
 use nom::combinator::opt;
 use nom::{IResult, Parser, bytes::complete::take_while1};
@@ -89,4 +89,14 @@ pub fn scan_name(input: &str) -> IResult<&str, Token> {
 pub fn scan_string(input: &str) -> IResult<&str, Token> {
     let a = tag_string(input)?;
     Ok((a.0, Token::String(a.1)))
+}
+pub fn is_terminal(input: &str,terminals:&[&str])->bool{
+    for g in terminals{
+       let a:IResult<&str,&str>=tag_no_case(*g).parse(input);
+       match a {
+        Ok(_) => {return true},
+        Err(_) =>{return false},
+           };
+    };
+    true
 }
