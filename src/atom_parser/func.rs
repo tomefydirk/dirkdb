@@ -1,4 +1,4 @@
-use crate::general_const::{MOD_SIGN, PARENS_0, PARENS_1};
+use crate::general_const::{MOD_SIGN, NULL_SIGN, PARENS_0, PARENS_1};
 use crate::general_struct::element::{BinOp, Condition};
 use crate::logic_parser::func::{ parse_logical};
 use crate::tokenizer::{Token,scan_token };
@@ -66,7 +66,9 @@ pub fn parse_factor(input: &str) -> IResult<&str, Box<Condition>> {
             } else if Condition::is_factor_op(str_token) {
                 let (after, real_perm) = parse_factor(next_input)?;
                 Ok((after, Condition::box_factorop_from(real_perm, str_token)))
-            } else {
+            } else if str_token.to_lowercase()==NULL_SIGN{
+                Ok((next_input,Box::new(Condition::Null)))
+            }else{
                 Err(nom::Err::Error(Error::new(
                     input,
                     nom::error::ErrorKind::Digit,
