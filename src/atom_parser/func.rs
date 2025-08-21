@@ -71,10 +71,6 @@ pub fn parse_factor(input: &str) -> IResult<&str, Box<Condition>> {
                 )))
             }
         }
-        _ => Err(nom::Err::Error(Error::new(
-            input,
-            nom::error::ErrorKind::Digit,
-        ))),
     }
 }
 
