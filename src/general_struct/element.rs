@@ -118,3 +118,15 @@ impl Default for TableCell {
         Self::Null
     }
 }
+
+//PartialEq:
+
+impl PartialEq for LogicResult {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (LogicResult::Boolean(a), LogicResult::Boolean(b)) => a == b,
+            (LogicResult::Other(a), LogicResult::Other(b)) => a == b,
+            _ => false,
+        }
+    }
+}
