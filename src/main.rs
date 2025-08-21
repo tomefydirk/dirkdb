@@ -8,6 +8,7 @@ mod tokenizer;
 mod parsing;
 mod evaluation;
 mod function;
+mod error_lib;
 fn main() {
     // 1) Contexte
         let mut ctx = HashMap::new();
