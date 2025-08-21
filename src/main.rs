@@ -6,6 +6,7 @@ mod general_struct;
 mod tokenizer;
 mod parsing;
 mod evaluation;
+mod function;
 fn main() {
     // -------------------
     // Jeu de données

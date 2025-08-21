@@ -1,0 +1,3 @@
+//tous les fonction utilitaire seront ici!!!
+
+//ex :DATEDIFF(),NOW(),PI() etc....

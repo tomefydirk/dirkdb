@@ -17,3 +17,4 @@ impl From<f64> for LogicResult{
         LogicResult::Other(value.into())
     }
 }
+

@@ -1,4 +1,4 @@
-use crate::general_struct::element::{CompareOp, LogicalOp, TableCell};
+use crate::general_struct::element::{CompareOp,  TableCell};
 
 impl PartialEq for TableCell {
     fn eq(&self, other: &Self) -> bool {
@@ -10,16 +10,7 @@ impl PartialEq for TableCell {
         }
     }
 }
-impl PartialOrd for  TableCell{
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        match (self,other) {
-            (TableCell::String(a), TableCell::String(b)) => a.partial_cmp(b),
-            (TableCell::Number(a), TableCell::Number(b)) => a.partial_cmp(b),
-            _=>None,
-        }
-    }
-}
-trait Comparator<T>
+pub trait Comparator<T>
 where
     T: PartialEq + PartialOrd,
 {
@@ -42,11 +33,14 @@ where
         }
     }
 }
-impl LogicalOp {
-    pub fn apply(&self, l: bool, r: bool) -> bool {
-        match self {
-            LogicalOp::And => l && r,
-            LogicalOp::Or => l || r,
-        }
+
+//transformer bool ---> 0 ou 1
+
+///pour accépter les (1!=1)+1  c'est égal à false+1  or false=0 donc le resultat est 1 
+pub fn bool_transform(b:bool)->f64{
+    if b {
+        1.0
+    }else {
+        0.0
     }
 }
