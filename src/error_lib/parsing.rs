@@ -1,6 +1,9 @@
 use thiserror::Error;
 
-use crate::parsing::{atom_parser::element::FromStrBinOpError, logic_parser::element::{FromStrCmpOpError, FromStrLogicalOpError}};
+use crate::parsing::{
+    atom_parser::element::FromStrBinOpError,
+    logic_parser::element::{FromStrCmpOpError, FromStrLogicalOpError},
+};
 #[derive(Debug)]
 pub enum ErrorKind {
     Parens1Missing,
@@ -19,12 +22,11 @@ impl<I> ParserErr<I> {
     }
 }
 
-
 //-------list of error :
 pub fn create_factor_error(input: &str) -> ParserErr<&str> {
     ParserErr::build(input, ErrorKind::Parens1Missing)
 }
-pub fn token_not_found(input: &str)->ParserErr<&str>{
+pub fn token_not_found(input: &str) -> ParserErr<&str> {
     ParserErr::build(input, ErrorKind::TokenNotfound)
 }
 #[derive(Debug, thiserror::Error)]
@@ -34,10 +36,10 @@ pub enum Error<I> {
     Nested(Vec<Self>),
     FromStrBinOp(#[from] FromStrBinOpError),
     FromStrCmpOp(#[from] FromStrCmpOpError),
-    FromStrLgclOp(#[from] FromStrLogicalOpError)
+    FromStrLgclOp(#[from] FromStrLogicalOpError),
 }
 
-pub type IResult<I, O, E = Error<I>> = nom::IResult<I, O, E>; 
+pub type IResult<I, O, E = Error<I>> = nom::IResult<I, O, E>;
 
 impl<I> nom::error::ParseError<I> for Error<I> {
     fn from_error_kind(input: I, kind: nom::error::ErrorKind) -> Self {
@@ -59,12 +61,16 @@ impl<I> nom::error::ParseError<I> for Error<I> {
     }
 }
 
-pub(crate) fn into_nom_failure<I,E>(e: E) -> nom::Err<Error<I>>
-where E: Into<Error<I>> {
-    nom::Err::Failure(e.into())    
+pub(crate) fn into_nom_failure<I, E>(e: E) -> nom::Err<Error<I>>
+where
+    E: Into<Error<I>>,
+{
+    nom::Err::Failure(e.into())
 }
 
-pub(crate) fn into_nom_error<I,E>(e: E) -> nom::Err<Error<I>>
-where E: Into<Error<I>> {
-    nom::Err::Error(e.into())    
+pub(crate) fn into_nom_error<I, E>(e: E) -> nom::Err<Error<I>>
+where
+    E: Into<Error<I>>,
+{
+    nom::Err::Error(e.into())
 }

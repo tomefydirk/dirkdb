@@ -75,7 +75,7 @@ pub fn parse_factor(input: &str) -> IResult<&str, Box<Condition>> {
             } else if str_token.to_lowercase() == NULL_SIGN {
                 Ok((next_input, Box::new(Condition::Null)))
             } else {
-               Err(into_nom_error(create_factor_error(input))) 
+                Err(into_nom_error(create_factor_error(input)))
             }
         }
     }

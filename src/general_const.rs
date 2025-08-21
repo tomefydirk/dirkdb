@@ -6,7 +6,7 @@ pub const ADD_SIGN: &str = "+";
 pub const MUL_SIGN: &str = "*";
 pub const DIV_SIGN: &str = "/";
 pub const POWER_SIGN: &str = "^";
-pub const MOD_SIGN:&str="%";
+pub const MOD_SIGN: &str = "%";
 
 //----->logic const ::
 pub const EQ_SIGN: &str = "=";

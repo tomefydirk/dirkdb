@@ -1,7 +1,8 @@
 use nom::branch::alt;
 // tokentools.rs
 use crate::general_const::{
-    ADD_SIGN, AND_SIGN, DIV_SIGN, EQ_SIGN, GT_E_SIGN, GT_SIGN, IS_NOT_SIGN, IS_SIGN, LT_E_SIGN, LT_SIGN, MINUS_SIGN, MOD_SIGN, MUL_SIGN, NOT_EQ_SIGN, NOT_SIGN, NULL_SIGN, OR_SIGN, POWER_SIGN
+    ADD_SIGN, AND_SIGN, DIV_SIGN, EQ_SIGN, GT_E_SIGN, GT_SIGN, IS_NOT_SIGN, IS_SIGN, LT_E_SIGN,
+    LT_SIGN, MINUS_SIGN, MOD_SIGN, MUL_SIGN, NOT_EQ_SIGN, NOT_SIGN, NULL_SIGN, OR_SIGN, POWER_SIGN,
 };
 use crate::general_const::{PARENS_0, PARENS_1};
 use nom::bytes::complete::{tag, tag_no_case};
@@ -134,18 +135,26 @@ pub fn tag_binop_token(input: &str) -> IResult<&str, Token> {
         tag(MUL_SIGN),
         tag(DIV_SIGN),
         tag(POWER_SIGN),
-        tag(MOD_SIGN)
+        tag(MOD_SIGN),
     ))
     .parse(input)?;
 
     Ok((a.0, Token::Other(a.1)))
 }
 //forcement en dernier !!!!!!
-pub fn default_token(input: &str)->IResult<&str,Token>{
-    let a=space0(input)?;
+pub fn default_token(input: &str) -> IResult<&str, Token> {
+    let a = space0(input)?;
     Ok((a.0, Token::Other(a.1)))
 }
 pub fn scan_token(input: &str) -> IResult<&str, Token> {
-    let a = alt((scan_float, tag_logic_token, tag_binop_token ,scan_name, scan_string,default_token)).parse(input.trim())?;
+    let a = alt((
+        scan_float,
+        tag_logic_token,
+        tag_binop_token,
+        scan_name,
+        scan_string,
+        default_token,
+    ))
+    .parse(input.trim())?;
     Ok((a.0.trim(), a.1))
 }

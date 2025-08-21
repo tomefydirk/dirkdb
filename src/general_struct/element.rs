@@ -1,5 +1,3 @@
-
-
 #[derive(Debug, Clone)]
 pub enum PrimitiveElement {
     Identifier(String),
@@ -23,8 +21,6 @@ impl PrimitiveElement {
     }
 }
 
-
-
 #[derive(Debug, Clone)]
 pub enum Condition {
     Comparison {
@@ -47,8 +43,6 @@ pub enum Condition {
     Primitive(PrimitiveElement),
     Null,
 }
-
-
 
 #[derive(Debug, Clone)]
 pub enum CompareOp {

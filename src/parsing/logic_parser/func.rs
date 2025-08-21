@@ -1,10 +1,14 @@
 use std::str::FromStr;
 
-use crate::error_lib::parsing::{into_nom_error, into_nom_failure, token_not_found};
 use crate::IResult;
+use crate::error_lib::parsing::{into_nom_error, into_nom_failure, token_not_found};
 
 use crate::{
-    parsing::atom_parser::func::parse_expr, general_const::*, general_struct::element::{CompareOp, Condition, LogicalOp}, parsing::logic_parser::element::{ BuildCondition}, tokenizer::{scan_token, Token}
+    general_const::*,
+    general_struct::element::{CompareOp, Condition, LogicalOp},
+    parsing::atom_parser::func::parse_expr,
+    parsing::logic_parser::element::BuildCondition,
+    tokenizer::{Token, scan_token},
 };
 
 pub fn parse_logical(input: &str) -> IResult<&str, Box<Condition>> {
@@ -80,4 +84,3 @@ pub fn and_ification(
         }
     }
 }
-
