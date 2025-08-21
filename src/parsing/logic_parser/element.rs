@@ -1,11 +1,6 @@
-use crate::IResult;
-
 use crate::{general_struct::element::{CompareOp, Condition, LogicalOp}};
 use crate::general_const::*;
 use std::str::FromStr;
-use nom::{
-    error::{Error, ErrorKind},
-};
 pub trait BuildCondition {
     fn build(left: Box<Condition>, right: Box<Condition>, op: Self) -> Box<Condition>
     where
@@ -51,6 +46,3 @@ impl FromStr for LogicalOp {
     }
 }
 
-pub fn error_builder(input: &str) -> IResult<&str, Box<Condition>> {
-    Err(nom::Err::Error(Error::new(input, ErrorKind::Digit).into()))
-}

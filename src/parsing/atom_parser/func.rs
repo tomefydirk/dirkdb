@@ -1,11 +1,11 @@
 use std::str::FromStr;
 
+use crate::IResult;
+use crate::error_lib::{create_factor_error, into_nom_error, into_nom_failure};
 use crate::general_const::{MOD_SIGN, NULL_SIGN, PARENS_0, PARENS_1};
 use crate::general_struct::element::{BinOp, Condition};
-use crate::parsing::logic_parser::func::{ parse_logical};
-use crate::tokenizer::{Token,scan_token };
-use crate::IResult;
-use nom::error::Error;
+use crate::parsing::logic_parser::func::parse_logical;
+use crate::tokenizer::{Token, scan_token};
 /*
 rhs:Right hand side
 lhs:Left hand side
@@ -32,10 +32,12 @@ where
         match token {
             Token::Other(op) if ops.contains(&op) => {
                 let (after_rhs, rhs) = lower_parser(next_input)?;
-                
-                current_expr = Condition::box_binop_from(current_expr, rhs, BinOp::from_str(op).map_err(|d| {
-                    nom::Err::Failure(d.into())
-                })?);
+
+                current_expr = Condition::box_binop_from(
+                    current_expr,
+                    rhs,
+                    BinOp::from_str(op).map_err(into_nom_failure)?,
+                );
                 input_rem = after_rhs;
             }
             _ => return Condition::result_from_current(input_rem, current_expr),
@@ -46,7 +48,7 @@ where
 pub fn parse_expr(input: &str) -> IResult<&str, Box<Condition>> {
     parse_binop_level(input, parse_mod, &[ADD_SIGN, MINUS_SIGN])
 }
-pub fn parse_mod(input: &str)->IResult<&str,Box<Condition>>{
+pub fn parse_mod(input: &str) -> IResult<&str, Box<Condition>> {
     parse_binop_level(input, parse_term, &[MOD_SIGN])
 }
 pub fn parse_term(input: &str) -> IResult<&str, Box<Condition>> {
@@ -62,22 +64,17 @@ pub fn parse_factor(input: &str) -> IResult<&str, Box<Condition>> {
     match token {
         Token::Number(n) => Condition::result_number(next_input, n),
         Token::String(s) => Condition::result_string(next_input, s),
-        Token::FieldName(f) =>{
-            Condition::result_name(next_input, f)
-        } ,
+        Token::FieldName(f) => Condition::result_name(next_input, f),
         Token::Other(str_token) => {
             if str_token == PARENS_0 {
                 parse_real_factor(next_input)
             } else if Condition::is_factor_op(str_token) {
                 let (after, real_perm) = parse_factor(next_input)?;
                 Ok((after, Condition::box_factorop_from(real_perm, str_token)))
-            } else if str_token.to_lowercase()==NULL_SIGN{
-                Ok((next_input,Box::new(Condition::Null)))
-            }else{
-                Err(nom::Err::Error(Error::new(
-                    input,
-                    nom::error::ErrorKind::Digit,
-                ).into()))
+            } else if str_token.to_lowercase() == NULL_SIGN {
+                Ok((next_input, Box::new(Condition::Null)))
+            } else {
+               Err(into_nom_error(create_factor_error(input))) 
             }
         }
     }
@@ -89,9 +86,6 @@ pub fn parse_real_factor(input: &str) -> IResult<&str, Box<Condition>> {
 
     match token {
         Token::Other(PARENS_1) => Condition::result_from_current(after_paren, expr),
-        _ => Err(nom::Err::Error(Error::new(
-            after_paren,
-            nom::error::ErrorKind::Digit,
-        ).into())),
+        _ => Err(into_nom_failure(create_factor_error(input))),
     }
 }

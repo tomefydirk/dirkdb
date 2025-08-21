@@ -1,9 +1,10 @@
 use std::str::FromStr;
 
+use crate::error_lib::{into_nom_error, into_nom_failure, token_not_found};
 use crate::IResult;
 
 use crate::{
-    parsing::atom_parser::func::parse_expr, general_const::*, general_struct::element::{CompareOp, Condition, LogicalOp}, parsing::logic_parser::element::{error_builder, BuildCondition}, tokenizer::{scan_token, Token}
+    parsing::atom_parser::func::parse_expr, general_const::*, general_struct::element::{CompareOp, Condition, LogicalOp}, parsing::logic_parser::element::{ BuildCondition}, tokenizer::{scan_token, Token}
 };
 
 pub fn parse_logical(input: &str) -> IResult<&str, Box<Condition>> {
@@ -43,7 +44,7 @@ pub fn parse_compare(input: &str) -> IResult<&str, Box<Condition>> {
                             new_input = after_rhs;
                         }
                         _ => {
-                            return error_builder(next);
+                            return Err(into_nom_error(token_not_found(input)));
                         }
                     }
                 } else {
@@ -68,7 +69,7 @@ pub fn and_ification(
     input: &str,
 ) -> IResult<&str, Box<Condition>> {
     match comparisons.len() {
-        0 => error_builder(input),
+        0 => Err(into_nom_failure(token_not_found(input))),
         1 => Ok((input, Box::new(comparisons.pop().unwrap()))),
         _ => {
             let mut current = Box::new(comparisons.remove(0));

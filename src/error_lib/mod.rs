@@ -24,7 +24,9 @@ impl<I> ParserErr<I> {
 pub fn create_factor_error(input: &str) -> ParserErr<&str> {
     ParserErr::build(input, ErrorKind::Parens1Missing)
 }
-
+pub fn token_not_found(input: &str)->ParserErr<&str>{
+    ParserErr::build(input, ErrorKind::TokenNotfound)
+}
 #[derive(Debug, thiserror::Error)]
 pub enum Error<I> {
     Nom(#[from] nom::error::Error<I>),
