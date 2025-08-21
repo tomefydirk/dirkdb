@@ -1,4 +1,4 @@
-use crate::general_struct::element::{LogicResult, TableCell};
+use crate::{evaluation::utils::bool_transform, general_struct::element::{LogicResult, TableCell}};
 
 impl From<TableCell> for bool {
     fn from(value: TableCell) -> Self {
@@ -21,5 +21,16 @@ impl From<LogicResult> for bool {
 impl Default for LogicResult {
     fn default() -> Self {
         LogicResult::Other(TableCell::Null)
+    }
+}
+
+impl From<LogicResult> for TableCell{
+    fn from(value: LogicResult) -> Self {
+       match value {
+        LogicResult::Boolean(b) => {
+            TableCell::Number(bool_transform(b))
+        },
+        LogicResult::Other(table_cell) => table_cell,
+           }
     }
 }

@@ -18,12 +18,13 @@ fn main() {
         ctx.insert("z".to_string(), TableCell::Null);
 
         // 2) Phrase à parser
-        let input = "(x > 5 AND y < 3 OR name = 'rust')+1";
+        let input = "1-(((x > 5 AND y < 3 OR name = 'rust')+1 ) is not null )";
 
         // 3) Parsing → Condition
         let (_, cond): (&str, Box<Condition>) = parse_logical(input).unwrap();
 
         // 4) Évaluation
+        println!("{cond:?}");
         let result = cond.eval(&ctx);
 
         println!("{:?}",result);

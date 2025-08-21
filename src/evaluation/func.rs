@@ -17,7 +17,9 @@ impl CompareOp {
             (TableCell::Number(l), TableCell::Number(r)) => self.comparing(*l, *r),
             (TableCell::String(l), TableCell::String(r)) => self.comparing(l, r),
             (a, TableCell::Null) => match (self, a) {
-                (CompareOp::Is, TableCell::Null) => true,
+                (CompareOp::Is, TableCell::Null) =>{
+                   
+                    true} ,
                 (CompareOp::IsNot, b) if *b != TableCell::Null => true,
                 _ => false,
             },
@@ -44,9 +46,9 @@ impl Condition {
         match self {
             Condition::Primitive(PrimitiveElement::Identifier(name)) => ctx.get(name).cloned(),
             Condition::Primitive(PrimitiveElement::Number(n)) => Some(TableCell::Number(*n)),
-             Condition::Primitive(PrimitiveElement::String(s)) => Some(TableCell::String(s.clone())),
-            Condition::Null => Some(TableCell::Null),
-            _ => None,
+            Condition::Primitive(PrimitiveElement::String(s)) => Some(TableCell::String(s.clone())),
+            Condition::Null =>Some(TableCell::Null),
+            a => Some(a.eval(ctx).into()),
         }
     }
 }
@@ -57,7 +59,9 @@ impl Condition {
             // --- Comparaison ---
             Condition::Comparison { left, op, right } => {
                 let l = left.eval_value(ctx).unwrap_or_default();
+               
                 let r = right.eval_value(ctx).unwrap_or_default();
+               
                 LogicResult::Boolean(op.default_apply(&l, &r))
             }
 
@@ -92,6 +96,7 @@ impl Condition {
 
             // --- Valeurs primitives (identifiants, nombres, chaînes, NULL) ---
             Condition::Primitive(_) | Condition::Null => {
+              
                 self.eval_value(ctx).map_or(LogicResult::Other(TableCell::Null), LogicResult::Other)
             }
         }
@@ -105,7 +110,9 @@ impl LogicResult {
             LogicResult::Other(TableCell::Number(n)) => Some(*n),
             LogicResult::Other(TableCell::String(_))=>Some(0.0),
             LogicResult::Boolean(b) => Some(crate::evaluation::utils::bool_transform(*b)),
-            _ => None,
+            _ =>
+                None
+             ,
         }
     }
 }
