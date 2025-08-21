@@ -1,7 +1,7 @@
 use nom::IResult;
 
 use crate::{
-    general_const::{ADD_SIGN, DIV_SIGN, MINUS_SIGN, MUL_SIGN, NOT_SIGN, POWER_SIGN},
+    general_const::{ADD_SIGN, DIV_SIGN, MINUS_SIGN, MOD_SIGN, MUL_SIGN, NOT_SIGN, POWER_SIGN},
     general_struct::element::{BinOp, Condition, PrimitiveElement},
     
 };
@@ -15,6 +15,7 @@ impl BinOp {
             MUL_SIGN => BinOp::Mul,
             DIV_SIGN => BinOp::Div,
             POWER_SIGN => BinOp::Pow,
+            MOD_SIGN=>BinOp::Mod,
             _ => BinOp::Add,
         }
     }

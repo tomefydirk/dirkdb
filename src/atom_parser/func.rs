@@ -1,4 +1,4 @@
-use crate::general_const::{PARENS_0, PARENS_1};
+use crate::general_const::{MOD_SIGN, PARENS_0, PARENS_1};
 use crate::general_struct::element::{BinOp, Condition};
 use crate::logic_parser::func::{ parse_logical};
 use crate::tokenizer::{Token,scan_token };
@@ -39,9 +39,11 @@ where
 }
 
 pub fn parse_expr(input: &str) -> IResult<&str, Box<Condition>> {
-    parse_binop_level(input, parse_term, &[ADD_SIGN, MINUS_SIGN])
+    parse_binop_level(input, parse_mod, &[ADD_SIGN, MINUS_SIGN])
 }
-
+pub fn parse_mod(input: &str)->IResult<&str,Box<Condition>>{
+    parse_binop_level(input, parse_term, &[MOD_SIGN])
+}
 pub fn parse_term(input: &str) -> IResult<&str, Box<Condition>> {
     parse_binop_level(input, parse_power, &[MUL_SIGN, DIV_SIGN])
 }

@@ -19,7 +19,7 @@ fn main() {
     // -------------------
     // Chaîne de condition
     // -------------------
-    let input = "(name is Null)+1*2";
+    let input = "1*2%1*2";
 
     //
     // -------------------
