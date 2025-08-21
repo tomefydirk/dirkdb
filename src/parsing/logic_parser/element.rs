@@ -16,10 +16,15 @@ impl BuildCondition for LogicalOp {
     fn build(left: Box<Condition>, right: Box<Condition>, op: Self) -> Box<Condition> {
         Box::new(Condition::Logical { left, op, right })
     }
+
 }
+#[derive(Debug, thiserror::Error)]
+#[error("Invalid token compare-op {0}")]
+pub struct FromStrCmpOpError(String);
+
 
 impl FromStr for CompareOp {
-    type Err = ();
+    type Err =FromStrCmpOpError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_ascii_lowercase().as_str() {
             EQ_SIGN => Ok(Self::Eq),
@@ -30,18 +35,22 @@ impl FromStr for CompareOp {
             GT_E_SIGN => Ok(Self::Gte),
             IS_SIGN => Ok(Self::Is),
             IS_NOT_SIGN => Ok(Self::IsNot),
-            _ => Err(()),
+            _ => Err(FromStrCmpOpError(s.into())),
         }
     }
 }
 
+#[derive(Debug, thiserror::Error)]
+#[error("Invalid token compare-op {0}")]
+pub struct FromStrLogicalOpError(String);
+
 impl FromStr for LogicalOp {
-    type Err = ();
+    type Err = FromStrLogicalOpError;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s.to_ascii_lowercase().as_str() {
             OR_SIGN => Ok(Self::Or),
             AND_SIGN => Ok(Self::And),
-            _ => Err(()),
+            _ => Err(FromStrLogicalOpError(s.into())),
         }
     }
 }

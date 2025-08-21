@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-use crate::parsing::atom_parser::element::FromStrBinOpError;
+use crate::parsing::{atom_parser::element::FromStrBinOpError, logic_parser::element::{FromStrCmpOpError, FromStrLogicalOpError}};
 #[derive(Debug)]
 pub enum ErrorKind {
     Parens1Missing,
@@ -8,7 +8,7 @@ pub enum ErrorKind {
 }
 
 #[derive(Debug, Error)]
-#[error("Erreur prés de : '{input}'")]
+#[error("{code:?} : '{input}' ")]
 pub struct ParserErr<I> {
     input: I,
     code: ErrorKind,
@@ -32,7 +32,9 @@ pub enum Error<I> {
     Nom(#[from] nom::error::Error<I>),
     Parser(#[from] ParserErr<I>),
     Nested(Vec<Self>),
-    FromStrBinOp(#[from] FromStrBinOpError)
+    FromStrBinOp(#[from] FromStrBinOpError),
+    FromStrCmpOp(#[from] FromStrCmpOpError),
+    FromStrLgclOp(#[from] FromStrLogicalOpError)
 }
 
 pub type IResult<I, O, E = Error<I>> = nom::IResult<I, O, E>; 

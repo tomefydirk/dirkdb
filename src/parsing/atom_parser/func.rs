@@ -6,6 +6,7 @@ use crate::general_const::{MOD_SIGN, NULL_SIGN, PARENS_0, PARENS_1};
 use crate::general_struct::element::{BinOp, Condition};
 use crate::parsing::logic_parser::func::parse_logical;
 use crate::tokenizer::{Token, scan_token};
+
 /*
 rhs:Right hand side
 lhs:Left hand side

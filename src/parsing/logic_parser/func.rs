@@ -15,7 +15,7 @@ pub fn parse_logical(input: &str) -> IResult<&str, Box<Condition>> {
         match token {
             Token::Other(a) if LogicalOp::from_str(a).is_ok() => {
                 let (after_rhs, rhs) = parse_compare(next)?;
-                current = LogicalOp::build(current, rhs, a.parse().unwrap());
+                current = LogicalOp::build(current, rhs, a.parse().map_err(into_nom_failure)?);
                 input_rem = after_rhs;
             }
             _ => break,
@@ -32,7 +32,7 @@ pub fn parse_compare(input: &str) -> IResult<&str, Box<Condition>> {
         let (next, token) = scan_token(new_input)?;
         match token {
             Token::Other(op) if CompareOp::from_str(op).is_ok() => {
-                let cop: CompareOp = op.parse().unwrap();
+                let cop: CompareOp = op.parse().map_err(into_nom_failure)?;
 
                 if matches!(cop, CompareOp::Is | CompareOp::IsNot) {
                     let (after_rhs, rhs_token) = scan_token(next)?;
