@@ -133,13 +133,17 @@ pub fn tag_binop_token(input: &str) -> IResult<&str, Token> {
         tag(MUL_SIGN),
         tag(DIV_SIGN),
         tag(POWER_SIGN),
-        space0,
     ))
     .parse(input)?;
 
     Ok((a.0, Token::Other(a.1)))
 }
+//forcement en dernier !!!!!!
+pub fn default_token(input: &str)->IResult<&str,Token>{
+    let a=space0(input)?;
+    Ok((a.0, Token::Other(a.1)))
+}
 pub fn scan_token(input: &str) -> IResult<&str, Token> {
-    let a = alt((scan_float, scan_other, scan_name, scan_string,tag_binop_token)).parse(input.trim())?;
+    let a = alt((scan_float, scan_other, scan_name, scan_string,tag_binop_token,default_token)).parse(input.trim())?;
     Ok((a.0.trim(), a.1))
 }
