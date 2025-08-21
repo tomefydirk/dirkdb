@@ -1,12 +1,11 @@
-use crate::{logic_parser::func::parse_logical};
+use crate::parsing::logic_parser::func::parse_logical;
 //use std::collections::HashMap;
 
-mod atom_parser;
 mod general_const;
-mod logic_parser;
 mod general_struct;
 mod tokenizer;
-
+mod parsing;
+mod evaluation;
 fn main() {
     // -------------------
     // Jeu de données
@@ -19,7 +18,7 @@ fn main() {
     // -------------------
     // Chaîne de condition
     // -------------------
-    let input = "1*2%1*2 Or (NULL and 1)";
+    let input = "1*2%1*2 != (NULL and 1)";
 
     //
     // -------------------
