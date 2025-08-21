@@ -1,5 +1,6 @@
-use crate::parsing::logic_parser::func::parse_logical;
-//use std::collections::HashMap;
+use std::collections::HashMap;
+
+use crate::{general_struct::element::{Condition, TableCell}, parsing::logic_parser::func::parse_logical};
 
 mod general_const;
 mod general_struct;
@@ -8,28 +9,21 @@ mod parsing;
 mod evaluation;
 mod function;
 fn main() {
-    // -------------------
-    // Jeu de données
-    // -------------------
-    /*   let mut ctx = HashMap::new();
-       ctx.insert("age".to_string(), TableCell::Null);
-       ctx.insert("nom".to_string(), TableCell::String("Alice".to_string()));
-       ctx.insert("ville".to_string(), TableCell::String("Paris".to_string()));
-    */
-    // -------------------
-    // Chaîne de condition
-    // -------------------
-    let input = "1*2%1*2 != (NULL and 1)";
+    // 1) Contexte
+        let mut ctx = HashMap::new();
+        ctx.insert("x".to_string(), TableCell::Number(10.0));
+        ctx.insert("y".to_string(), TableCell::Number(2.0));
+        ctx.insert("name".to_string(), TableCell::String("rust".into()));
+        ctx.insert("z".to_string(), TableCell::Null);
 
-    //
-    // -------------------
-    // Parsing
-    // -------------------
-    let (a, cond) = parse_logical(input).expect("Erreur de parsing");
+        // 2) Phrase à parser
+        let input = "(x > 5 AND y < 3 OR name = 'rust')+1";
 
-    println!("{:?}", a);
+        // 3) Parsing → Condition
+        let (_, cond): (&str, Box<Condition>) = parse_logical(input).unwrap();
 
-    println!("AST = {:?}", cond);
+        // 4) Évaluation
+        let result = cond.eval(&ctx);
 
-    // println!("{:?}",tokenizer::is_terminal("a", &["A"]));
+        println!("{:?}",result);
 }

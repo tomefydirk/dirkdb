@@ -96,11 +96,6 @@ impl Condition {
             }
         }
     }
-
-    /// Helper : transformer un LogicResult en Option<f64>
-    fn as_number(&self, ctx: &HashMap<String, TableCell>) -> Option<f64> {
-        self.eval(ctx).as_number()
-    }
 }
 
 impl LogicResult {
@@ -108,6 +103,7 @@ impl LogicResult {
     pub fn as_number(&self) -> Option<f64> {
         match self {
             LogicResult::Other(TableCell::Number(n)) => Some(*n),
+            LogicResult::Other(TableCell::String(_))=>Some(0.0),
             LogicResult::Boolean(b) => Some(crate::evaluation::utils::bool_transform(*b)),
             _ => None,
         }
