@@ -1,10 +1,10 @@
-use crate::{logic_parser::cond_source::parse_logical};
+use crate::{logic_parser::func::parse_logical};
 //use std::collections::HashMap;
 
 mod atom_parser;
 mod general_const;
-mod general_struct;
 mod logic_parser;
+mod general_struct;
 mod tokenizer;
 
 fn main() {

@@ -1,19 +1,12 @@
 use nom::IResult;
 
 use crate::{
-    atom_parser::expr_constant::{ADD_SIGN, DIV_SIGN, MINUS_SIGN, MUL_SIGN, POWER_SIGN},
-    general_struct::PrimitiveElement,
-    logic_parser::{cond_constant::NOT_SIGN, cond_source::Condition},
+    general_const::{ADD_SIGN, DIV_SIGN, MINUS_SIGN, MUL_SIGN, NOT_SIGN, POWER_SIGN},
+    general_struct::element::{BinOp, Condition, PrimitiveElement},
+    
 };
 
-#[derive(Debug, Clone)]
-pub enum BinOp {
-    Add,
-    Sub,
-    Mul,
-    Div,
-    Pow,
-}
+
 impl BinOp {
     pub fn from_str(a: &str) -> Self {
         match a {

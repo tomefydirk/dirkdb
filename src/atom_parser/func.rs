@@ -1,15 +1,14 @@
-use crate::atom_parser::expr_struct::BinOp;
 use crate::general_const::{PARENS_0, PARENS_1};
-use crate::logic_parser::cond_source::{Condition, parse_logical};
-use crate::logic_parser::tokentool::scan_token;
-use crate::tokenizer::{Token, };
+use crate::general_struct::element::{BinOp, Condition};
+use crate::logic_parser::func::{ parse_logical};
+use crate::tokenizer::{Token,scan_token };
 use nom::IResult;
 use nom::error::Error;
 /*
 rhs:Right hand side
 lhs:Left hand side
 */
-use crate::atom_parser::expr_constant::{ADD_SIGN, DIV_SIGN, MINUS_SIGN, MUL_SIGN, POWER_SIGN};
+use crate::general_const::{ADD_SIGN, DIV_SIGN, MINUS_SIGN, MUL_SIGN, POWER_SIGN};
 
 fn parse_binop_level<'a, F>(
     input: &'a str,

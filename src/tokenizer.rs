@@ -1,15 +1,14 @@
 use nom::branch::alt;
 // tokentools.rs
+use crate::general_const::{
+    ADD_SIGN, AND_SIGN, DIV_SIGN, EQ_SIGN, GT_E_SIGN, GT_SIGN, IS_NOT_SIGN, IS_SIGN, LT_E_SIGN,
+    LT_SIGN, MINUS_SIGN, MUL_SIGN, NOT_EQ_SIGN, NOT_SIGN, NULL_SIGN, OR_SIGN, POWER_SIGN,
+};
+use crate::general_const::{PARENS_0, PARENS_1};
 use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::{digit1, multispace1, space0};
 use nom::combinator::opt;
 use nom::{IResult, Parser, bytes::complete::take_while1};
-use crate::atom_parser::expr_constant::{ADD_SIGN, DIV_SIGN, MINUS_SIGN, MUL_SIGN, POWER_SIGN};
-use crate::general_const::{PARENS_0, PARENS_1};
-use crate::logic_parser::cond_constant::{
-    AND_SIGN, EQ_SIGN, GT_E_SIGN, GT_SIGN, IS_NOT_SIGN, IS_SIGN, LT_E_SIGN, LT_SIGN, NOT_EQ_SIGN,
-    NOT_SIGN, NULL_SIGN, OR_SIGN,
-};
 fn is_ident_start(c: char) -> bool {
     c.is_alphabetic() || c == '_'
 }
@@ -139,4 +138,8 @@ pub fn tag_binop_token(input: &str) -> IResult<&str, Token> {
     .parse(input)?;
 
     Ok((a.0, Token::Other(a.1)))
+}
+pub fn scan_token(input: &str) -> IResult<&str, Token> {
+    let a = alt((scan_float, scan_other, scan_name, scan_string,tag_binop_token)).parse(input.trim())?;
+    Ok((a.0.trim(), a.1))
 }
