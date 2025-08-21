@@ -17,8 +17,9 @@ impl From<LogicResult> for bool {
         }
     }
 }
-impl Default for TableCell {
+
+impl Default for LogicResult {
     fn default() -> Self {
-        Self::Null
+        LogicResult::Other(TableCell::Null)
     }
 }

@@ -7,3 +7,8 @@ impl From<bool> for  LogicResult{
         LogicResult::Boolean(value)
     }
 }
+impl From<String> for LogicResult{
+    fn from(value: String) -> Self {
+        todo!()
+    }
+}

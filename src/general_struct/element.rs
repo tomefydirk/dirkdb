@@ -48,11 +48,7 @@ pub enum Condition {
     Null,
 }
 
-impl Default for Condition {
-    fn default() -> Self {
-        Self::Null
-    }
-}
+
 
 #[derive(Debug, Clone)]
 pub enum CompareOp {
@@ -92,4 +88,33 @@ pub enum TableCell {
 pub enum LogicResult {
     Boolean(bool),
     Other(TableCell),
+}
+
+//IMPLEMENTATION :
+
+//DEFAULT for CONDITION :
+impl Default for Condition {
+    fn default() -> Self {
+        Self::Null
+    }
+}
+
+//FROM for TABLECELL :
+impl From<String> for TableCell {
+    fn from(value: String) -> Self {
+        TableCell::String(value)
+    }
+}
+impl From<f64> for TableCell {
+    fn from(value: f64) -> Self {
+        TableCell::Number(value)
+    }
+}
+
+//DEFAULT for TableCell
+
+impl Default for TableCell {
+    fn default() -> Self {
+        Self::Null
+    }
 }
