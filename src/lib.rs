@@ -6,4 +6,4 @@ pub mod evaluation;
 pub mod function;
 pub mod error_lib;
 
-pub(crate) use error_lib::IResult;
+pub(crate) use error_lib::parsing::IResult;

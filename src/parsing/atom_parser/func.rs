@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use crate::IResult;
-use crate::error_lib::{create_factor_error, into_nom_error, into_nom_failure};
+use crate::error_lib::parsing::{create_factor_error, into_nom_error, into_nom_failure};
 use crate::general_const::{MOD_SIGN, NULL_SIGN, PARENS_0, PARENS_1};
 use crate::general_struct::element::{BinOp, Condition};
 use crate::parsing::logic_parser::func::parse_logical;

@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use crate::error_lib::{into_nom_error, into_nom_failure, token_not_found};
+use crate::error_lib::parsing::{into_nom_error, into_nom_failure, token_not_found};
 use crate::IResult;
 
 use crate::{
