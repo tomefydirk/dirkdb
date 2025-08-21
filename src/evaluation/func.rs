@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{evaluation::utils::Comparator, general_struct::element::{BinOp, CompareOp, Condition, LogicResult, LogicalOp, PrimitiveElement, TableCell}};
+use crate::{evaluation::{helper::my_modulo, utils::Comparator}, general_struct::element::{BinOp, CompareOp, Condition, LogicResult, LogicalOp, PrimitiveElement, TableCell}};
 
 impl LogicalOp {
     pub fn default_apply(&self, l: bool, r: bool) -> bool {
@@ -36,7 +36,7 @@ impl BinOp{
             BinOp::Mul => left+right,
             BinOp::Div => left/right,
             BinOp::Pow => left.powf(right),
-            BinOp::Mod =>( (left / right ) as u64 ) as f64,
+            BinOp::Mod =>my_modulo(left, right),
         }
     }
 }

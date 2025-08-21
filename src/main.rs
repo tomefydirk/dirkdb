@@ -18,7 +18,7 @@ fn main() {
         ctx.insert("z".to_string(), TableCell::Null);
 
         // 2) Phrase à parser
-        let input = "1-(((x > 5 AND y < 3 OR name = 'rust')+1 ) is not null )";
+        let input = "3%2";
 
         // 3) Parsing → Condition
         let (_, cond): (&str, Box<Condition>) = parse_logical(input).unwrap();
