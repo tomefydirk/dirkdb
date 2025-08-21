@@ -1,4 +1,4 @@
-use nom::IResult;
+use crate::IResult;
 
 use crate::{general_struct::element::{CompareOp, Condition, LogicalOp}};
 use crate::general_const::*;
@@ -52,5 +52,5 @@ impl FromStr for LogicalOp {
 }
 
 pub fn error_builder(input: &str) -> IResult<&str, Box<Condition>> {
-    Err(nom::Err::Error(Error::new(input, ErrorKind::Digit)))
+    Err(nom::Err::Error(Error::new(input, ErrorKind::Digit).into()))
 }

@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use nom::IResult;
+use crate::IResult;
 
 use crate::{
     parsing::atom_parser::func::parse_expr, general_const::*, general_struct::element::{CompareOp, Condition, LogicalOp}, parsing::logic_parser::element::{error_builder, BuildCondition}, tokenizer::{scan_token, Token}

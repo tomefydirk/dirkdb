@@ -1,4 +1,7 @@
-use nom::IResult;
+use std::convert::Infallible;
+use std::str::FromStr;
+
+use crate::IResult;
 
 use crate::{
     general_const::{ADD_SIGN, DIV_SIGN, MINUS_SIGN, MOD_SIGN, MUL_SIGN, NOT_SIGN, POWER_SIGN},
@@ -6,21 +9,25 @@ use crate::{
     
 };
 
+#[derive(Debug, thiserror::Error)]
+#[error("Invalid token bin-op {0}")]
+pub struct FromStrBinOpError(String);
 
-impl BinOp {
-    pub fn from_str(a: &str) -> Self {
-        match a {
+impl FromStr for BinOp {
+    type Err = FromStrBinOpError;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let op = match s {
             ADD_SIGN => BinOp::Add,
             MINUS_SIGN => BinOp::Sub,
             MUL_SIGN => BinOp::Mul,
             DIV_SIGN => BinOp::Div,
             POWER_SIGN => BinOp::Pow,
             MOD_SIGN=>BinOp::Mod,
-            _ => BinOp::Add,
-        }
+            _ => return Err(FromStrBinOpError(s.into())),
+        };
+        Ok(op)
     }
 }
-
 impl Condition {
     //binary operation
     pub fn box_binop_from(
@@ -52,10 +59,10 @@ impl Condition {
         }
     }
 
-    pub fn result_number(input: &str, number: f64) -> IResult<&str, Box<Condition>> {
+    pub fn result_number(input: &str, number: f64) -> crate::IResult<&str, Box<Condition>> {
         let a: PrimitiveElement = number.into();
         let result = (input, Box::new(Condition::Primitive(a)));
-        IResult::Ok(result)
+        Ok(result)
     }
     pub fn result_string(input: &str, str: String) -> IResult<&str, Box<Condition>> {
         let a: PrimitiveElement = str.into();

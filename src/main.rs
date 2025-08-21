@@ -1,14 +1,8 @@
 use std::collections::HashMap;
 
-use crate::{general_struct::element::{Condition, TableCell}, parsing::logic_parser::func::parse_logical};
+use dirkdb::{general_struct::element::{Condition, TableCell}, parsing::logic_parser::func::parse_logical};
 
-mod general_const;
-mod general_struct;
-mod tokenizer;
-mod parsing;
-mod evaluation;
-mod function;
-mod error_lib;
+
 fn main() {
     // 1) Contexte
         let mut ctx = HashMap::new();
@@ -18,7 +12,7 @@ fn main() {
         ctx.insert("z".to_string(), TableCell::Null);
 
         // 2) Phrase à parser
-        let input = "3%2";
+        let input = "'hello world'";
 
         // 3) Parsing → Condition
         let (_, cond): (&str, Box<Condition>) = parse_logical(input).unwrap();

@@ -1,8 +1,10 @@
+use std::str::FromStr;
+
 use crate::general_const::{MOD_SIGN, NULL_SIGN, PARENS_0, PARENS_1};
 use crate::general_struct::element::{BinOp, Condition};
 use crate::parsing::logic_parser::func::{ parse_logical};
 use crate::tokenizer::{Token,scan_token };
-use nom::IResult;
+use crate::IResult;
 use nom::error::Error;
 /*
 rhs:Right hand side
@@ -30,7 +32,10 @@ where
         match token {
             Token::Other(op) if ops.contains(&op) => {
                 let (after_rhs, rhs) = lower_parser(next_input)?;
-                current_expr = Condition::box_binop_from(current_expr, rhs, BinOp::from_str(op));
+                
+                current_expr = Condition::box_binop_from(current_expr, rhs, BinOp::from_str(op).map_err(|d| {
+                    nom::Err::Failure(d.into())
+                })?);
                 input_rem = after_rhs;
             }
             _ => return Condition::result_from_current(input_rem, current_expr),
@@ -72,7 +77,7 @@ pub fn parse_factor(input: &str) -> IResult<&str, Box<Condition>> {
                 Err(nom::Err::Error(Error::new(
                     input,
                     nom::error::ErrorKind::Digit,
-                )))
+                ).into()))
             }
         }
     }
@@ -87,6 +92,6 @@ pub fn parse_real_factor(input: &str) -> IResult<&str, Box<Condition>> {
         _ => Err(nom::Err::Error(Error::new(
             after_paren,
             nom::error::ErrorKind::Digit,
-        ))),
+        ).into())),
     }
 }

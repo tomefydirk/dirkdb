@@ -7,10 +7,12 @@ use crate::general_const::{PARENS_0, PARENS_1};
 use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::{digit1, multispace1, space0};
 use nom::combinator::opt;
-use nom::{IResult, Parser, bytes::complete::take_while1};
+use nom::{Parser, bytes::complete::take_while1};
 fn is_ident_start(c: char) -> bool {
     c.is_alphabetic() || c == '_'
 }
+
+use crate::IResult;
 
 fn is_ident_char(c: char) -> bool {
     c.is_alphanumeric() || c == '_'
@@ -52,14 +54,14 @@ pub fn tag_float(input: &str) -> IResult<&str, f64> {
         Ok((
             rest3,
             format!("{first_part}.{second_part}").parse().map_err(|_| {
-                nom::Err::Error(nom::error::Error::new(input, nom::error::ErrorKind::Digit))
+                nom::Err::Error(nom::error::Error::new(input, nom::error::ErrorKind::Digit).into())
             })?,
         ))
     } else {
         Ok((
             rest,
             format!("{first_part}.0").parse().map_err(|_| {
-                nom::Err::Error(nom::error::Error::new(input, nom::error::ErrorKind::Digit))
+                nom::Err::Error(nom::error::Error::new(input, nom::error::ErrorKind::Digit).into())
             })?,
         ))
     }
