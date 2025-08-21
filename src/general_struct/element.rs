@@ -81,3 +81,15 @@ pub enum BinOp {
     Pow,
     Mod,
 }
+#[derive(Debug, Clone)]
+pub enum TableCell {
+    String(String),
+    Number(f64),
+    Null,
+}
+
+#[derive(Debug, Clone)]
+pub enum LogicResult {
+    Boolean(bool),
+    Other(TableCell),
+}
