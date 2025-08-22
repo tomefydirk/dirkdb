@@ -1,10 +1,9 @@
 use std::collections::HashMap;
 
 use crate::{
-    evaluation::{helper::my_modulo, utils::Comparator},
-    general_struct::element::{
+    evaluation::utils::Comparator, function::helper::my_modulo, general_struct::element::{
         BinOp, CompareOp, Condition, LogicResult, LogicalOp, PrimitiveElement, TableCell,
-    },
+    }
 };
 
 impl LogicalOp {

@@ -14,7 +14,7 @@ fn main() {
     ctx.insert("z".to_string(), TableCell::Null);
 
     // 2) Phrase à parser
-    let input = "z is not null";
+    let input = "z is   not null";
 
     // 3) Parsing → Condition
     let (_, cond): (&str, Box<Condition>) = parse_logical(input).unwrap();
