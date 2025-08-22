@@ -1,5 +1,4 @@
 use std::str::FromStr;
-
 use crate::IResult;
 
 use crate::{
@@ -72,7 +71,6 @@ impl Condition {
         let result = (input, Box::new(Condition::Primitive(a)));
         IResult::Ok(result)
     }
-
     pub fn result_from_current(
         input: &str,
         current_expr: Box<Condition>,

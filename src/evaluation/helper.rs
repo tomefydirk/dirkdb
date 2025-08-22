@@ -1,5 +1,8 @@
+use chrono::{ NaiveDate};
+
 use crate::{
-    evaluation::utils::bool_transform,
+    error_lib::evaluation::EvalEror,
+    evaluation::{LgResult, utils::bool_transform},
     general_struct::element::{EvalElement, TableCell},
 };
 
@@ -24,6 +27,7 @@ impl From<TableCell> for bool {
         match value {
             TableCell::String(a) => !a.is_empty(),
             TableCell::Number(n) => n != 0.0,
+            TableCell::Date(_) => true,
             TableCell::Null => false,
         }
     }
@@ -53,12 +57,31 @@ impl From<EvalElement> for TableCell {
 }
 
 impl TableCell {
-    
     pub fn to_string_value(&self) -> String {
         match self {
             TableCell::Number(n) => n.to_string(),
             TableCell::String(s) => s.clone(),
             TableCell::Null => "NULL".to_string(),
+            TableCell::Date(naive_date) => naive_date.to_string(),
+        }
+    }
+
+    pub fn convert_to_date(&self) -> LgResult<NaiveDate> {
+        match self {
+            TableCell::String(v) => {
+                let a = (v).parse::<NaiveDate>().map_err(|_| {
+                    EvalEror::incorrect_date_value(v.clone())
+                })?;
+                Ok(a)
+            }
+            TableCell::Number(n) => {
+                //CONVERTIR en nombre de jours
+               todo!()
+            }
+            TableCell::Date(naive_date) => Ok(*naive_date),
+            TableCell::Null => {
+                Err(EvalEror::incorrect_date_value("NULL".to_string()))
+            },
         }
     }
 }

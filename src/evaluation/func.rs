@@ -1,12 +1,13 @@
 use std::collections::HashMap;
 
 use crate::{
-    error_lib::evaluation::{EvalEror, EvalErrorkind}, evaluation::{ utils::Comparator, LgResult}, function::{self, helper::my_modulo}, general_struct::element::{
+    error_lib::evaluation::{EvalEror},
+    evaluation::{LgResult, utils::Comparator},
+    function::{self, helper::my_modulo},
+    general_struct::element::{
         BinOp, CompareOp, Condition, EvalElement, LogicalOp, PrimitiveElement, TableCell,
-    }
+    },
 };
-
-
 
 impl LogicalOp {
     pub fn default_apply(&self, l: bool, r: bool) -> bool {
@@ -29,10 +30,12 @@ impl CompareOp {
             _ => match (left, right) {
                 (TableCell::Number(l), TableCell::Number(r)) => Ok(self.comparing(*l, *r)),
                 (TableCell::String(l), TableCell::String(r)) => Ok(self.comparing(l, r)),
+                (TableCell::Date(d), t) => Ok(self.comparing(d, &t.convert_to_date()?)),
+                (t, TableCell::Date(d)) => Ok(self.comparing(&t.convert_to_date()?, d)),
                 (a, TableCell::Null) => match (self, a) {
                     (CompareOp::Is, TableCell::Null) => Ok(true),
-                    (CompareOp::IsNot, b) if *b != TableCell::Null =>Ok(true) ,
-                    _ =>Ok( false),
+                    (CompareOp::IsNot, b) if *b != TableCell::Null => Ok(true),
+                    _ => Ok(false),
                 },
                 _ => Ok(false),
             },
@@ -56,11 +59,10 @@ impl BinOp {
 impl Condition {
     fn eval_value(&self, ctx: &HashMap<String, TableCell>) -> LgResult<TableCell> {
         match self {
-            Condition::Primitive(PrimitiveElement::Identifier(name)) => {
-                ctx.get(name).cloned().ok_or_else(|| {
-                   EvalEror::build(name.clone(), EvalErrorkind::FieldNotFound)
-                })
-            }
+            Condition::Primitive(PrimitiveElement::Identifier(name)) => ctx
+                .get(name)
+                .cloned()
+                .ok_or_else(|| EvalEror::field_notfound(name.to_string())),
             Condition::Primitive(PrimitiveElement::Number(n)) => Ok(TableCell::Number(*n)),
             Condition::Primitive(PrimitiveElement::String(s)) => Ok(TableCell::String(s.clone())),
             Condition::Null => Ok(TableCell::Null),
@@ -123,6 +125,10 @@ impl EvalElement {
         match self {
             EvalElement::Other(TableCell::Number(n)) => Some(*n),
             EvalElement::Other(TableCell::String(_)) => Some(0.0),
+            EvalElement::Other(TableCell::Date(d))=>{
+                //CHANGER d en jours 
+                todo!()
+            },
             EvalElement::Boolean(b) => Some(crate::evaluation::utils::bool_transform(*b)),
             _ => None,
         }

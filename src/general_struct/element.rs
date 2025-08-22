@@ -1,3 +1,5 @@
+use chrono::NaiveDate;
+
 #[derive(Debug, Clone)]
 pub enum PrimitiveElement {
     Identifier(String),
@@ -76,6 +78,7 @@ pub enum BinOp {
 pub enum TableCell {
     String(String),
     Number(f64),
+    Date(NaiveDate),
     Null,
 }
 

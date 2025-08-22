@@ -1,7 +1,8 @@
 #[derive(Debug)]
 pub enum EvalErrorkind {
     FieldNotFound,
-    RegexInvalid
+    RegexInvalid,
+    IncorrectDateValue,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -15,4 +16,15 @@ impl<I> EvalEror<I> {
     pub fn build(input:I,code:EvalErrorkind)->Self{
         Self { input, code }
     }
+    pub fn incorrect_date_value(input:I)->Self{
+        Self { input, code: EvalErrorkind::IncorrectDateValue }
+    
+    }
+    pub fn regex_invalid(input:I)->Self{
+        Self { input, code: EvalErrorkind::RegexInvalid }
+    }
+    pub fn field_notfound(input:I)->Self{
+        Self { input, code: EvalErrorkind::FieldNotFound }
+    }
 }
+

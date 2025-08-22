@@ -1,4 +1,4 @@
-use crate::{error_lib::evaluation::{EvalEror, EvalErrorkind}, evaluation::LgResult};
+use crate::{error_lib::evaluation::{EvalEror}, evaluation::LgResult};
 
 pub fn my_modulo(left: f64, right: f64) -> f64 {
     let q = (left / right) as u64;
@@ -18,7 +18,7 @@ pub fn convert_sql_to_regex(pattern: &str) -> LgResult<regex::Regex> {
                 Ok(r)
             },
             Err(_) =>{
-               Err(EvalEror::build(pattern.to_string(),EvalErrorkind::RegexInvalid))
+               Err(EvalEror::regex_invalid(pattern.to_string()))
             },
         }
      
