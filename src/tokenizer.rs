@@ -108,6 +108,15 @@ pub fn tag_is_not(input: &str) -> IResult<&str, &str> {
         .parse(input)?;
     Ok((input, (IS_NOT_SIGN)))
 }
+
+/*
+
+tag_key_word_logic<T,I,E:Error: ParseError<I>>(T) -> impl Fn(I) -> IResult(T,I,E)
+
+}
+
+*/
+
 pub fn tag_key_word_logic(input: &str) -> IResult<&str, Token> {
     let (new_input, token) = alt((
         tag_no_case(OR_SIGN),

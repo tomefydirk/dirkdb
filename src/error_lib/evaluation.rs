@@ -1,6 +1,6 @@
 #[derive(Debug,thiserror::Error)]
 #[error("Field not found :'0'")]
-pub struct FieldNotFoundErr<I>(I);
+pub struct FieldNotFoundErr<I>(pub I);
 
 
 #[derive(Debug, thiserror::Error)]
