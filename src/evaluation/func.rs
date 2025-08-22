@@ -1,12 +1,13 @@
 use std::collections::HashMap;
 
 use crate::{
-    error_lib::evaluation::{EvalEror},
+    error_lib::evaluation::EvalEror,
     evaluation::{LgResult, utils::Comparator},
     function::{self, helper::my_modulo},
     general_struct::element::{
         BinOp, CompareOp, Condition, EvalElement, LogicalOp, PrimitiveElement, TableCell,
     },
+    tokenizer::{Token, scan_float},
 };
 
 impl LogicalOp {
@@ -124,11 +125,17 @@ impl EvalElement {
     pub fn as_number(&self) -> Option<f64> {
         match self {
             EvalElement::Other(TableCell::Number(n)) => Some(*n),
-            EvalElement::Other(TableCell::String(_)) => Some(0.0),
-            EvalElement::Other(TableCell::Date(d))=>{
-                //CHANGER d en jours 
+            EvalElement::Other(TableCell::String(s)) => {
+                let g = scan_float(s);
+                match g {
+                    Ok((_, Token::Number(n))) => Some(n),
+                    _ => Some(0.0),
+                }
+            }
+            EvalElement::Other(TableCell::Date(d)) => {
+                //CHANGER d en jours
                 todo!()
-            },
+            }
             EvalElement::Boolean(b) => Some(crate::evaluation::utils::bool_transform(*b)),
             _ => None,
         }
