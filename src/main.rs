@@ -15,7 +15,7 @@ fn main() {
     ctx.insert("z".to_string(), TableCell::Null);
 
     // 2) Phrase à parser
-    let input = "0 like ((name like test and 10 like x)-1)";
+    let input = "((name like test and 10 like x)-1) like '%'";
 
     // 3) Parsing → Condition
     let (_, cond): (&str, Box<Condition>) = parse_logical(input).unwrap();

@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::{
     error_lib::evaluation::{EvalEror, EvalErrorkind}, evaluation::{ utils::Comparator, LgResult}, function::{self, helper::my_modulo}, general_struct::element::{
-        BinOp, CompareOp, Condition, LogicResult, LogicalOp, PrimitiveElement, TableCell,
+        BinOp, CompareOp, Condition, EvalElement, LogicalOp, PrimitiveElement, TableCell,
     }
 };
 
@@ -70,20 +70,20 @@ impl Condition {
 }
 
 impl Condition {
-    pub fn eval(&self, ctx: &HashMap<String, TableCell>) -> LgResult<LogicResult> {
+    pub fn eval(&self, ctx: &HashMap<String, TableCell>) -> LgResult<EvalElement> {
         match self {
             // Comparaison
             Condition::Comparison { left, op, right } => {
                 let l = left.eval_value(ctx)?;
                 let r = right.eval_value(ctx)?;
-                Ok(LogicResult::Boolean(op.default_apply(&l, &r)?))
+                Ok(EvalElement::Boolean(op.default_apply(&l, &r)?))
             }
 
             // Logique (AND / OR)
             Condition::Logical { left, op, right } => {
                 let l: bool = left.eval(ctx)?.into();
                 let r: bool = right.eval(ctx)?.into();
-                Ok(LogicResult::Boolean(op.default_apply(l, r)))
+                Ok(EvalElement::Boolean(op.default_apply(l, r)))
             }
 
             // Opérateurs binaires arithmétiques
@@ -92,38 +92,38 @@ impl Condition {
                 let r = right.eval(ctx)?.as_number();
                 Ok(match (l, r) {
                     (Some(a), Some(b)) => {
-                        LogicResult::Other(TableCell::Number(op.default_apply(a, b)))
+                        EvalElement::Other(TableCell::Number(op.default_apply(a, b)))
                     }
-                    _ => LogicResult::Other(TableCell::Null),
+                    _ => EvalElement::Other(TableCell::Null),
                 })
             }
 
             // Négation arithmétique (-x)
             Condition::Negate(inner) => match inner.eval(ctx)?.as_number() {
-                Some(n) => Ok(LogicResult::Other(TableCell::Number(-n))),
-                None => Ok(LogicResult::Other(TableCell::Null)),
+                Some(n) => Ok(EvalElement::Other(TableCell::Number(-n))),
+                None => Ok(EvalElement::Other(TableCell::Null)),
             },
 
             // NOT logique
             Condition::Not(inner) => {
                 let val: bool = inner.eval(ctx)?.into();
-                Ok(LogicResult::Boolean(!val))
+                Ok(EvalElement::Boolean(!val))
             }
 
             // Valeurs primitives
             Condition::Primitive(_) | Condition::Null => {
-                Ok(LogicResult::Other(self.eval_value(ctx)?))
+                Ok(EvalElement::Other(self.eval_value(ctx)?))
             }
         }
     }
 }
 
-impl LogicResult {
+impl EvalElement {
     pub fn as_number(&self) -> Option<f64> {
         match self {
-            LogicResult::Other(TableCell::Number(n)) => Some(*n),
-            LogicResult::Other(TableCell::String(_)) => Some(0.0),
-            LogicResult::Boolean(b) => Some(crate::evaluation::utils::bool_transform(*b)),
+            EvalElement::Other(TableCell::Number(n)) => Some(*n),
+            EvalElement::Other(TableCell::String(_)) => Some(0.0),
+            EvalElement::Boolean(b) => Some(crate::evaluation::utils::bool_transform(*b)),
             _ => None,
         }
     }

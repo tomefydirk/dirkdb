@@ -22,8 +22,7 @@ impl<I> ParserErr<I> {
     }
 }
 
-//-------list of error :
-pub fn create_factor_error(input: &str) -> ParserErr<&str> {
+pub fn factor_error(input: &str) -> ParserErr<&str> {
     ParserErr::build(input, ErrorKind::Parens1Missing)
 }
 pub fn token_not_found(input: &str) -> ParserErr<&str> {

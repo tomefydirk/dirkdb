@@ -80,7 +80,7 @@ pub enum TableCell {
 }
 
 #[derive(Debug, Clone)]
-pub enum LogicResult {
+pub enum EvalElement {
     Boolean(bool),
     Other(TableCell),
 }
@@ -116,11 +116,11 @@ impl Default for TableCell {
 
 //PartialEq:
 
-impl PartialEq for LogicResult {
+impl PartialEq for EvalElement {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
-            (LogicResult::Boolean(a), LogicResult::Boolean(b)) => a == b,
-            (LogicResult::Other(a), LogicResult::Other(b)) => a == b,
+            (EvalElement::Boolean(a), EvalElement::Boolean(b)) => a == b,
+            (EvalElement::Other(a), EvalElement::Other(b)) => a == b,
             _ => false,
         }
     }

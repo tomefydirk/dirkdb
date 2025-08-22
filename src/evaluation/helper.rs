@@ -1,21 +1,21 @@
 use crate::{
     evaluation::utils::bool_transform,
-    general_struct::element::{LogicResult, TableCell},
+    general_struct::element::{EvalElement, TableCell},
 };
 
-impl From<bool> for LogicResult {
+impl From<bool> for EvalElement {
     fn from(value: bool) -> Self {
-        LogicResult::Boolean(value)
+        EvalElement::Boolean(value)
     }
 }
-impl From<String> for LogicResult {
+impl From<String> for EvalElement {
     fn from(value: String) -> Self {
-        LogicResult::Other(value.into())
+        EvalElement::Other(value.into())
     }
 }
-impl From<f64> for LogicResult {
+impl From<f64> for EvalElement {
     fn from(value: f64) -> Self {
-        LogicResult::Other(value.into())
+        EvalElement::Other(value.into())
     }
 }
 
@@ -28,26 +28,26 @@ impl From<TableCell> for bool {
         }
     }
 }
-impl From<LogicResult> for bool {
-    fn from(value: LogicResult) -> Self {
+impl From<EvalElement> for bool {
+    fn from(value: EvalElement) -> Self {
         match value {
-            LogicResult::Boolean(b) => b,
-            LogicResult::Other(t) => t.into(),
+            EvalElement::Boolean(b) => b,
+            EvalElement::Other(t) => t.into(),
         }
     }
 }
 
-impl Default for LogicResult {
+impl Default for EvalElement {
     fn default() -> Self {
-        LogicResult::Other(TableCell::Null)
+        EvalElement::Other(TableCell::Null)
     }
 }
 
-impl From<LogicResult> for TableCell {
-    fn from(value: LogicResult) -> Self {
+impl From<EvalElement> for TableCell {
+    fn from(value: EvalElement) -> Self {
         match value {
-            LogicResult::Boolean(b) => TableCell::Number(bool_transform(b)),
-            LogicResult::Other(table_cell) => table_cell,
+            EvalElement::Boolean(b) => TableCell::Number(bool_transform(b)),
+            EvalElement::Other(table_cell) => table_cell,
         }
     }
 }
