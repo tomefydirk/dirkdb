@@ -25,6 +25,8 @@ impl CompareOp {
                 (CompareOp::IsNot, b) if *b != TableCell::Null => true,
                 _ => false,
             },
+
+            //TODO LIKE!!!
             _ => false,
         }
     }

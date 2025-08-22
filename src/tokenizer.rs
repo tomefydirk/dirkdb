@@ -1,8 +1,9 @@
 use nom::branch::alt;
 // tokentools.rs
 use crate::general_const::{
-    ADD_SIGN, AND_SIGN, DIV_SIGN, EQ_SIGN, GT_E_SIGN, GT_SIGN, IS_NOT_SIGN, IS_SIGN, LT_E_SIGN,
-    LT_SIGN, MINUS_SIGN, MOD_SIGN, MUL_SIGN, NOT_EQ_SIGN, NOT_SIGN, NULL_SIGN, OR_SIGN, POWER_SIGN,
+    ADD_SIGN, AND_SIGN, DIV_SIGN, EQ_SIGN, GT_E_SIGN, GT_SIGN, IS_NOT_SIGN, IS_SIGN, LIKE_SIGN,
+    LT_E_SIGN, LT_SIGN, MINUS_SIGN, MOD_SIGN, MUL_SIGN, NOT_EQ_SIGN, NOT_SIGN, NULL_SIGN, OR_SIGN,
+    POWER_SIGN,
 };
 use crate::general_const::{PARENS_0, PARENS_1};
 use nom::bytes::complete::{tag, tag_no_case};
@@ -107,6 +108,22 @@ pub fn tag_is_not(input: &str) -> IResult<&str, &str> {
         .parse(input)?;
     Ok((input, (IS_NOT_SIGN)))
 }
+pub fn tag_key_word_logic(input: &str) -> IResult<&str, Token> {
+    let (new_input, token) = alt((
+        tag_no_case(OR_SIGN),
+        tag_no_case(AND_SIGN),
+        tag_no_case(NOT_SIGN),
+        tag_no_case(LIKE_SIGN),
+    ))
+    .parse(input)?;
+
+    if new_input.trim().starts_with("(") {
+        Ok((new_input, Token::Other(token)))
+    } else {
+        let (new_input, _) = multispace1(new_input)?;
+        Ok((new_input, Token::Other(token)))
+    }
+}
 pub fn tag_logic_token(input: &str) -> IResult<&str, Token> {
     let a = alt((
         tag(LT_E_SIGN),
@@ -118,10 +135,7 @@ pub fn tag_logic_token(input: &str) -> IResult<&str, Token> {
         tag(PARENS_0),
         tag(PARENS_1),
         tag_is_not,
-        tag_no_case(OR_SIGN),
-        tag_no_case(AND_SIGN),
         tag_no_case(IS_SIGN),
-        tag_no_case(NOT_SIGN),
         tag_no_case(NULL_SIGN),
     ))
     .parse(input)?;
@@ -149,6 +163,7 @@ pub fn default_token(input: &str) -> IResult<&str, Token> {
 pub fn scan_token(input: &str) -> IResult<&str, Token> {
     let a = alt((
         scan_float,
+        tag_key_word_logic,
         tag_logic_token,
         tag_binop_token,
         scan_name,

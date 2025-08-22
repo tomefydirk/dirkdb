@@ -33,6 +33,7 @@ impl FromStr for CompareOp {
             GT_E_SIGN => Ok(Self::Gte),
             IS_SIGN => Ok(Self::Is),
             IS_NOT_SIGN => Ok(Self::IsNot),
+            LIKE_SIGN=>Ok(Self::Like),
             _ => Err(FromStrCmpOpError(s.into())),
         }
     }
