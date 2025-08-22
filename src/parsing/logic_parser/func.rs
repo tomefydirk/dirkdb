@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use crate::IResult;
-use crate::error_lib::parsing::{into_nom_error, into_nom_failure, token_not_found};
+use crate::error_lib::parsing::{after_is_or_isnot, into_nom_error, into_nom_failure, token_not_found};
 
 use crate::{
     general_const::*,
@@ -48,7 +48,7 @@ pub fn parse_compare(input: &str) -> IResult<&str, Box<Condition>> {
                             new_input = after_rhs;
                         }
                         _ => {
-                            return Err(into_nom_error(token_not_found(input)));
+                            return Err(into_nom_error(after_is_or_isnot(input)));
                         }
                     }
                 } else {

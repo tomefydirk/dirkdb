@@ -8,8 +8,8 @@ use crate::parsing::{
 pub enum ErrorKind {
     Parens1Missing,
     TokenNotfound,
+    AfterIsorIsnot(String),
 }
-
 #[derive(Debug, Error)]
 #[error("{code:?} : '{input}' ")]
 pub struct ParserErr<I> {
@@ -28,6 +28,10 @@ pub fn create_factor_error(input: &str) -> ParserErr<&str> {
 }
 pub fn token_not_found(input: &str) -> ParserErr<&str> {
     ParserErr::build(input, ErrorKind::TokenNotfound)
+}
+pub fn after_is_or_isnot(input: &str)->ParserErr<&str>{
+    let msg="Désolé aprés 'IS' ou 'IS NOT' est forçément 'NULL'".to_string();
+    ParserErr::build(input, ErrorKind::AfterIsorIsnot(msg))
 }
 #[derive(Debug, thiserror::Error)]
 pub enum Error<I> {
