@@ -11,10 +11,11 @@ fn main() {
     ctx.insert("x".to_string(), TableCell::Number(10.0));
     ctx.insert("y".to_string(), TableCell::Number(2.0));
     ctx.insert("name".to_string(), TableCell::String("rust".into()));
+    ctx.insert("test".to_string(), TableCell::String("R%".into()));
     ctx.insert("z".to_string(), TableCell::Null);
 
     // 2) Phrase à parser
-    let input = "name like 'R%'";
+    let input = "0 like ((name like test and 10 like x)-1)";
 
     // 3) Parsing → Condition
     let (_, cond): (&str, Box<Condition>) = parse_logical(input).unwrap();

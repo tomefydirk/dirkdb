@@ -1,15 +1,12 @@
 use std::collections::HashMap;
 
 use crate::{
-    evaluation::{ utils::Comparator},
-    function::{self, helper::my_modulo},
-    general_struct::element::{
+    error_lib::evaluation::{EvalEror, EvalErrorkind}, evaluation::{ utils::Comparator, LgResult}, function::{self, helper::my_modulo}, general_struct::element::{
         BinOp, CompareOp, Condition, LogicResult, LogicalOp, PrimitiveElement, TableCell,
-    },
+    }
 };
 
-pub(crate) type Result<T, E = crate::error_lib::evaluation::EvalEror<String>> =
-    std::result::Result<T, E>;
+
 
 impl LogicalOp {
     pub fn default_apply(&self, l: bool, r: bool) -> bool {
@@ -21,23 +18,23 @@ impl LogicalOp {
 }
 
 impl CompareOp {
-    pub fn default_apply(&self, left: &TableCell, right: &TableCell) -> bool {
+    pub fn default_apply(&self, left: &TableCell, right: &TableCell) -> LgResult<bool> {
         match self {
             CompareOp::Like => {
                 let l_str = left.to_string_value();
                 let r_str = right.to_string_value();
-                let re = function::helper::convert_sql_to_regex(&r_str);
-                re.is_match(&l_str)
+                let re = function::helper::convert_sql_to_regex(&r_str)?;
+                Ok(re.is_match(&l_str))
             }
             _ => match (left, right) {
-                (TableCell::Number(l), TableCell::Number(r)) => self.comparing(*l, *r),
-                (TableCell::String(l), TableCell::String(r)) => self.comparing(l, r),
+                (TableCell::Number(l), TableCell::Number(r)) => Ok(self.comparing(*l, *r)),
+                (TableCell::String(l), TableCell::String(r)) => Ok(self.comparing(l, r)),
                 (a, TableCell::Null) => match (self, a) {
-                    (CompareOp::Is, TableCell::Null) => true,
-                    (CompareOp::IsNot, b) if *b != TableCell::Null => true,
-                    _ => false,
+                    (CompareOp::Is, TableCell::Null) => Ok(true),
+                    (CompareOp::IsNot, b) if *b != TableCell::Null =>Ok(true) ,
+                    _ =>Ok( false),
                 },
-                _ => false,
+                _ => Ok(false),
             },
         }
     }
@@ -57,13 +54,11 @@ impl BinOp {
 }
 
 impl Condition {
-    fn eval_value(&self, ctx: &HashMap<String, TableCell>) -> Result<TableCell> {
+    fn eval_value(&self, ctx: &HashMap<String, TableCell>) -> LgResult<TableCell> {
         match self {
             Condition::Primitive(PrimitiveElement::Identifier(name)) => {
                 ctx.get(name).cloned().ok_or_else(|| {
-                    crate::error_lib::evaluation::EvalEror::FieldNotFound(
-                        crate::error_lib::evaluation::FieldNotFoundErr(name.clone()),
-                    )
+                   EvalEror::build(name.clone(), EvalErrorkind::FieldNotFound)
                 })
             }
             Condition::Primitive(PrimitiveElement::Number(n)) => Ok(TableCell::Number(*n)),
@@ -75,13 +70,13 @@ impl Condition {
 }
 
 impl Condition {
-    pub fn eval(&self, ctx: &HashMap<String, TableCell>) -> Result<LogicResult> {
+    pub fn eval(&self, ctx: &HashMap<String, TableCell>) -> LgResult<LogicResult> {
         match self {
             // Comparaison
             Condition::Comparison { left, op, right } => {
                 let l = left.eval_value(ctx)?;
                 let r = right.eval_value(ctx)?;
-                Ok(LogicResult::Boolean(op.default_apply(&l, &r)))
+                Ok(LogicResult::Boolean(op.default_apply(&l, &r)?))
             }
 
             // Logique (AND / OR)

@@ -1,9 +1,18 @@
-#[derive(Debug,thiserror::Error)]
-#[error("Field not found :'0'")]
-pub struct FieldNotFoundErr<I>(pub I);
-
+#[derive(Debug)]
+pub enum EvalErrorkind {
+    FieldNotFound,
+    RegexInvalid
+}
 
 #[derive(Debug, thiserror::Error)]
-pub enum EvalEror<I> {
-    FieldNotFound(#[from] FieldNotFoundErr<I>)
+#[error("{code:?} : '{input}' ")]
+pub struct  EvalEror<I> {
+   pub input:I,
+   pub code:EvalErrorkind
+}
+
+impl<I> EvalEror<I> {
+    pub fn build(input:I,code:EvalErrorkind)->Self{
+        Self { input, code }
+    }
 }
