@@ -52,3 +52,13 @@ impl From<LogicResult> for TableCell {
     }
 }
 
+impl TableCell {
+    
+    pub fn to_string_value(&self) -> String {
+        match self {
+            TableCell::Number(n) => n.to_string(),
+            TableCell::String(s) => s.clone(),
+            TableCell::Null => "NULL".to_string(),
+        }
+    }
+}

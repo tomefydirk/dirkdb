@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
 use crate::{
-    evaluation::utils::Comparator,
-    function::helper::my_modulo,
+    evaluation::{ utils::Comparator},
+    function::{self, helper::my_modulo},
     general_struct::element::{
         BinOp, CompareOp, Condition, LogicResult, LogicalOp, PrimitiveElement, TableCell,
     },
@@ -22,15 +22,23 @@ impl LogicalOp {
 
 impl CompareOp {
     pub fn default_apply(&self, left: &TableCell, right: &TableCell) -> bool {
-        match (left, right) {
-            (TableCell::Number(l), TableCell::Number(r)) => self.comparing(*l, *r),
-            (TableCell::String(l), TableCell::String(r)) => self.comparing(l, r),
-            (a, TableCell::Null) => match (self, a) {
-                (CompareOp::Is, TableCell::Null) => true,
-                (CompareOp::IsNot, b) if *b != TableCell::Null => true,
+        match self {
+            CompareOp::Like => {
+                let l_str = left.to_string_value();
+                let r_str = right.to_string_value();
+                let re = function::helper::convert_sql_to_regex(&r_str);
+                re.is_match(&l_str)
+            }
+            _ => match (left, right) {
+                (TableCell::Number(l), TableCell::Number(r)) => self.comparing(*l, *r),
+                (TableCell::String(l), TableCell::String(r)) => self.comparing(l, r),
+                (a, TableCell::Null) => match (self, a) {
+                    (CompareOp::Is, TableCell::Null) => true,
+                    (CompareOp::IsNot, b) if *b != TableCell::Null => true,
+                    _ => false,
+                },
                 _ => false,
             },
-            _ => false,
         }
     }
 }
@@ -52,16 +60,14 @@ impl Condition {
     fn eval_value(&self, ctx: &HashMap<String, TableCell>) -> Result<TableCell> {
         match self {
             Condition::Primitive(PrimitiveElement::Identifier(name)) => {
-                ctx.get(name)
-                    .cloned()
-                    .ok_or_else(|| crate::error_lib::evaluation::EvalEror::FieldNotFound(
-                        crate::error_lib::evaluation::FieldNotFoundErr(name.clone())
-                    ))
+                ctx.get(name).cloned().ok_or_else(|| {
+                    crate::error_lib::evaluation::EvalEror::FieldNotFound(
+                        crate::error_lib::evaluation::FieldNotFoundErr(name.clone()),
+                    )
+                })
             }
             Condition::Primitive(PrimitiveElement::Number(n)) => Ok(TableCell::Number(*n)),
-            Condition::Primitive(PrimitiveElement::String(s)) => {
-                Ok(TableCell::String(s.clone()))
-            }
+            Condition::Primitive(PrimitiveElement::String(s)) => Ok(TableCell::String(s.clone())),
             Condition::Null => Ok(TableCell::Null),
             a => Ok(a.eval(ctx)?.into()),
         }
@@ -90,7 +96,9 @@ impl Condition {
                 let l = left.eval(ctx)?.as_number();
                 let r = right.eval(ctx)?.as_number();
                 Ok(match (l, r) {
-                    (Some(a), Some(b)) => LogicResult::Other(TableCell::Number(op.default_apply(a, b))),
+                    (Some(a), Some(b)) => {
+                        LogicResult::Other(TableCell::Number(op.default_apply(a, b)))
+                    }
                     _ => LogicResult::Other(TableCell::Null),
                 })
             }

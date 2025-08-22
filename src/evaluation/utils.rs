@@ -29,7 +29,6 @@ where
             CompareOp::Lte => l <= r,
             CompareOp::Gt => l > r,
             CompareOp::Gte => l >= r,
-            CompareOp::Like=>todo!(),
             _ => false,
         }
     }
