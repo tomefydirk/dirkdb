@@ -109,30 +109,21 @@ pub fn tag_is_not(input: &str) -> IResult<&str, &str> {
     Ok((input, (IS_NOT_SIGN)))
 }
 
-/*
+pub fn tag_key_word_logic<'a>(
+    keyword: &'static str,
+) -> impl FnMut(&'a str) -> IResult<&'a str, &'a str> {
+    move |input: &'a str| {
+        let (new_input, matched) = tag_no_case(keyword).parse(input)?;
 
-tag_key_word_logic<T,I,E:Error: ParseError<I>>(T) -> impl Fn(I) -> IResult(T,I,E)
-
-}
-
-*/
-
-pub fn tag_key_word_logic(input: &str) -> IResult<&str, Token> {
-    let (new_input, token) = alt((
-        tag_no_case(OR_SIGN),
-        tag_no_case(AND_SIGN),
-        tag_no_case(NOT_SIGN),
-        tag_no_case(LIKE_SIGN),
-    ))
-    .parse(input)?;
-
-    if new_input.trim().starts_with("(") {
-        Ok((new_input, Token::Other(token)))
-    } else {
-        let (new_input, _) = multispace1(new_input)?;
-        Ok((new_input, Token::Other(token)))
+        if new_input.trim_start().starts_with('(') {
+            Ok((new_input, matched))
+        } else {
+            let (new_input, _) = multispace1(new_input)?;
+            Ok((new_input, matched))
+        }
     }
 }
+
 pub fn tag_logic_token(input: &str) -> IResult<&str, Token> {
     let a = alt((
         tag(LT_E_SIGN),
@@ -144,6 +135,10 @@ pub fn tag_logic_token(input: &str) -> IResult<&str, Token> {
         tag(PARENS_0),
         tag(PARENS_1),
         tag_is_not,
+        tag_key_word_logic(OR_SIGN),
+        tag_key_word_logic(AND_SIGN),
+        tag_key_word_logic(NOT_SIGN),
+        tag_key_word_logic(LIKE_SIGN),
         tag_no_case(IS_SIGN),
         tag_no_case(NULL_SIGN),
     ))
@@ -172,7 +167,6 @@ pub fn default_token(input: &str) -> IResult<&str, Token> {
 pub fn scan_token(input: &str) -> IResult<&str, Token> {
     let a = alt((
         scan_float,
-        tag_key_word_logic,
         tag_logic_token,
         tag_binop_token,
         scan_name,
