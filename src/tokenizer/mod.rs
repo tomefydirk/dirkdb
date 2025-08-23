@@ -1,5 +1,7 @@
+
+pub mod helper;
 use nom::branch::alt;
-// tokentools.rs
+use crate::tokenizer::helper::{is_ident_char, is_ident_start};
 use crate::IResult;
 use crate::general_const::{
     ADD_SIGN, AND_SIGN, DIV_SIGN, EQ_SIGN, GT_E_SIGN, GT_SIGN, IS_NOT_SIGN, IS_SIGN, LIKE_SIGN,
@@ -12,13 +14,7 @@ use nom::character::complete::{digit1, multispace1, space0};
 use nom::combinator::opt;
 use nom::{Parser, bytes::complete::take_while1};
 
-fn is_ident_start(c: char) -> bool {
-    c.is_alphabetic() || c == '_'
-}
 
-fn is_ident_char(c: char) -> bool {
-    c.is_alphanumeric() || c == '_'
-}
 
 #[derive(Debug)]
 pub enum Token<'a> {

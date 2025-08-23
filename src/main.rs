@@ -11,7 +11,7 @@ fn main() {
     let mut ctx = HashMap::new();
     ctx.insert(
         "x".to_string(),
-        TableCell::Date(NaiveDate::from_ymd(2025, 1, 1)),
+        TableCell::Date(NaiveDate::from_ymd_opt(2025, 1, 1).unwrap()),
     );
     ctx.insert("y".to_string(), TableCell::Number(2.0));
     ctx.insert("name".to_string(), TableCell::String("rust".into()));

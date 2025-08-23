@@ -2,8 +2,8 @@ use std::collections::HashMap;
 
 use crate::{
     error_lib::evaluation::EvalEror,
-    evaluation::{LgResult, helper::Comparator},
-    function::{self, helper::my_modulo},
+    evaluation::{helper::Comparator, LgResult},
+    function::{self, helper::my_modulo, sql::Signature},
     general_struct::element::{
         BinOp, CompareOp, Condition, LogicalOp, PrimitiveElement, TableCell,
     },
@@ -74,7 +74,6 @@ impl Condition {
 impl Condition {
     pub fn eval(&self, ctx: &HashMap<String, TableCell>) -> LgResult<TableCell> {
         match self {
-            // Comparaison
             Condition::Comparison { left, op, right } => {
                 let l = left.eval_value(ctx)?;
                 let r = right.eval_value(ctx)?;
@@ -82,15 +81,11 @@ impl Condition {
                 let a = (op.default_apply(&l, &r)?).into();
                 Ok(a)
             }
-
-            // Logique (AND / OR)
             Condition::Logical { left, op, right } => {
                 let l: bool = left.eval(ctx)?.into();
                 let r: bool = right.eval(ctx)?.into();
                 Ok((op.default_apply(l, r)).into())
             }
-
-            // Opérateurs binaires arithmétiques
             Condition::BinaryOp { left, op, right } => {
                 let l = left.eval(ctx)?.as_number();
                 let r = right.eval(ctx)?.as_number();
@@ -99,21 +94,19 @@ impl Condition {
                     _ => TableCell::Null,
                 })
             }
-
-            // Négation arithmétique (-x)
             Condition::Negate(inner) => match inner.eval(ctx)?.as_number() {
                 Some(n) => Ok(TableCell::Number(-n)),
                 None => Ok(TableCell::Null),
             },
-
-            // NOT logique
             Condition::Not(inner) => {
                 let val: bool = inner.eval(ctx)?.into();
                 Ok((!val).into())
             }
-
-            // Valeurs primitives
             Condition::Primitive(_) | Condition::Null => Ok(self.eval_value(ctx)?),
+            Condition::Func { name, parameter } => {
+                let s=Signature::new(name.clone(), parameter.len());
+                todo!()
+            },
         }
     }
 }
