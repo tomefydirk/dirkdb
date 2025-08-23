@@ -1,4 +1,4 @@
-use chrono::NaiveDate;
+use chrono::{Datelike, NaiveDate};
 
 use crate::{
     error_lib::evaluation::EvalEror, evaluation::LgResult, function::helper::bool_transform, general_struct::element::{CompareOp, EvalElement, TableCell}, tokenizer::{scan_float, Token}
@@ -106,8 +106,12 @@ impl TableCell {
                 Ok(a)
             }
             TableCell::Number(n) => {
-                //CONVERTIR en nombre de jours
-                todo!()
+                 let date_opt = NaiveDate::from_num_days_from_ce_opt(*n as i32);
+                match date_opt {
+                    Some(date) => Ok(date) ,
+                    None =>Err(EvalEror::incorrect_date_value(n.to_string()) ),
+                }
+                
             }
             TableCell::Date(naive_date) => Ok(*naive_date),
             TableCell::Null => Err(EvalEror::incorrect_date_value("NULL".to_string())),
@@ -127,8 +131,8 @@ impl EvalElement {
                 }
             }
             EvalElement::Other(TableCell::Date(d)) => {
-                //CHANGER d en jours
-                todo!()
+                let days = d.num_days_from_ce();
+                Some(days as f64)
             }
             EvalElement::Boolean(b) => Some(bool_transform(*b)),
             _ => None,
