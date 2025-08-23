@@ -1,5 +1,8 @@
 
 pub mod helper;
+pub mod function;
+
+///TOKENTOOL::
 use nom::branch::alt;
 use crate::tokenizer::helper::{is_ident_char, is_ident_start};
 use crate::IResult;
@@ -21,6 +24,7 @@ pub enum Token<'a> {
     Number(f64),
     String(String),
     FieldName(String),
+    Func(String),
     Other(&'a str),
 }
 
