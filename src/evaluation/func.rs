@@ -5,7 +5,7 @@ use crate::{
     evaluation::{LgResult, helper::Comparator},
     function::{self, helper::my_modulo},
     general_struct::element::{
-        BinOp, CompareOp, Condition, EvalElement, LogicalOp, PrimitiveElement, TableCell,
+        BinOp, CompareOp, Condition, LogicalOp, PrimitiveElement, TableCell,
     },
 };
 
@@ -66,26 +66,28 @@ impl Condition {
             Condition::Primitive(PrimitiveElement::Number(n)) => Ok(TableCell::Number(*n)),
             Condition::Primitive(PrimitiveElement::String(s)) => Ok(TableCell::String(s.clone())),
             Condition::Null => Ok(TableCell::Null),
-            a => Ok(a.eval(ctx)?.into()),
+            a => Ok(a.eval(ctx)?),
         }
     }
 }
 
 impl Condition {
-    pub fn eval(&self, ctx: &HashMap<String, TableCell>) -> LgResult<EvalElement> {
+    pub fn eval(&self, ctx: &HashMap<String, TableCell>) -> LgResult<TableCell> {
         match self {
             // Comparaison
             Condition::Comparison { left, op, right } => {
                 let l = left.eval_value(ctx)?;
                 let r = right.eval_value(ctx)?;
-                Ok(EvalElement::Boolean(op.default_apply(&l, &r)?))
+
+                let a = (op.default_apply(&l, &r)?).into();
+                Ok(a)
             }
 
             // Logique (AND / OR)
             Condition::Logical { left, op, right } => {
                 let l: bool = left.eval(ctx)?.into();
                 let r: bool = right.eval(ctx)?.into();
-                Ok(EvalElement::Boolean(op.default_apply(l, r)))
+                Ok((op.default_apply(l, r)).into())
             }
 
             // Opérateurs binaires arithmétiques
@@ -93,29 +95,25 @@ impl Condition {
                 let l = left.eval(ctx)?.as_number();
                 let r = right.eval(ctx)?.as_number();
                 Ok(match (l, r) {
-                    (Some(a), Some(b)) => {
-                        EvalElement::Other(TableCell::Number(op.default_apply(a, b)))
-                    }
-                    _ => EvalElement::Other(TableCell::Null),
+                    (Some(a), Some(b)) => TableCell::Number(op.default_apply(a, b)),
+                    _ => TableCell::Null,
                 })
             }
 
             // Négation arithmétique (-x)
             Condition::Negate(inner) => match inner.eval(ctx)?.as_number() {
-                Some(n) => Ok(EvalElement::Other(TableCell::Number(-n))),
-                None => Ok(EvalElement::Other(TableCell::Null)),
+                Some(n) => Ok(TableCell::Number(-n)),
+                None => Ok(TableCell::Null),
             },
 
             // NOT logique
             Condition::Not(inner) => {
                 let val: bool = inner.eval(ctx)?.into();
-                Ok(EvalElement::Boolean(!val))
+                Ok((!val).into())
             }
 
             // Valeurs primitives
-            Condition::Primitive(_) | Condition::Null => {
-                Ok(EvalElement::Other(self.eval_value(ctx)?))
-            }
+            Condition::Primitive(_) | Condition::Null => Ok(self.eval_value(ctx)?),
         }
     }
 }

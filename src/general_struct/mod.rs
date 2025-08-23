@@ -1,4 +1,4 @@
-use crate::general_struct::element::{Condition, EvalElement, PrimitiveElement, TableCell};
+use crate::general_struct::element::{Condition,  PrimitiveElement, TableCell};
 
 pub mod element;
 
@@ -44,17 +44,5 @@ impl From<f64> for TableCell {
 impl Default for TableCell {
     fn default() -> Self {
         Self::Null
-    }
-}
-
-//PartialEq:
-
-impl PartialEq for EvalElement {
-    fn eq(&self, other: &Self) -> bool {
-        match (self, other) {
-            (EvalElement::Boolean(a), EvalElement::Boolean(b)) => a == b,
-            (EvalElement::Other(a), EvalElement::Other(b)) => a == b,
-            _ => false,
-        }
     }
 }

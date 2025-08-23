@@ -66,10 +66,3 @@ pub enum TableCell {
     Date(NaiveDate),
     Null,
 }
-
-#[derive(Debug, Clone)]
-pub enum EvalElement {
-    Boolean(bool),
-    Other(TableCell),
-}
-
