@@ -1,8 +1,41 @@
 use chrono::NaiveDate;
 
 use crate::{
-    error_lib::evaluation::EvalEror, evaluation::LgResult, function::helper::bool_transform, general_struct::element::{EvalElement, TableCell}
+    error_lib::evaluation::EvalEror, evaluation::LgResult, function::helper::bool_transform, general_struct::element::{CompareOp, EvalElement, TableCell}, tokenizer::{scan_float, Token}
 };
+impl PartialEq for TableCell {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::String(l0), Self::String(r0)) => l0 == r0,
+            (Self::Number(l0), Self::Number(r0)) => l0 == r0,
+            (Self::Null, Self::Null) => true,
+            _ => false,
+        }
+    }
+}
+pub trait Comparator<T>
+where
+    T: PartialEq + PartialOrd,
+{
+    fn comparing(&self, l: T, r: T) -> bool;
+}
+
+impl<T> Comparator<T> for CompareOp
+where
+    T: PartialEq + PartialOrd,
+{
+    fn comparing(&self, l: T, r: T) -> bool {
+        match self {
+            CompareOp::Eq => l == r,
+            CompareOp::Neq => l != r,
+            CompareOp::Lt => l < r,
+            CompareOp::Lte => l <= r,
+            CompareOp::Gt => l > r,
+            CompareOp::Gte => l >= r,
+            _ => false,
+        }
+    }
+}
 
 impl From<bool> for EvalElement {
     fn from(value: bool) -> Self {
@@ -78,6 +111,27 @@ impl TableCell {
             }
             TableCell::Date(naive_date) => Ok(*naive_date),
             TableCell::Null => Err(EvalEror::incorrect_date_value("NULL".to_string())),
+        }
+    }
+}
+
+impl EvalElement {
+    pub fn as_number(&self) -> Option<f64> {
+        match self {
+            EvalElement::Other(TableCell::Number(n)) => Some(*n),
+            EvalElement::Other(TableCell::String(s)) => {
+                let g = scan_float(s);
+                match g {
+                    Ok((_, Token::Number(n))) => Some(n),
+                    _ => Some(0.0),
+                }
+            }
+            EvalElement::Other(TableCell::Date(d)) => {
+                //CHANGER d en jours
+                todo!()
+            }
+            EvalElement::Boolean(b) => Some(bool_transform(*b)),
+            _ => None,
         }
     }
 }
