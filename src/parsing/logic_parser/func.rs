@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+use crate::tokenizer::helper::codon_stop;
 use crate::IResult;
 use crate::error_lib::parsing::{
     after_is_or_isnot, into_nom_error, into_nom_failure, token_not_found,
@@ -16,7 +17,7 @@ use crate::{
 pub fn parse_logical(input: &str) -> IResult<&str, Box<Condition>> {
     let (mut input_rem, mut current) = parse_compare(input)?;
 
-    while !input_rem.is_empty() && !input_rem.starts_with(PARENS_1) {
+    while !codon_stop(input_rem) {
         let (next, token) = scan_token(input_rem)?;
         match token {
             Token::Other(a) if LogicalOp::from_str(a).is_ok() => {
@@ -34,7 +35,7 @@ pub fn parse_compare(input: &str) -> IResult<&str, Box<Condition>> {
     let (mut new_input, mut current) = parse_atom(input)?;
     let mut comparisons = Vec::<Condition>::new();
 
-    while !new_input.trim().is_empty() && !new_input.trim().starts_with(PARENS_1) {
+    while !codon_stop(new_input) {
         let (next, token) = scan_token(new_input)?;
         match token {
             Token::Other(op) if CompareOp::from_str(op).is_ok() => {

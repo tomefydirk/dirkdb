@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+use crate::tokenizer::helper::codon_stop;
 use crate::IResult;
 use crate::error_lib::parsing::{factor_error, into_nom_error, into_nom_failure, token_not_found};
 use crate::general_const::{MOD_SIGN, NULL_SIGN, PARENS_0, PARENS_1};
@@ -23,7 +24,7 @@ where
 {
     let (mut input_rem, mut current_expr) = lower_parser(input)?;
 
-    if input_rem.starts_with(')') {
+    if codon_stop(input_rem) {
         return Condition::result_from_current(input_rem, current_expr);
     }
 
