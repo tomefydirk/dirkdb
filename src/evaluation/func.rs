@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use crate::{
+    function::helper::bool_transform,
     error_lib::evaluation::EvalEror,
     evaluation::{LgResult, utils::Comparator},
     function::{self, helper::my_modulo},
@@ -136,7 +137,7 @@ impl EvalElement {
                 //CHANGER d en jours
                 todo!()
             }
-            EvalElement::Boolean(b) => Some(crate::evaluation::utils::bool_transform(*b)),
+            EvalElement::Boolean(b) => Some(bool_transform(*b)),
             _ => None,
         }
     }

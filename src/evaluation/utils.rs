@@ -34,9 +34,5 @@ where
     }
 }
 
-//transformer bool ---> 0 ou 1
 
-///pour accépter les (1!=1)+1  c'est égal à false+1  or false=0 donc le resultat est 1
-pub fn bool_transform(b: bool) -> f64 {
-    if b { 1.0 } else { 0.0 }
-}
+

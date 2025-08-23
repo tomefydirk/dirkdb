@@ -1,9 +1,7 @@
 use chrono::NaiveDate;
 
 use crate::{
-    error_lib::evaluation::EvalEror,
-    evaluation::{LgResult, utils::bool_transform},
-    general_struct::element::{EvalElement, TableCell},
+    error_lib::evaluation::EvalEror, evaluation::LgResult, function::helper::bool_transform, general_struct::element::{EvalElement, TableCell}
 };
 
 impl From<bool> for EvalElement {
