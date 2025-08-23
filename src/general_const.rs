@@ -22,4 +22,4 @@ pub const OR_SIGN: &str = "or";
 pub const NOT_SIGN: &str = "not";
 pub const NULL_SIGN: &str = "null";
 pub const AND_SIGN: &str = "and";
-pub const LIKE_SIGN:&str="like";
+pub const LIKE_SIGN: &str = "like";

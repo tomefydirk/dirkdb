@@ -1,9 +1,7 @@
 use thiserror::Error;
 
-use crate::parsing::{
-    atom_parser::element::FromStrBinOpError,
-    logic_parser::element::{FromStrCmpOpError, FromStrLogicalOpError},
-};
+use crate::error_lib::parsing::mini_err::*;
+pub mod mini_err;
 #[derive(Debug)]
 pub enum ErrorKind {
     Parens1Missing,
@@ -28,8 +26,8 @@ pub fn factor_error(input: &str) -> ParserErr<&str> {
 pub fn token_not_found(input: &str) -> ParserErr<&str> {
     ParserErr::build(input, ErrorKind::TokenNotfound)
 }
-pub fn after_is_or_isnot(input: &str)->ParserErr<&str>{
-    let msg="Désolé aprés 'IS' ou 'IS NOT' est forçément 'NULL'".to_string();
+pub fn after_is_or_isnot(input: &str) -> ParserErr<&str> {
+    let msg = "Désolé aprés 'IS' ou 'IS NOT' est forçément 'NULL'".to_string();
     ParserErr::build(input, ErrorKind::AfterIsorIsnot(msg))
 }
 #[derive(Debug, thiserror::Error)]

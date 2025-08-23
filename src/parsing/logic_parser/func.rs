@@ -1,13 +1,15 @@
 use std::str::FromStr;
 
 use crate::IResult;
-use crate::error_lib::parsing::{after_is_or_isnot, into_nom_error, into_nom_failure, token_not_found};
+use crate::error_lib::parsing::{
+    after_is_or_isnot, into_nom_error, into_nom_failure, token_not_found,
+};
+use crate::parsing::logic_parser::BuildCondition;
 
 use crate::{
     general_const::*,
     general_struct::element::{CompareOp, Condition, LogicalOp},
-    parsing::atom_parser::func::parse_expr,
-    parsing::logic_parser::element::BuildCondition,
+    parsing::atom_parser::func::parse_atom,
     tokenizer::{Token, scan_token},
 };
 
@@ -29,7 +31,7 @@ pub fn parse_logical(input: &str) -> IResult<&str, Box<Condition>> {
 }
 
 pub fn parse_compare(input: &str) -> IResult<&str, Box<Condition>> {
-    let (mut new_input, mut current) = parse_expr(input)?;
+    let (mut new_input, mut current) = parse_atom(input)?;
     let mut comparisons = Vec::<Condition>::new();
 
     while !new_input.trim().is_empty() && !new_input.trim().starts_with(PARENS_1) {
@@ -52,7 +54,7 @@ pub fn parse_compare(input: &str) -> IResult<&str, Box<Condition>> {
                         }
                     }
                 } else {
-                    let (after_rhs, rhs) = parse_expr(next)?;
+                    let (after_rhs, rhs) = parse_atom(next)?;
                     current = CompareOp::build(current, rhs, cop);
                     comparisons.push(*current.clone());
                     new_input = after_rhs;

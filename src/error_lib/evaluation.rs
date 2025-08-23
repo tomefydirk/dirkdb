@@ -7,24 +7,31 @@ pub enum EvalErrorkind {
 
 #[derive(Debug, thiserror::Error)]
 #[error("{code:?} : '{input}' ")]
-pub struct  EvalEror<I> {
-   pub input:I,
-   pub code:EvalErrorkind
+pub struct EvalEror<I> {
+    pub input: I,
+    pub code: EvalErrorkind,
 }
 
 impl<I> EvalEror<I> {
-    pub fn build(input:I,code:EvalErrorkind)->Self{
+    pub fn build(input: I, code: EvalErrorkind) -> Self {
         Self { input, code }
     }
-    pub fn incorrect_date_value(input:I)->Self{
-        Self { input, code: EvalErrorkind::IncorrectDateValue }
-    
+    pub fn incorrect_date_value(input: I) -> Self {
+        Self {
+            input,
+            code: EvalErrorkind::IncorrectDateValue,
+        }
     }
-    pub fn regex_invalid(input:I)->Self{
-        Self { input, code: EvalErrorkind::RegexInvalid }
+    pub fn regex_invalid(input: I) -> Self {
+        Self {
+            input,
+            code: EvalErrorkind::RegexInvalid,
+        }
     }
-    pub fn field_notfound(input:I)->Self{
-        Self { input, code: EvalErrorkind::FieldNotFound }
+    pub fn field_notfound(input: I) -> Self {
+        Self {
+            input,
+            code: EvalErrorkind::FieldNotFound,
+        }
     }
 }
-

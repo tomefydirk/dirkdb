@@ -56,7 +56,7 @@ pub enum CompareOp {
     Gte,
     Is,
     IsNot,
-    Like
+    Like,
 }
 
 #[derive(Debug, Clone)]

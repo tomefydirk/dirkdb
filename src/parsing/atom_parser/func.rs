@@ -46,7 +46,7 @@ where
     }
 }
 
-pub fn parse_expr(input: &str) -> IResult<&str, Box<Condition>> {
+pub fn parse_atom(input: &str) -> IResult<&str, Box<Condition>> {
     parse_binop_level(input, parse_mod, &[ADD_SIGN, MINUS_SIGN])
 }
 pub fn parse_mod(input: &str) -> IResult<&str, Box<Condition>> {

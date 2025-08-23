@@ -1,4 +1,4 @@
-use chrono::{ NaiveDate};
+use chrono::NaiveDate;
 
 use crate::{
     error_lib::evaluation::EvalEror,
@@ -69,19 +69,17 @@ impl TableCell {
     pub fn convert_to_date(&self) -> LgResult<NaiveDate> {
         match self {
             TableCell::String(v) => {
-                let a = (v).parse::<NaiveDate>().map_err(|_| {
-                    EvalEror::incorrect_date_value(v.clone())
-                })?;
+                let a = (v)
+                    .parse::<NaiveDate>()
+                    .map_err(|_| EvalEror::incorrect_date_value(v.clone()))?;
                 Ok(a)
             }
             TableCell::Number(n) => {
                 //CONVERTIR en nombre de jours
-               todo!()
+                todo!()
             }
             TableCell::Date(naive_date) => Ok(*naive_date),
-            TableCell::Null => {
-                Err(EvalEror::incorrect_date_value("NULL".to_string()))
-            },
+            TableCell::Null => Err(EvalEror::incorrect_date_value("NULL".to_string())),
         }
     }
 }
