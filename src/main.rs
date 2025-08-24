@@ -4,9 +4,7 @@ use chrono::NaiveDate;
 use dirkdb::{
     general_struct::element::{Condition, TableCell},
     parsing::logic_parser::func::parse_logical,
-    tokenizer::function::tag_name_fn,
 };
-use nom::Parser;
 
 fn main() {
     // 1) Contexte
@@ -21,7 +19,7 @@ fn main() {
     ctx.insert("z".to_string(), TableCell::Null);
 
     // 2) Phrase à parser
-    let input = "sqrt(2)";
+    let input = "sqrt(9)+1";
 
     // 3) Parsing → Condition
     let (_, cond): (&str, Box<Condition>) = parse_logical(input).unwrap();
@@ -31,6 +29,4 @@ fn main() {
     let result = cond.eval(&ctx);
 
     println!("{:?}", result);
-
-    println!("{:?}", tag_name_fn("a").parse("a ("));
 }

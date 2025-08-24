@@ -9,7 +9,8 @@ use std::{
 };
 
 use crate::{
-    error_lib::evaluation::EvalEror, evaluation::LgResult, function::sql::numbersql::sqrt, general_struct::element::TableCell
+    error_lib::evaluation::EvalEror, evaluation::LgResult, function::sql::numbersql::sqrt,
+    general_struct::element::TableCell,
 };
 
 #[derive(Debug, Clone)]
@@ -37,7 +38,6 @@ impl Hash for Signature {
     }
 }
 
-
 type FuncSQL = fn(Vec<TableCell>) -> LgResult<TableCell>;
 
 pub struct FunctionRegistry {
@@ -46,10 +46,7 @@ pub struct FunctionRegistry {
 impl FunctionRegistry {
     pub fn new() -> Self {
         let mut funcs: HashMap<Signature, FuncSQL> = HashMap::new();
-        funcs.insert(
-            Signature::new("sqrt".to_string(), 1),
-            sqrt as FuncSQL,
-        );
+        funcs.insert(Signature::new("sqrt".to_string(), 1), sqrt as FuncSQL);
         Self { funcs }
     }
 }
@@ -61,7 +58,6 @@ impl Default for FunctionRegistry {
 }
 
 impl FunctionRegistry {
-   
     pub fn match_with(&self, s: Signature) -> LgResult<FuncSQL> {
         match self.funcs.get(&s) {
             Some(f) => Ok(*f),

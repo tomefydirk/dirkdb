@@ -44,13 +44,16 @@ impl<I> EvalEror<I> {
             code: EvalErrorkind::FunctionNotFound,
         }
     }
-    pub fn negative_into_sqrt(number:f64)->EvalEror<String>{
-         EvalEror {
+    pub fn negative_into_sqrt(number: f64) -> EvalEror<String> {
+        EvalEror {
             input: number.to_string(),
             code: EvalErrorkind::NegativeintoSQRT,
         }
     }
-    pub fn incompatible_type(t:&TableCell)->EvalEror<String>{
-        EvalEror { input: format!("{t:?}"), code: EvalErrorkind::IncompatibleType }
+    pub fn incompatible_type(t: &TableCell) -> EvalEror<String> {
+        EvalEror {
+            input: format!("{t:?}"),
+            code: EvalErrorkind::IncompatibleType,
+        }
     }
 }

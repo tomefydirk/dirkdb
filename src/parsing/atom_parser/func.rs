@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use crate::IResult;
 use crate::error_lib::parsing::{factor_error, into_nom_error, into_nom_failure, token_not_found};
-use crate::general_const::{MOD_SIGN, NULL_SIGN, PARENS_0, PARENS_1};
+use crate::general_const::{COMMA_SIGN, MOD_SIGN, NULL_SIGN, PARENS_0, PARENS_1};
 use crate::general_struct::element::{BinOp, Condition};
 use crate::parsing::logic_parser::func::parse_logical;
 use crate::tokenizer::helper::codon_stop;
@@ -81,32 +81,30 @@ pub fn parse_factor(input: &str) -> IResult<&str, Box<Condition>> {
         }
         Token::Func(f) => parse_func_factor(next_input, f),
     }
-   
 }
- pub fn parse_func_factor(mut input: &str, f: String) -> IResult<&str, Box<Condition>> {
-        let mut vec = Vec::<Condition>::new();
-        while !codon_stop(input) {
-            let a = parse_logical(input)?;
-            let (ipt, token) = scan_token(input)?;
-            match token {
-                Token::Other(",") => {
-                    input = ipt;
-                    vec.push(*a.1)
-                }
-                Token::Other(")") => {
-                    return Ok((
-                        ipt,
-                        Box::new(Condition::Func {
-                            name: f,
-                            parameter: vec,
-                        }),
-                    ));
-                }
-                _ => break,
+pub fn parse_func_factor(mut input: &str, f: String) -> IResult<&str, Box<Condition>> {
+    let mut vec = Vec::<Condition>::new();
+    while !codon_stop(input) {
+        let a = parse_logical(input)?;
+        let (ipt, token) = scan_token(a.0)?;
+        match token {
+            Token::Other(COMMA_SIGN) => vec.push(*a.1),
+            Token::Other(PARENS_1) => {
+                vec.push(*a.1);
+                return Ok((
+                    ipt,
+                    Box::new(Condition::Func {
+                        name: f,
+                        parameter: vec,
+                    }),
+                ));
             }
+            _ => break,
         }
-        Err(into_nom_error(token_not_found(input)))
+        input = ipt;
     }
+    Err(into_nom_error(token_not_found(input)))
+}
 pub fn parse_real_factor(input: &str) -> IResult<&str, Box<Condition>> {
     let (after_expr, expr) = parse_logical(input)?;
     let (after_paren, token) = scan_token(after_expr)?;
