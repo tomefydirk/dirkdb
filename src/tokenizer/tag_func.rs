@@ -80,9 +80,8 @@ pub fn tag_function(input: &str) -> IResult<&str, String> {
     if is_func_valid(&func_name) {
         Ok((input_retour, func_name))
     } else {
-        Err(nom::Err::Error(nom::error::Error::new(
-            input,
-            nom::error::ErrorKind::Tag,
-        ).into()))
+        Err(nom::Err::Error(
+            nom::error::Error::new(input, nom::error::ErrorKind::Tag).into(),
+        ))
     }
 }

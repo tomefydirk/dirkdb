@@ -84,6 +84,10 @@ pub fn parse_factor(input: &str) -> IResult<&str, Box<Condition>> {
 }
 pub fn parse_func_factor(mut input: &str, f: String) -> IResult<&str, Box<Condition>> {
     let mut vec = Vec::<Condition>::new();
+    if input.trim().starts_with(")") {
+        let (ipt, _) = scan_token(input)?;
+        return Condition::result_func(ipt, f, vec);
+    }
     while !codon_stop(input) {
         let a = parse_logical(input)?;
         let (ipt, token) = scan_token(a.0)?;
@@ -91,13 +95,7 @@ pub fn parse_func_factor(mut input: &str, f: String) -> IResult<&str, Box<Condit
             Token::Other(COMMA_SIGN) => vec.push(*a.1),
             Token::Other(PARENS_1) => {
                 vec.push(*a.1);
-                return Ok((
-                    ipt,
-                    Box::new(Condition::Func {
-                        name: f,
-                        parameter: vec,
-                    }),
-                ));
+                return Condition::result_func(ipt, f, vec);
             }
             _ => break,
         }

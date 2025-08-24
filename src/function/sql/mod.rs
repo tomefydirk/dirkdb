@@ -8,7 +8,7 @@ use std::{
 use crate::{
     error_lib::evaluation::EvalEror,
     evaluation::LgResult,
-    function::sql::list_func::{datediff, sqrt},
+    function::sql::list_func::{datediff, now, sqrt},
     general_struct::element::TableCell,
 };
 
@@ -50,6 +50,7 @@ impl FunctionRegistry {
             Signature::new("datediff".to_string(), 2),
             datediff as FuncSQL,
         );
+        funcs.insert(Signature::new("now".to_string(), 0), now as FuncSQL);
         Self { funcs }
     }
 }

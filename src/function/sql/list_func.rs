@@ -1,3 +1,5 @@
+use chrono::Local;
+
 use crate::{
     error_lib::evaluation::*, evaluation::LgResult, function::sql::Signature,
     general_struct::element::TableCell,
@@ -30,4 +32,13 @@ pub fn datediff(args: Vec<TableCell>) -> LgResult<TableCell> {
     }
     let n = (args[0].convert_to_date()? - args[1].convert_to_date()?).num_days() as f64;
     Ok(TableCell::Number(n))
+}
+pub fn now(args: Vec<TableCell>) -> LgResult<TableCell> {
+    if !args.is_empty() {
+        return Err(EvalEror::<String>::function_not_found(Signature::new(
+            "datediff".to_string(),
+            args.len(),
+        )));
+    }
+    Ok(TableCell::Date(Local::now().date_naive()))
 }
