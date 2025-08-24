@@ -1,15 +1,14 @@
 pub mod datesql;
-pub mod names;
-pub mod numbersql;
-pub mod stringsql;
-
+pub mod list_func;
 use std::{
     collections::HashMap,
     hash::{Hash, Hasher},
 };
 
 use crate::{
-    error_lib::evaluation::EvalEror, evaluation::LgResult, function::sql::numbersql::sqrt,
+    error_lib::evaluation::EvalEror,
+    evaluation::LgResult,
+    function::sql::list_func::{datediff, sqrt},
     general_struct::element::TableCell,
 };
 
@@ -47,6 +46,10 @@ impl FunctionRegistry {
     pub fn new() -> Self {
         let mut funcs: HashMap<Signature, FuncSQL> = HashMap::new();
         funcs.insert(Signature::new("sqrt".to_string(), 1), sqrt as FuncSQL);
+        funcs.insert(
+            Signature::new("datediff".to_string(), 2),
+            datediff as FuncSQL,
+        );
         Self { funcs }
     }
 }

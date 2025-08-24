@@ -8,7 +8,7 @@ use nom::{
 use crate::{
     IResult,
     general_const::{IS_NOT_SIGN, IS_SIGN, NOT_SIGN, PARENS_0},
-    tokenizer::helper::{is_ident_char, is_ident_start},
+    tokenizer::helper::{is_func_valid, is_ident_char, is_ident_start},
 };
 
 pub fn tag_float(input: &str) -> IResult<&str, f64> {
@@ -77,5 +77,12 @@ pub fn tag_function(input: &str) -> IResult<&str, String> {
     let b = a.trim();
     let (input_retour, _) = tag(PARENS_0).parse(b)?;
 
-    Ok((input_retour, func_name))
+    if is_func_valid(&func_name) {
+        Ok((input_retour, func_name))
+    } else {
+        Err(nom::Err::Error(nom::error::Error::new(
+            input,
+            nom::error::ErrorKind::Tag,
+        ).into()))
+    }
 }

@@ -1,4 +1,6 @@
-use crate::general_const::{COMMA_SIGN, PARENS_1, SEMICOLON_SIGN};
+use crate::general_const::{
+     key_word_list, COMMA_SIGN, PARENS_1, SEMICOLON_SIGN
+};
 
 pub(crate) fn is_ident_start(c: char) -> bool {
     c.is_alphabetic() || c == '_'
@@ -12,4 +14,7 @@ pub fn codon_stop(input: &str) -> bool {
         && input.trim().is_empty()
         && input.trim().starts_with(COMMA_SIGN)
         && input.trim().starts_with(SEMICOLON_SIGN)
+}
+pub fn is_func_valid(input: &String) -> bool {
+    !key_word_list().contains(input)   
 }

@@ -27,3 +27,15 @@ pub const LIKE_SIGN: &str = "like";
 //--- virgule et point virugle
 pub const COMMA_SIGN: &str = ",";
 pub const SEMICOLON_SIGN: &str = ";";
+
+pub fn key_word_list() -> Vec<String> {
+    vec![
+        IS_SIGN.to_string(),
+        IS_NOT_SIGN.to_string(),
+        OR_SIGN.to_string(),
+        NOT_SIGN.to_string(),
+        NULL_SIGN.to_string(),
+        AND_SIGN.to_string(),
+        LIKE_SIGN.to_string(),
+    ]
+}

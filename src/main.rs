@@ -19,7 +19,7 @@ fn main() {
     ctx.insert("z".to_string(), TableCell::Null);
 
     // 2) Phrase à parser
-    let input = "sqrt(9)+1";
+    let input = "datediff('2025-01-02',x)";
 
     // 3) Parsing → Condition
     let (_, cond): (&str, Box<Condition>) = parse_logical(input).unwrap();
