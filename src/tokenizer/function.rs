@@ -1,9 +1,8 @@
 use nom::{
-    Parser,
-    bytes::complete::{tag, tag_no_case},
+    branch::alt, bytes::complete::{tag, tag_no_case}, Parser
 };
 
-use crate::{IResult, general_const::PARENS_0};
+use crate::{general_const::PARENS_0, tokenizer::Token, IResult};
 
 pub fn tag_name_fn<'a>(keyword: &'static str) -> impl FnMut(&'a str) -> IResult<&'a str, &'a str> {
     move |input: &'a str| {
@@ -12,4 +11,12 @@ pub fn tag_name_fn<'a>(keyword: &'static str) -> impl FnMut(&'a str) -> IResult<
 
         Ok((new_input, matched))
     }
+}
+
+pub fn scan_function(input:&str) -> IResult<&str, Token>{
+    let a=alt((
+        tag_name_fn("sqrt"),
+        tag_name_fn("sqrt"),
+    )).parse(input)?;
+    Ok((a.0, Token::Func(a.1.to_string())))
 }

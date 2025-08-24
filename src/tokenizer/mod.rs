@@ -1,6 +1,7 @@
 pub mod function;
 pub mod helper;
 
+use crate::tokenizer::function::scan_function;
 use crate::IResult;
 use crate::general_const::{
     ADD_SIGN, AND_SIGN, COMMA_SIGN, DIV_SIGN, EQ_SIGN, GT_E_SIGN, GT_SIGN, IS_NOT_SIGN, IS_SIGN, LIKE_SIGN, LT_E_SIGN, LT_SIGN, MINUS_SIGN, MOD_SIGN, MUL_SIGN, NOT_EQ_SIGN, NOT_SIGN, NULL_SIGN, OR_SIGN, POWER_SIGN, SEMICOLON_SIGN
@@ -163,6 +164,7 @@ pub fn default_token(input: &str) -> IResult<&str, Token> {
 }
 pub fn scan_token(input: &str) -> IResult<&str, Token> {
     let a = alt((
+        scan_function,
         scan_float,
         tag_logic_token,
         tag_binop_token,

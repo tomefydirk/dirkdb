@@ -2,8 +2,8 @@ use std::collections::HashMap;
 
 use crate::{
     error_lib::evaluation::EvalEror,
-    evaluation::{LgResult, helper::Comparator},
-    function::{self, helper::my_modulo, sql::Signature},
+    evaluation::{helper::Comparator, LgResult},
+    function::{self, helper::my_modulo, sql::{FunctionRegistry}},
     general_struct::element::{
         BinOp, CompareOp, Condition, LogicalOp, PrimitiveElement, TableCell,
     },
@@ -110,9 +110,18 @@ impl Condition {
                TODO!()
             */
             Condition::Func { name, parameter } => {
-                let s = Signature::new(name.clone(), parameter.len());
-                todo!()
+                let func_list=FunctionRegistry::new();
+
+             
+                func_list.call(name, change_args_type(parameter, ctx)?)
             }
         }
     }
+}
+pub fn change_args_type(args:&Vec<Condition>,ctx: &HashMap<String, TableCell>)->LgResult<Vec<TableCell>>{
+    let mut retour=Vec::<TableCell>::new();
+    for a in args{
+        retour.push(a.eval(ctx)?);
+    }
+    Ok(retour)
 }

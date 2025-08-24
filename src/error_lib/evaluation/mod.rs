@@ -1,4 +1,4 @@
-use crate::function::sql::Signature;
+use crate::{function::sql::Signature, general_struct::element::TableCell};
 
 #[derive(Debug)]
 pub enum EvalErrorkind {
@@ -6,6 +6,8 @@ pub enum EvalErrorkind {
     RegexInvalid,
     IncorrectDateValue,
     FunctionNotFound,
+    NegativeintoSQRT,
+    IncompatibleType,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -41,5 +43,14 @@ impl<I> EvalEror<I> {
             input: format!("{s:?}"),
             code: EvalErrorkind::FunctionNotFound,
         }
+    }
+    pub fn negative_into_sqrt(number:f64)->EvalEror<String>{
+         EvalEror {
+            input: number.to_string(),
+            code: EvalErrorkind::NegativeintoSQRT,
+        }
+    }
+    pub fn incompatible_type(t:&TableCell)->EvalEror<String>{
+        EvalEror { input: format!("{t:?}"), code: EvalErrorkind::IncompatibleType }
     }
 }

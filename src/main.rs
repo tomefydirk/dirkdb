@@ -21,7 +21,7 @@ fn main() {
     ctx.insert("z".to_string(), TableCell::Null);
 
     // 2) Phrase à parser
-    let input = "y<3";
+    let input = "sqrt(2)";
 
     // 3) Parsing → Condition
     let (_, cond): (&str, Box<Condition>) = parse_logical(input).unwrap();
