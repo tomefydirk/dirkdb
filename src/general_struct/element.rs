@@ -1,6 +1,5 @@
 use chrono::NaiveDate;
 
-
 #[derive(Debug, Clone)]
 pub enum PrimitiveElement {
     Identifier(String),
@@ -8,7 +7,7 @@ pub enum PrimitiveElement {
     String(String),
 }
 
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 pub enum Condition {
     Comparison {
         left: Box<Condition>,
@@ -30,7 +29,7 @@ pub enum Condition {
     Primitive(PrimitiveElement),
     Func {
         name: String,
-        parameter: Vec<Box<Condition>>,
+        parameter: Vec<Condition>,
     },
     Null,
 }

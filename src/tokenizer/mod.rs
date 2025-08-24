@@ -1,23 +1,18 @@
-
-pub mod helper;
 pub mod function;
+pub mod helper;
 
-///TOKENTOOL::
-use nom::branch::alt;
-use crate::tokenizer::helper::{is_ident_char, is_ident_start};
 use crate::IResult;
 use crate::general_const::{
-    ADD_SIGN, AND_SIGN, DIV_SIGN, EQ_SIGN, GT_E_SIGN, GT_SIGN, IS_NOT_SIGN, IS_SIGN, LIKE_SIGN,
-    LT_E_SIGN, LT_SIGN, MINUS_SIGN, MOD_SIGN, MUL_SIGN, NOT_EQ_SIGN, NOT_SIGN, NULL_SIGN, OR_SIGN,
-    POWER_SIGN,
+    ADD_SIGN, AND_SIGN, COMMA_SIGN, DIV_SIGN, EQ_SIGN, GT_E_SIGN, GT_SIGN, IS_NOT_SIGN, IS_SIGN, LIKE_SIGN, LT_E_SIGN, LT_SIGN, MINUS_SIGN, MOD_SIGN, MUL_SIGN, NOT_EQ_SIGN, NOT_SIGN, NULL_SIGN, OR_SIGN, POWER_SIGN, SEMICOLON_SIGN
 };
 use crate::general_const::{PARENS_0, PARENS_1};
+use crate::tokenizer::helper::{is_ident_char, is_ident_start};
+///TOKENTOOL::
+use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::{digit1, multispace1, space0};
 use nom::combinator::opt;
 use nom::{Parser, bytes::complete::take_while1};
-
-
 
 #[derive(Debug)]
 pub enum Token<'a> {
@@ -134,6 +129,8 @@ pub fn tag_logic_token(input: &str) -> IResult<&str, Token> {
         tag(GT_SIGN),
         tag(PARENS_0),
         tag(PARENS_1),
+        tag(COMMA_SIGN),
+        tag(SEMICOLON_SIGN),
         tag_is_not,
         tag_key_word_logic(OR_SIGN),
         tag_key_word_logic(AND_SIGN),

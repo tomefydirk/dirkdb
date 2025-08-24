@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::{
     error_lib::evaluation::EvalEror,
-    evaluation::{helper::Comparator, LgResult},
+    evaluation::{LgResult, helper::Comparator},
     function::{self, helper::my_modulo, sql::Signature},
     general_struct::element::{
         BinOp, CompareOp, Condition, LogicalOp, PrimitiveElement, TableCell,
@@ -103,10 +103,16 @@ impl Condition {
                 Ok((!val).into())
             }
             Condition::Primitive(_) | Condition::Null => Ok(self.eval_value(ctx)?),
+
+            /*
+               ÉVALUATION STATIQUE POUR LE MOMENT :
+
+               TODO!()
+            */
             Condition::Func { name, parameter } => {
-                let s=Signature::new(name.clone(), parameter.len());
+                let s = Signature::new(name.clone(), parameter.len());
                 todo!()
-            },
+            }
         }
     }
 }

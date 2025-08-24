@@ -1,4 +1,4 @@
-use crate::general_struct::element::{Condition,  PrimitiveElement, TableCell};
+use crate::general_struct::element::{Condition, PrimitiveElement, TableCell};
 
 pub mod element;
 

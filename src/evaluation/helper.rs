@@ -49,7 +49,7 @@ impl From<TableCell> for bool {
         }
     }
 }
-impl From<bool> for TableCell{
+impl From<bool> for TableCell {
     fn from(value: bool) -> Self {
         match value {
             true => TableCell::Number(1.0),
@@ -106,10 +106,10 @@ impl TableCell {
             _ => None,
         }
     }
-    pub fn as_bool(&self)->bool{
+    pub fn as_bool(&self) -> bool {
         match self {
-            TableCell::String(s) =>!s.is_empty(),
-            TableCell::Number(n) => *n!=0.0,
+            TableCell::String(s) => !s.is_empty(),
+            TableCell::Number(n) => *n != 0.0,
             TableCell::Date(_) => true,
             TableCell::Null => false,
         }

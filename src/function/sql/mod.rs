@@ -1,16 +1,21 @@
-pub mod names;
 pub mod datesql;
+pub mod names;
 pub mod numbersql;
 pub mod stringsql;
 
-use std::{collections::HashMap, hash::{Hash,Hasher}};
+use std::{
+    collections::HashMap,
+    hash::{Hash, Hasher},
+};
 
-use crate::{error_lib::{ evaluation::EvalEror}, evaluation::LgResult, general_struct::element::TableCell};
+use crate::{
+    error_lib::evaluation::EvalEror, evaluation::LgResult, general_struct::element::TableCell,
+};
 
-#[derive(Debug,PartialEq, Eq,Clone)]
-pub struct Signature{
-   name:String,
-   parameter:usize 
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct Signature {
+    name: String,
+    parameter: usize,
 }
 
 impl Signature {
@@ -21,8 +26,8 @@ impl Signature {
 
 impl Hash for Signature {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        self.name.hash(state);   
-        self.parameter.hash(state); 
+        self.name.hash(state);
+        self.parameter.hash(state);
     }
 }
 
@@ -33,9 +38,9 @@ pub struct FunctionRegistry {
 }
 
 impl FunctionRegistry {
-    pub fn match_with(&self,s:Signature)->LgResult<FuncSQL>{
+    pub fn match_with(&self, s: Signature) -> LgResult<FuncSQL> {
         match self.funcs.get(&s) {
-            Some(f) => Ok(*f), 
+            Some(f) => Ok(*f),
             None => Err(EvalEror::<String>::function_not_found(s)),
         }
     }

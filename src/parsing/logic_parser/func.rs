@@ -1,11 +1,11 @@
 use std::str::FromStr;
 
-use crate::tokenizer::helper::codon_stop;
 use crate::IResult;
 use crate::error_lib::parsing::{
     after_is_or_isnot, into_nom_error, into_nom_failure, token_not_found,
 };
 use crate::parsing::logic_parser::BuildCondition;
+use crate::tokenizer::helper::codon_stop;
 
 use crate::{
     general_const::*,

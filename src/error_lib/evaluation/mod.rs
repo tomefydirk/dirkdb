@@ -38,7 +38,7 @@ impl<I> EvalEror<I> {
     }
     pub fn function_not_found(s: Signature) -> EvalEror<String> {
         EvalEror {
-            input:  format!("{s:?}"),
+            input: format!("{s:?}"),
             code: EvalErrorkind::FunctionNotFound,
         }
     }

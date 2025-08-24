@@ -25,5 +25,5 @@ pub const AND_SIGN: &str = "and";
 pub const LIKE_SIGN: &str = "like";
 
 //--- virgule et point virugle
-pub const COMMA_SIGN:&str=",";
-pub const SEMICOLON_SIGN:&str=";";
+pub const COMMA_SIGN: &str = ",";
+pub const SEMICOLON_SIGN: &str = ";";
