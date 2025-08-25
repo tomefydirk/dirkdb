@@ -19,13 +19,13 @@ fn main() {
     ctx.insert("z".to_string(), TableCell::Null);
 
     // 2) Phrase à parser
-    let input = "datediff('2025-01-02',Now()) and (1 is not null)";
+    let input = "y à";
 
     // 3) Parsing → Condition
-    let (_, cond): (&str, Box<Condition>) = parse_logical(input).unwrap();
+    let (i, cond): (&str, Box<Condition>) = parse_logical(input).unwrap();
 
     // 4) Évaluation
-    println!("{cond:?}");
+    println!("{i:?}");
     let result = cond.eval(&ctx);
 
     println!("{:?}", result);

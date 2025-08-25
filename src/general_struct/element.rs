@@ -69,3 +69,28 @@ pub enum TableCell {
     Date(NaiveDate),
     Null,
 }
+
+///La question la plus importante est :
+///    COMMENT GÉRER LES ALIAS ?
+/// 
+/// 
+#[derive(Debug, Clone)]
+pub enum FieldRqst{
+    All,
+    Selected(Vec<Condition>)
+}
+#[derive(Debug, Clone)]
+pub enum TableOrigin{
+    Name(String),
+    SubRequest(Box<SelectRqst>)
+}
+#[derive(Debug, Clone)]
+pub struct  SelectRqst{
+    fields:FieldRqst,
+    from:Option<TableOrigin>,
+    condition:Option<Condition>
+    /*
+            APRÉS LIMIT ,SORT , JOIN , GROUP BY 
+            Mais cela ne sont pas encore la pripriorité  
+     */
+}
