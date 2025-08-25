@@ -1,4 +1,4 @@
-use crate::{function::sql::Signature, general_struct::element::TableCell};
+use crate::{function::sql::Signature, general_struct::structure::TableCell};
 
 #[derive(Debug)]
 pub enum EvalErrorkind {

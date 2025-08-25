@@ -9,7 +9,7 @@ use crate::{
     error_lib::evaluation::EvalEror,
     evaluation::LgResult,
     function::sql::list_func::{datediff, now, sqrt},
-    general_struct::element::TableCell,
+    general_struct::structure::TableCell,
 };
 
 #[derive(Debug, Clone)]

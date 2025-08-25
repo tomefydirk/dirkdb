@@ -4,7 +4,7 @@ use crate::{
     error_lib::evaluation::EvalEror,
     evaluation::{LgResult, helper::Comparator},
     function::{self, helper::my_modulo, sql::FunctionRegistry},
-    general_struct::element::{
+    general_struct::structure::{
         BinOp, CompareOp, Condition, LogicalOp, PrimitiveElement, TableCell,
     },
 };

@@ -1,9 +1,7 @@
 use std::str::FromStr;
 
-use crate::{
-    general_const::*,
-    general_struct::element::{BinOp, CompareOp, LogicalOp},
-};
+use crate::general_struct::constant::*;
+use crate::general_struct::structure::{BinOp, CompareOp, LogicalOp};
 
 #[derive(Debug, thiserror::Error)]
 #[error("Invalid token bin-op {0}")]

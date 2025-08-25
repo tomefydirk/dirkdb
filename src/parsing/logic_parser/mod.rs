@@ -1,4 +1,4 @@
-use crate::general_struct::element::{CompareOp, Condition, LogicalOp};
+use crate::general_struct::structure::{CompareOp, Condition, LogicalOp};
 
 pub mod func;
 

@@ -1,7 +1,7 @@
-use crate::general_struct::element::{Condition, PrimitiveElement, TableCell};
+use crate::general_struct::structure::{Condition, PrimitiveElement, TableCell};
 
-pub mod element;
-
+pub mod constant;
+pub mod structure;
 //IMPLEMENTATION :
 
 //FROM for PrimitiveElement

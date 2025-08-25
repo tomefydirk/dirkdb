@@ -1,7 +1,7 @@
+use crate::general_struct::constant::*;
 use crate::{
     IResult,
-    general_const::{MINUS_SIGN, NOT_SIGN},
-    general_struct::element::{BinOp, Condition, PrimitiveElement},
+    general_struct::structure::{BinOp, Condition, PrimitiveElement},
 };
 
 pub mod func;
@@ -52,22 +52,26 @@ impl Condition {
         let result = (input, Box::new(Condition::Primitive(a)));
         IResult::Ok(result)
     }
-     pub fn result_func(input: &str,f_name:String,args:Vec<Condition>) -> IResult<&str, Box<Condition>>{
+    pub fn result_func(
+        input: &str,
+        f_name: String,
+        args: Vec<Condition>,
+    ) -> IResult<&str, Box<Condition>> {
         Ok((
-                    input,
-                    Box::new(Condition::Func {
-                        name: f_name,
-                        parameter: args,
-                    }),
-                ))
-     }
+            input,
+            Box::new(Condition::Func {
+                name: f_name,
+                parameter: args,
+            }),
+        ))
+    }
     pub fn result_from_current(
         input: &str,
         current_expr: Box<Condition>,
     ) -> IResult<&str, Box<Condition>> {
         IResult::Ok((input, current_expr))
     }
-   
+
     pub fn is_factor_op(str_token: &str) -> bool {
         str_token.eq_ignore_ascii_case(MINUS_SIGN) || str_token.eq_ignore_ascii_case(NOT_SIGN)
     }

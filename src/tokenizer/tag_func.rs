@@ -5,9 +5,9 @@ use nom::{
     combinator::opt,
 };
 
+use crate::general_struct::constant::*;
 use crate::{
     IResult,
-    general_const::{IS_NOT_SIGN, IS_SIGN, NOT_SIGN, PARENS_0},
     tokenizer::helper::{is_func_valid, is_ident_char, is_ident_start},
 };
 

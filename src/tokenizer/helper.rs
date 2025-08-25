@@ -1,4 +1,4 @@
-use crate::general_const::{COMMA_SIGN, PARENS_1, SEMICOLON_SIGN, key_word_list};
+use crate::general_struct::constant::*;
 
 pub(crate) fn is_ident_start(c: char) -> bool {
     c.is_alphabetic() || c == '_'

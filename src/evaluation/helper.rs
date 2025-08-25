@@ -3,7 +3,7 @@ use chrono::{Datelike, NaiveDate};
 use crate::{
     error_lib::evaluation::EvalEror,
     evaluation::LgResult,
-    general_struct::element::{CompareOp, TableCell},
+    general_struct::structure::{CompareOp, TableCell},
     tokenizer::{Token, scan_float},
 };
 impl PartialEq for TableCell {

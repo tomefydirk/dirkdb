@@ -1,7 +1,6 @@
 pub mod error_lib;
 pub mod evaluation;
 pub mod function;
-pub mod general_const;
 pub mod general_struct;
 pub mod parsing;
 pub mod tokenizer;

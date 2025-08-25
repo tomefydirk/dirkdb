@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use chrono::NaiveDate;
 use dirkdb::{
-    general_struct::element::{Condition, TableCell},
+    general_struct::structure::{Condition, TableCell},
     parsing::logic_parser::func::parse_logical,
 };
 

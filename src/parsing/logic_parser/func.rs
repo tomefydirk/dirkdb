@@ -8,8 +8,10 @@ use crate::parsing::logic_parser::BuildCondition;
 use crate::tokenizer::helper::codon_stop;
 
 use crate::{
-    general_const::*,
-    general_struct::element::{CompareOp, Condition, LogicalOp},
+    general_struct::{
+        constant::*,
+        structure::{CompareOp, Condition, LogicalOp},
+    },
     parsing::atom_parser::func::parse_atom,
     tokenizer::{Token, scan_token},
 };

@@ -72,25 +72,24 @@ pub enum TableCell {
 
 ///La question la plus importante est :
 ///    COMMENT GÉRER LES ALIAS ?
-/// 
-/// 
+///
+///
 #[derive(Debug, Clone)]
-pub enum FieldRqst{
+pub enum FieldRqst {
     All,
-    Selected(Vec<Condition>)
+    Selected(Vec<Condition>),
 }
 #[derive(Debug, Clone)]
-pub enum TableOrigin{
+pub enum TableOrigin {
     Name(String),
-    SubRequest(Box<SelectRqst>)
+    SubRequest(Box<SelectRqst>),
 }
 #[derive(Debug, Clone)]
-pub struct  SelectRqst{
-    fields:FieldRqst,
-    from:Option<TableOrigin>,
-    condition:Option<Condition>
-    /*
-            APRÉS LIMIT ,SORT , JOIN , GROUP BY 
-            Mais cela ne sont pas encore la pripriorité  
-     */
+pub struct SelectRqst {
+    fields: FieldRqst,
+    from: Option<TableOrigin>,
+    condition: Option<Condition>, /*
+                                         APRÉS LIMIT ,SORT , JOIN , GROUP BY
+                                         Mais cela ne sont pas encore la pripriorité
+                                  */
 }

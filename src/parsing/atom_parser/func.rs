@@ -2,8 +2,7 @@ use std::str::FromStr;
 
 use crate::IResult;
 use crate::error_lib::parsing::{factor_error, into_nom_error, into_nom_failure, token_not_found};
-use crate::general_const::{COMMA_SIGN, MOD_SIGN, NULL_SIGN, PARENS_0, PARENS_1};
-use crate::general_struct::element::{BinOp, Condition};
+use crate::general_struct::structure::{BinOp, Condition};
 use crate::parsing::logic_parser::func::parse_logical;
 use crate::tokenizer::helper::codon_stop;
 use crate::tokenizer::{Token, scan_token};
@@ -12,7 +11,7 @@ use crate::tokenizer::{Token, scan_token};
 rhs:Right hand side
 lhs:Left hand side
 */
-use crate::general_const::{ADD_SIGN, DIV_SIGN, MINUS_SIGN, MUL_SIGN, POWER_SIGN};
+use crate::general_struct::constant::*;
 
 fn parse_binop_level<'a, F>(
     input: &'a str,

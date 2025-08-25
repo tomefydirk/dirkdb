@@ -1,12 +1,7 @@
 pub mod helper;
 pub mod tag_func;
 use crate::IResult;
-use crate::general_const::{
-    ADD_SIGN, AND_SIGN, COMMA_SIGN, DIV_SIGN, EQ_SIGN, GT_E_SIGN, GT_SIGN, IS_SIGN, LIKE_SIGN,
-    LT_E_SIGN, LT_SIGN, MINUS_SIGN, MOD_SIGN, MUL_SIGN, NOT_EQ_SIGN, NOT_SIGN, NULL_SIGN, OR_SIGN,
-    POWER_SIGN, SEMICOLON_SIGN,
-};
-use crate::general_const::{PARENS_0, PARENS_1};
+use crate::general_struct::constant::*;
 use crate::tokenizer::tag_func::{
     tag_float, tag_function, tag_is_not, tag_key_word_logic, tag_name, tag_string,
 };
