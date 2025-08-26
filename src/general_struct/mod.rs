@@ -1,4 +1,4 @@
-use crate::general_struct::structure::{Condition, PrimitiveElement, TableCell};
+use crate::general_struct::structure::{Condition, Field, PrimitiveElement, TableCell};
 
 pub mod constant;
 pub mod structure;
@@ -46,3 +46,14 @@ impl Default for TableCell {
         Self::Null
     }
 }
+
+impl Field {
+    pub fn new(expr: Condition) -> Self {
+        Field { expr, alias: None }
+    }
+
+    pub fn with_alias(expr: Condition, alias: String) -> Self {
+        Field { expr, alias: Some(alias) }
+    }
+}
+
