@@ -57,3 +57,6 @@ impl Field {
     }
 }
 
+pub fn ident(name: &str) -> Condition {
+        Condition::Primitive(PrimitiveElement::Identifier(name.to_string()))
+    }

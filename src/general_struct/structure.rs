@@ -1,13 +1,13 @@
 use chrono::NaiveDate;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone,PartialEq)]
 pub enum PrimitiveElement {
     Identifier(String),
     Number(f64),
     String(String),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone,PartialEq)]
 pub enum Condition {
     Comparison {
         left: Box<Condition>,
@@ -34,7 +34,7 @@ pub enum Condition {
     Null,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone,PartialEq)]
 pub enum CompareOp {
     Eq,
     Neq,
@@ -47,13 +47,13 @@ pub enum CompareOp {
     Like,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone,PartialEq)]
 pub enum LogicalOp {
     And,
     Or,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone,PartialEq)]
 pub enum BinOp {
     Add,
     Sub,
