@@ -1,18 +1,18 @@
 use chrono::NaiveDate;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct QualifiedIdentifier {
-    pub table: Option<String>, 
-    pub column: String,        
+    pub table: Option<String>,
+    pub column: String,
 }
 
-#[derive(Debug, Clone,PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum PrimitiveElement {
     Identifier(QualifiedIdentifier),
     Number(f64),
     String(String),
 }
 
-#[derive(Debug, Clone,PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Condition {
     Comparison {
         left: Box<Condition>,
@@ -39,7 +39,7 @@ pub enum Condition {
     Null,
 }
 
-#[derive(Debug, Clone,PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum CompareOp {
     Eq,
     Neq,
@@ -52,13 +52,13 @@ pub enum CompareOp {
     Like,
 }
 
-#[derive(Debug, Clone,PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum LogicalOp {
     And,
     Or,
 }
 
-#[derive(Debug, Clone,PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum BinOp {
     Add,
     Sub,
@@ -90,14 +90,14 @@ pub enum TableOrigin {
 #[derive(Debug, Clone)]
 pub struct SelectRqst {
     pub fields: FieldRqst,
-    pub from: Option<TableWithAlias>, 
+    pub from: Option<TableWithAlias>,
     pub condition: Option<Condition>,
 }
 
 #[derive(Debug, Clone)]
 pub struct Field {
-    pub expr: Condition,        
-    pub alias: Option<String>,  
+    pub expr: Condition,
+    pub alias: Option<String>,
 }
 
 #[derive(Debug, Clone)]
@@ -105,4 +105,3 @@ pub enum FieldRqst {
     All,
     Selected(Vec<Field>),
 }
-

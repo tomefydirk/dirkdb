@@ -95,7 +95,10 @@ pub fn scan_logic_token(input: &str) -> IResult<&str, Token> {
         tag_key_word_logic(LIKE_SIGN),
         tag_no_case(IS_SIGN),
         tag_no_case(NULL_SIGN),
-        tag_no_case(AS_SIGN)
+        tag_no_case(AS_SIGN),
+        tag_key_word_logic(SELECT_SIGN),
+        tag_key_word_logic(FROM_SIGN),
+        tag_key_word_logic(WHERE_SIGN),
     ))
     .parse(input)?;
 

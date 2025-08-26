@@ -1,5 +1,5 @@
 use crate::general_struct::structure::{
-    Condition, Field, PrimitiveElement, QualifiedIdentifier, TableCell,
+    Condition, Field, FieldRqst, PrimitiveElement, QualifiedIdentifier, SelectRqst, TableCell, TableWithAlias
 };
 
 pub mod constant;
@@ -67,4 +67,10 @@ pub fn ident(column: &str) -> Condition {
         table: None,
         column: column.to_string(),
     }))
+}
+
+impl SelectRqst {
+    pub fn new(fields: FieldRqst, from: Option<TableWithAlias>, condition: Option<Condition>) -> Self {
+        Self { fields, from, condition }
+    }
 }

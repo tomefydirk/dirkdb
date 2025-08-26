@@ -83,7 +83,7 @@ pub fn parse_factor(input: &str) -> IResult<&str, Box<Condition>> {
 }
 pub fn parse_func_factor(mut input: &str, f: String) -> IResult<&str, Box<Condition>> {
     let mut vec = Vec::<Condition>::new();
-    if input.trim().starts_with(")") {
+    if input.trim().starts_with(PARENS_1) {
         let (ipt, _) = scan_token(input)?;
         return Condition::result_func(ipt, f, vec);
     }
