@@ -1,4 +1,5 @@
 use crate::general_struct::constant::*;
+use crate::general_struct::structure::QualifiedIdentifier;
 use crate::{
     IResult,
     general_struct::structure::{BinOp, Condition, PrimitiveElement},
@@ -47,7 +48,7 @@ impl Condition {
         let result = (input, Box::new(Condition::Primitive(a)));
         IResult::Ok(result)
     }
-    pub fn result_name(input: &str, str: String) -> IResult<&str, Box<Condition>> {
+    pub fn result_name(input: &str, str: QualifiedIdentifier) -> IResult<&str, Box<Condition>> {
         let a: PrimitiveElement = PrimitiveElement::from_id(str);
         let result = (input, Box::new(Condition::Primitive(a)));
         IResult::Ok(result)

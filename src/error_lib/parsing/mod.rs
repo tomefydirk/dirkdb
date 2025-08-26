@@ -7,6 +7,7 @@ pub enum ErrorKind {
     Parens1Missing,
     TokenNotfound,
     AfterIsorIsnot(String),
+    Aliasnotvalid
 }
 #[derive(Debug, Error)]
 #[error("{code:?} : '{input}' ")]
@@ -29,6 +30,9 @@ pub fn token_not_found(input: &str) -> ParserErr<&str> {
 pub fn after_is_or_isnot(input: &str) -> ParserErr<&str> {
     let msg = "Désolé aprés 'IS' ou 'IS NOT' est forçément 'NULL'".to_string();
     ParserErr::build(input, ErrorKind::AfterIsorIsnot(msg))
+}
+pub fn alias_not_valid(input: &str) -> ParserErr<&str>{
+    ParserErr::build(input, ErrorKind::Aliasnotvalid)
 }
 #[derive(Debug, thiserror::Error)]
 pub enum Error<I> {

@@ -1,4 +1,6 @@
-use crate::general_struct::structure::{Condition, Field, PrimitiveElement, TableCell};
+use crate::general_struct::structure::{
+    Condition, Field, PrimitiveElement, QualifiedIdentifier, TableCell,
+};
 
 pub mod constant;
 pub mod structure;
@@ -16,7 +18,7 @@ impl From<String> for PrimitiveElement {
     }
 }
 impl PrimitiveElement {
-    pub fn from_id(value: String) -> Self {
+    pub fn from_id(value: QualifiedIdentifier) -> Self {
         PrimitiveElement::Identifier(value)
     }
 }
@@ -53,10 +55,16 @@ impl Field {
     }
 
     pub fn with_alias(expr: Condition, alias: String) -> Self {
-        Field { expr, alias: Some(alias) }
+        Field {
+            expr,
+            alias: Some(alias),
+        }
     }
 }
 
-pub fn ident(name: &str) -> Condition {
-        Condition::Primitive(PrimitiveElement::Identifier(name.to_string()))
-    }
+pub fn ident(column: &str) -> Condition {
+    Condition::Primitive(PrimitiveElement::Identifier(QualifiedIdentifier {
+        table: None,
+        column: column.to_string(),
+    }))
+}

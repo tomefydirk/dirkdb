@@ -1,8 +1,13 @@
 use chrono::NaiveDate;
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct QualifiedIdentifier {
+    pub table: Option<String>, 
+    pub column: String,        
+}
 
 #[derive(Debug, Clone,PartialEq)]
 pub enum PrimitiveElement {
-    Identifier(String),
+    Identifier(QualifiedIdentifier),
     Number(f64),
     String(String),
 }

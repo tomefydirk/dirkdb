@@ -1,10 +1,12 @@
 pub mod helper;
 pub mod tag_func;
+use crate::general_struct::structure::QualifiedIdentifier;
 use crate::IResult;
 use crate::general_struct::constant::*;
 use crate::tokenizer::tag_func::{
     tag_float, tag_function, tag_is_not, tag_key_word_logic, tag_name, tag_string,
 };
+use nom::combinator::opt;
 use nom::Parser;
 ///TOKENTOOL::
 use nom::branch::alt;
@@ -15,7 +17,7 @@ use nom::character::complete::space0;
 pub enum Token<'a> {
     Number(f64),
     String(String),
-    FieldName(String),
+    FieldName(QualifiedIdentifier),
     Func(String),
     Other(&'a str),
 }
@@ -46,8 +48,27 @@ pub fn scan_float(input: &str) -> IResult<&str, Token> {
 }
 
 pub fn scan_name(input: &str) -> IResult<&str, Token> {
-    let a = tag_name(input)?;
-    Ok((a.0, Token::FieldName(a.1)))
+   let (rest, current_field) = tag_name(input)?;
+    let (rest2, point) = opt(tag(".")).parse(rest)?;
+    match point {
+        Some(_) => {
+            let (rest3, second_part) = tag_name(rest2)?;
+            Ok((
+                rest3,
+                Token::FieldName(QualifiedIdentifier {
+                    table: Some(current_field),
+                    column: second_part,
+                }),
+            ))
+        }
+        None => Ok((
+            rest,
+            Token::FieldName(QualifiedIdentifier {
+                table: None,
+                column: current_field,
+            }),
+        )),
+    }
 }
 
 pub fn scan_string(input: &str) -> IResult<&str, Token> {

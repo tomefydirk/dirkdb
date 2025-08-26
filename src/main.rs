@@ -26,7 +26,8 @@ fn main() {
 
     // 4) Évaluation
     println!("{i:?}");
-    let result = cond.eval(&ctx);
+   /*  let result = cond.eval(&ctx);
 
     println!("{:?}", result);
+    println!("{:?}", result);*/
 }
