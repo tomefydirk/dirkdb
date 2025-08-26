@@ -23,7 +23,7 @@ pub const NOT_SIGN: &str = "not";
 pub const NULL_SIGN: &str = "null";
 pub const AND_SIGN: &str = "and";
 pub const LIKE_SIGN: &str = "like";
-
+pub const AS_SIGN:&str="as";
 //--- virgule et point virugle
 pub const COMMA_SIGN: &str = ",";
 pub const SEMICOLON_SIGN: &str = ";";

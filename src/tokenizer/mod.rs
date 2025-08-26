@@ -74,6 +74,7 @@ pub fn scan_logic_token(input: &str) -> IResult<&str, Token> {
         tag_key_word_logic(LIKE_SIGN),
         tag_no_case(IS_SIGN),
         tag_no_case(NULL_SIGN),
+        tag_no_case(AS_SIGN)
     ))
     .parse(input)?;
 
