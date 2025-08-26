@@ -49,6 +49,6 @@ fn parse_optional_where(input: &str) -> IResult<&str, Option<Condition>> {
             let (rest, cond) = parse_where(maybe_input)?;
             Ok((rest, Some(*cond)))
         }
-        _ => Ok((input, None)), // rien consommé
+        _ => Ok((input, None)),
     }
 }

@@ -16,3 +16,12 @@ pub fn codon_stop(input: &str) -> bool {
 pub fn is_func_valid(input: &String) -> bool {
     !key_word_list().contains(input)
 }
+
+pub trait Factorable {
+     fn is_factor_parens(&self)->bool;
+}
+impl Factorable for &str {
+    fn is_factor_parens(&self)->bool {
+        self.trim().starts_with(PARENS_0)
+    }
+}

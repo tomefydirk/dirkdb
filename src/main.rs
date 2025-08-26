@@ -19,13 +19,13 @@ fn main() {
     ctx.insert("z".to_string(), TableCell::Null);
 
     // 2) Phrase à parser
-    let input = "y à";
+    let input = "n.y";
 
     // 3) Parsing → Condition
     let (i, cond): (&str, Box<Condition>) = parse_logical(input).unwrap();
 
     // 4) Évaluation
-    println!("{i:?}");
+    println!("{i:?} {cond:?}");
    /*  let result = cond.eval(&ctx);
 
     println!("{:?}", result);
