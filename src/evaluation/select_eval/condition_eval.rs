@@ -1,4 +1,4 @@
-/*
+
 use std::collections::HashMap;
 
 use crate::{
@@ -59,11 +59,14 @@ impl BinOp {
 
 impl Condition {
     fn eval_value(&self, ctx: &HashMap<String, TableCell>) -> LgResult<TableCell> {
+        /*
+            FONCTION À MODIFIER AVEC LES ALIAS :
+         */
         match self {
             Condition::Primitive(PrimitiveElement::Identifier(name)) => ctx
-                .get(name)
+                .get(&name.column.clone())
                 .cloned()
-                .ok_or_else(|| EvalEror::field_notfound(name.to_string())),
+                .ok_or_else(|| EvalEror::field_notfound(name.column.to_string())),
             Condition::Primitive(PrimitiveElement::Number(n)) => Ok(TableCell::Number(*n)),
             Condition::Primitive(PrimitiveElement::String(s)) => Ok(TableCell::String(s.clone())),
             Condition::Null => Ok(TableCell::Null),
@@ -128,4 +131,4 @@ pub fn change_args_type(
     }
     Ok(retour)
 }
- */
+ 

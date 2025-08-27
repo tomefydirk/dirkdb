@@ -17,6 +17,7 @@ impl From<String> for PrimitiveElement {
         PrimitiveElement::String(value)
     }
 }
+
 impl PrimitiveElement {
     pub fn from_id(value: QualifiedIdentifier) -> Self {
         PrimitiveElement::Identifier(value)

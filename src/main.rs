@@ -1,16 +1,38 @@
-use dirkdb::parsing::{logic_parser::func::parse_logical, select_parser::func::parse_select};
- fn test_select_queries() {
-       
+use std::collections::HashMap;
 
-        println!("13°) {:?}\n", parse_select("SELECT sub.id, sub.total+1 FROM (table) "));
+use dirkdb::{evaluation::{select_eval::{FieldEval, Table}, LgResult}, general_struct::structure::{Condition, Field, PrimitiveElement, QualifiedIdentifier, TableCell}};
 
-    }
+fn main() -> LgResult<()> {
+    let mut row1 = HashMap::new();
+    row1.insert("id".into(), TableCell::Number(1.0));
+    row1.insert("name".into(), TableCell::String("Alice".into()));
+    let mut row2 = HashMap::new();
+    row2.insert("id".into(), TableCell::Number(2.0));
+    row2.insert("name".into(), TableCell::String("Bob".into()));
 
-fn test_into_string(){
-    let a=parse_logical("field+1+Now(1)*3").expect("erreur désole").1;
-    println!("{}",*a);
-}
-fn main() {
-   test_select_queries();
-   test_into_string();
+    let table: Table = vec![row1, row2];
+
+ 
+    let id=PrimitiveElement::from_id(QualifiedIdentifier{table:None,column:"id".to_string()});
+
+    let name=PrimitiveElement::from_id(QualifiedIdentifier{table:None,column:"name".to_string()});
+
+
+    let fields = vec![
+        Field {
+            expr: Condition::Primitive(id),
+            default_name: "id".into(),
+            alias: None,
+        },
+        Field {
+            expr: Condition::Primitive(name),
+            default_name: "name".into(),
+            alias: Some("username".into()),
+        },
+    ];
+
+    let projected = fields.eval(&table)?;
+    println!("{:#?}", projected);
+
+    Ok(())
 }
