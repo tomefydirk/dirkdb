@@ -1,5 +1,5 @@
 use crate::general_struct::structure::{
-    Condition, Field, FieldRqst, PrimitiveElement, QualifiedIdentifier, SelectRqst, TableCell, TableWithAlias
+    BinOp, CompareOp, Condition, Field, FieldRqst, LogicalOp, PrimitiveElement, QualifiedIdentifier, SelectRqst, TableCell, TableWithAlias
 };
 
 pub mod constant;
@@ -73,5 +73,100 @@ pub fn ident(column: &str) -> Condition {
 impl SelectRqst {
     pub fn new(fields: FieldRqst, from: Option<TableWithAlias>, condition: Option<Condition>) -> Self {
         Self { fields, from, condition }
+    }
+}
+
+//DISPLAY :
+use std::fmt;
+
+impl fmt::Display for Condition {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Condition::Comparison { left, op, right } => {
+                write!(f, "{} {} {}", left, op, right)
+            }
+            Condition::Logical { left, op, right } => {
+                write!(f, "({} {} {})", left, op, right)
+            }
+            Condition::BinaryOp { left, op, right } => {
+                write!(f, "({} {} {})", left, op, right)
+            }
+            Condition::Negate(inner) => {
+                write!(f, "-{}", inner)
+            }
+            Condition::Not(inner) => {
+                write!(f, "NOT ({})", inner)
+            }
+            Condition::Primitive(prim) => {
+                write!(f, "{}", prim)
+            }
+            Condition::Func { name, parameter } => {
+                let params = parameter
+                    .iter()
+                    .map(|p| p.to_string())
+                    .collect::<Vec<_>>()
+                    .join(", ");
+                write!(f, "{}({})", name, params)
+            }
+            Condition::Null => {
+                write!(f, "NULL")
+            }
+        }
+    }
+}
+
+impl fmt::Display for PrimitiveElement {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            PrimitiveElement::Identifier(qid) => {
+                if let Some(table) = &qid.table {
+                    write!(f, "{}.{}", table, qid.column)
+                } else {
+                    write!(f, "{}", qid.column)
+                }
+            }
+            PrimitiveElement::Number(n) => write!(f, "{}", n),
+            PrimitiveElement::String(s) => write!(f, "'{}'", s),
+        }
+    }
+}
+impl fmt::Display for CompareOp {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let s = match self {
+            CompareOp::Eq => "=",
+            CompareOp::Neq => "!=",
+            CompareOp::Gt => ">",
+            CompareOp::Gte => ">=",
+            CompareOp::Lt => "<",
+            CompareOp::Lte => "<=",
+            CompareOp::Is => "is",
+            CompareOp::IsNot => "is not",
+            CompareOp::Like => "like",
+        };
+        write!(f, "{}", s)
+    }
+}
+
+impl fmt::Display for LogicalOp {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let s = match self {
+            LogicalOp::And => "AND",
+            LogicalOp::Or => "OR",
+        };
+        write!(f, "{}", s)
+    }
+}
+
+impl fmt::Display for BinOp {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let s = match self {
+            BinOp::Add => "+",
+            BinOp::Sub => "-",
+            BinOp::Mul => "*",
+            BinOp::Div => "/",
+            BinOp::Pow => "^",
+            BinOp::Mod => "%",
+        };
+        write!(f, "{}", s)
     }
 }

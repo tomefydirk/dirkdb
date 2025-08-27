@@ -70,7 +70,7 @@ impl Field {
         }
 
         _ => {
-            let default_name=format!("{:?}",expr) ;
+            let default_name=expr.to_string() ;
            Field::new(expr, default_name)
         }
     }
