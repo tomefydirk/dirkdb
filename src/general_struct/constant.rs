@@ -42,6 +42,7 @@ pub fn key_word_list() -> Vec<String> {
         AND_SIGN.to_string(),
         LIKE_SIGN.to_string(),
         AS_SIGN.to_string(),
-        FROM_SIGN.to_string()
+        FROM_SIGN.to_string(),
+        SELECT_SIGN.to_string(),
     ]
 }

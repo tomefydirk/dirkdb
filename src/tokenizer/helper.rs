@@ -13,8 +13,8 @@ pub fn codon_stop(input: &str) -> bool {
         && input.trim().starts_with(COMMA_SIGN)
         && input.trim().starts_with(SEMICOLON_SIGN)
 }
-pub fn is_func_valid(input: &String) -> bool {
-    !key_word_list().contains(input)
+pub fn is_func_valid(input: &str) -> bool {
+    !key_word_list().contains(&input.to_lowercase())
 }
 
 pub trait Factorable {
