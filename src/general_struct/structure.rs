@@ -97,6 +97,7 @@ pub struct SelectRqst {
 #[derive(Debug, Clone)]
 pub struct Field {
     pub expr: Condition,
+    pub default_name:String,
     pub alias: Option<String>,
 }
 

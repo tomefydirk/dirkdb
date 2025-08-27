@@ -50,13 +50,14 @@ impl Default for TableCell {
 }
 
 impl Field {
-    pub fn new(expr: Condition) -> Self {
-        Field { expr, alias: None }
+    pub fn new(expr: Condition,default_name:String) -> Self {
+        Field { expr,default_name,alias: None }
     }
 
-    pub fn with_alias(expr: Condition, alias: String) -> Self {
+    pub fn with_alias(expr: Condition, default_name:String,alias: String) -> Self {
         Field {
             expr,
+            default_name,
             alias: Some(alias),
         }
     }
