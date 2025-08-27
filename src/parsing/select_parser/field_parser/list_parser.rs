@@ -1,12 +1,8 @@
 use crate::{
-    IResult,
-    error_lib::parsing::{alias_not_valid, factor_error, into_nom_failure},
-    general_struct::{
+    error_lib::parsing::{alias_not_valid, factor_error, into_nom_failure}, general_struct::{
         constant::{AS_SIGN, COMMA_SIGN},
-        structure::{Field, FieldRqst, QualifiedIdentifier},
-    },
-    parsing::logic_parser::func::parse_logical,
-    tokenizer::{Token, scan_token},
+        structure::{Condition, Field, FieldRqst, PrimitiveElement, QualifiedIdentifier},
+    }, parsing::logic_parser::func::parse_logical, tokenizer::{scan_token, Token}, IResult
 };
 impl Field {
     pub fn apply_alias(&mut self, alias: QualifiedIdentifier) -> bool {
@@ -20,14 +16,14 @@ impl Field {
 }
 pub fn parse_fieldrqst_expr_list(input: &str) -> IResult<&str, FieldRqst> {
     let (mut input, first_expr) = parse_logical(input)?;
-    let mut fields = vec![Field::new(*first_expr)];
+    let mut fields = vec![Field::build_field(*first_expr)];
 
     while let Ok((next_input, next_token)) = scan_token(input) {
         match next_token {
             Token::Other(COMMA_SIGN) => {
                 // après une virgule : nouvelle expression
                 let (after_expr, expr) = parse_logical(next_input)?;
-                fields.push(Field::new(*expr));
+                fields.push(Field::build_field(*expr));
                 input = after_expr;
             }
 
@@ -62,4 +58,22 @@ pub fn parse_fieldrqst_expr_list(input: &str) -> IResult<&str, FieldRqst> {
     }
 
     Ok((input, FieldRqst::Selected(fields)))
+}
+
+impl Field {
+    fn build_field(expr: Condition) ->  Self {
+    match &expr.clone() {
+      
+        Condition::Primitive(PrimitiveElement::Identifier(qid)) => {
+            Field::new(expr, qid.column.clone()) 
+           
+        }
+
+        _ => {
+            let default_name=format!("{:?}",expr) ;
+           Field::new(expr, default_name)
+        }
+    }
+}
+    
 }
