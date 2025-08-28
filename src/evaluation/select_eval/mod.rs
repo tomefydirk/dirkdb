@@ -1,7 +1,7 @@
 use std::collections::HashMap;
-
+pub mod from_registry;
 use crate::{
-    evaluation::LgResult,
+    evaluation::{select_eval::from_registry::make_tables, LgResult},
     general_struct::structure::{
         Field, FieldRqst, SelectRqst, TableCell, TableOrigin, TableWithAlias,
     },
@@ -34,7 +34,6 @@ impl FieldEval for Vec<Field> {
 
             result.push(new_row);
         }
-
         Ok(result)
     }
 }
@@ -42,7 +41,11 @@ impl FieldEval for Vec<Field> {
 impl TableWithAlias {
     fn eval(&self) -> LgResult<Table> {
         match &self.origin {
-            TableOrigin::Name(n) => todo!(),
+            TableOrigin::Name(n) => {
+                let g=make_tables();
+                let a=g.get(n).unwrap();
+                Ok(a.clone())
+            },
             TableOrigin::SubRequest(select_rqst) => {
                 select_rqst.eval_with_from()    
             },
@@ -85,7 +88,7 @@ impl SelectRqst {
     pub fn eval_with_from(&self) -> LgResult<Table> {
         match &self.from {
             Some(a) => {
-                a.eval()
+                self.eval(&a.eval()?)
             },
             None => {
                 todo!()
