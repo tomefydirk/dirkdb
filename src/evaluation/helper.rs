@@ -3,8 +3,8 @@ use chrono::{Datelike, NaiveDate};
 use crate::{
     error_lib::evaluation::EvalEror,
     evaluation::LgResult,
-    general_struct::structure::{CompareOp, TableCell},
-    tokenizer::{Token, scan_float},
+    general_struct::structure::{CompareOp, QualifiedIdentifier, TableAliasMap, TableCell, TableRow},
+    tokenizer::{scan_float, Token},
 };
 impl PartialEq for TableCell {
     fn eq(&self, other: &Self) -> bool {
@@ -112,6 +112,52 @@ impl TableCell {
             TableCell::Number(n) => *n != 0.0,
             TableCell::Date(_) => true,
             TableCell::Null => false,
+        }
+    }
+}
+use std::{ hash::{Hash, Hasher}};
+
+impl Hash for QualifiedIdentifier {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        if let Some(ref t) = self.table {
+            t.to_lowercase().hash(state);
+        }
+        self.column.to_lowercase().hash(state);
+    }
+}
+pub trait RowAlias {
+     fn get_column(&self, qid: &QualifiedIdentifier, aliases: &TableAliasMap) -> Option<&TableCell>;
+}
+
+impl RowAlias for TableRow {
+    fn get_column(&self, qid: &QualifiedIdentifier, aliases: &TableAliasMap) -> Option<&TableCell> {
+        match &qid.table {
+            Some(table_name) => {
+                
+                let real_table = aliases.get(table_name).unwrap_or(table_name);
+
+              
+                let normalized = QualifiedIdentifier {
+                    table: Some(real_table.clone()),
+                    column: qid.column.clone(),
+                };
+
+                self.get(&normalized)
+            }
+            None => {
+               
+                let mut matches: Vec<&TableCell> = self.iter()
+                    .filter_map(|(k, v)| {
+                        if k.column == qid.column { Some(v) } else { None }
+                    })
+                    .collect();
+
+                match matches.len() {
+                    0 => None,
+                    1 => Some(matches.remove(0)),
+                    _ => None, 
+                }
+            }
         }
     }
 }

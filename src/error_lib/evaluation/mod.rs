@@ -8,7 +8,8 @@ pub enum EvalErrorkind {
     FunctionNotFound,
     NegativeintoSQRT,
     IncompatibleType,
-    NotStaticVariable
+    NotStaticVariable,
+    AmbiguousName,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -57,10 +58,16 @@ impl<I> EvalEror<I> {
             code: EvalErrorkind::IncompatibleType,
         }
     }
-    pub fn not_static_variable()->EvalEror<String>{
-          EvalEror {
+    pub fn not_static_variable() -> EvalEror<String> {
+        EvalEror {
             input: "*".to_string(),
             code: EvalErrorkind::NotStaticVariable,
+        }
+    }
+    pub fn ambiguous_name(field_name: String) -> EvalEror<String> {
+        EvalEror {
+            input: field_name,
+            code: EvalErrorkind::AmbiguousName,
         }
     }
 }

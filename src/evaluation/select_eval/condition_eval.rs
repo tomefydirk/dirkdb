@@ -3,10 +3,10 @@ use std::collections::HashMap;
 
 use crate::{
     error_lib::evaluation::EvalEror,
-    evaluation::{LgResult, helper::Comparator},
+    evaluation::{helper::Comparator, LgResult},
     function::{self, helper::my_modulo, sql::FunctionRegistry},
     general_struct::structure::{
-        BinOp, CompareOp, Condition, LogicalOp, PrimitiveElement, TableCell,
+        BinOp, CompareOp, Condition, LogicalOp, PrimitiveElement, TableCell
     },
 };
 

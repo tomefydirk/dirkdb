@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use chrono::NaiveDate;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct QualifiedIdentifier {
@@ -106,3 +108,8 @@ pub enum FieldRqst {
     All,
     Selected(Vec<Field>),
 }
+
+
+pub type Table = Vec<HashMap<String, TableCell>>;
+pub type TableRow=HashMap<QualifiedIdentifier,TableCell>;
+pub type TableAliasMap=HashMap<String,String>;

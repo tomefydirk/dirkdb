@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{evaluation::select_eval::Table, general_struct::structure::TableCell};
+use crate::general_struct::structure::{Table, TableCell};
 
 pub type Database = HashMap<String, Table>;
 pub fn make_tables() -> Database {
