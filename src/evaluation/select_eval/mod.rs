@@ -1,10 +1,9 @@
 use std::collections::HashMap;
 pub mod from_registry;
 use crate::{
-    evaluation::{LgResult, select_eval::from_registry::make_tables},
-    general_struct::structure::{
+    error_lib::{evaluation::EvalEror}, evaluation::{select_eval::from_registry::make_tables, LgResult}, general_struct::structure::{
         Field, FieldRqst, SelectRqst, TableCell, TableOrigin, TableWithAlias,
-    },
+    }
 };
 
 pub mod condition_eval;
@@ -116,7 +115,9 @@ impl SelectRqst {
     }
      pub fn static_eval(&self) -> LgResult<Table> {
         match &self.fields {
-            FieldRqst::All => Ok(vec![]), 
+            FieldRqst::All => {
+                Err(EvalEror::<String>::not_static_variable())
+            }, 
             FieldRqst::Selected(fields) => fields.static_eval(),
         }
     }
