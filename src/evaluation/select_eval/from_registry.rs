@@ -26,7 +26,7 @@ pub fn make_tables() -> Database {
     let mut row4 = HashMap::new();
     row4.insert("id".into(), TableCell::Number(11.0));
     row4.insert("salary".into(), TableCell::Number(4000.0));
-
+  
     let employees: Table = vec![row3, row4];
     db.insert("employees".into(), employees);
 

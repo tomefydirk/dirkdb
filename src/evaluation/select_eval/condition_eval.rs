@@ -120,6 +120,10 @@ impl Condition {
             }
         }
     }
+    pub fn static_eval(&self)-> LgResult<TableCell>{
+        let ctx=HashMap::<String,TableCell>::new();
+        self.eval(&ctx)
+    }
 }
 pub fn change_args_type(
     args: &Vec<Condition>,

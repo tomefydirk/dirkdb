@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 pub mod from_registry;
 use crate::{
-    evaluation::{select_eval::from_registry::make_tables, LgResult},
+    evaluation::{LgResult, select_eval::from_registry::make_tables},
     general_struct::structure::{
         Field, FieldRqst, SelectRqst, TableCell, TableOrigin, TableWithAlias,
     },
@@ -12,6 +12,7 @@ pub mod condition_eval;
 pub type Table = Vec<HashMap<String, TableCell>>;
 
 pub trait FieldEval {
+    fn static_eval(&self) -> LgResult<Table>;
     fn eval(&self, ctx: &Table) -> LgResult<Table>;
 }
 
@@ -36,19 +37,41 @@ impl FieldEval for Vec<Field> {
         }
         Ok(result)
     }
+    fn static_eval(&self) -> LgResult<Table> {
+        let mut new_row = HashMap::new();
+
+        for field in self {
+            match field.expr.static_eval() {
+                Ok(val) => {
+                    let col_name = field
+                        .alias
+                        .clone()
+                        .unwrap_or_else(|| field.default_name.clone());
+                    new_row.insert(col_name, val);
+                }
+                Err(e) => {
+                    return Err(e);
+                }
+            }
+        }
+
+        if new_row.is_empty() {
+            Ok(vec![])
+        } else {
+            Ok(vec![new_row]) 
+        }
+    }
 }
 
 impl TableWithAlias {
     fn eval(&self) -> LgResult<Table> {
         match &self.origin {
             TableOrigin::Name(n) => {
-                let g=make_tables();
-                let a=g.get(n).unwrap();
+                let g = make_tables();
+                let a = g.get(n).unwrap();
                 Ok(a.clone())
-            },
-            TableOrigin::SubRequest(select_rqst) => {
-                select_rqst.eval_with_from()    
-            },
+            }
+            TableOrigin::SubRequest(select_rqst) => select_rqst.eval_with_from(),
         }
     }
 }
@@ -87,12 +110,14 @@ impl SelectRqst {
     }
     pub fn eval_with_from(&self) -> LgResult<Table> {
         match &self.from {
-            Some(a) => {
-                self.eval(&a.eval()?)
-            },
-            None => {
-                todo!()
-            },
+            Some(a) => self.eval(&a.eval()?),
+            None => self.static_eval(),
+        }
+    }
+     pub fn static_eval(&self) -> LgResult<Table> {
+        match &self.fields {
+            FieldRqst::All => Ok(vec![]), 
+            FieldRqst::Selected(fields) => fields.static_eval(),
         }
     }
 }
