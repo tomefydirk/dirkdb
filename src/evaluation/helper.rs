@@ -138,7 +138,7 @@ impl RowAlias for TableRow {
               
                 let normalized = QualifiedIdentifier {
                     table: Some(real_table.clone()),
-                    column: qid.column.clone(),
+                    column: qid.to_string().clone(),
                 };
 
                
@@ -146,7 +146,7 @@ impl RowAlias for TableRow {
                     Some(retour) => {
                        Ok(retour) 
                     },
-                    None =>Err(EvalEror::<String>::field_notfound(qid.column.to_string().clone())) ,
+                    None =>Err(EvalEror::<String>::field_notfound(qid.to_string())) ,
                 }
             }
             None => {
@@ -158,9 +158,9 @@ impl RowAlias for TableRow {
                     .collect();
 
                 match matches.len() {
-                    0 => Err(EvalEror::<String>::field_notfound(qid.column.to_string().clone())),
+                    0 => Err(EvalEror::<String>::field_notfound(qid.to_string())),
                     1 => Ok(matches.remove(0)),
-                    _ => Err(EvalEror::<String>::ambiguous_name(qid.column.to_string().clone())), 
+                    _ => Err(EvalEror::<String>::ambiguous_name(qid.to_string())), 
                 }
             }
         }

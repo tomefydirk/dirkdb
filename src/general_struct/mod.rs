@@ -171,3 +171,11 @@ impl fmt::Display for BinOp {
         write!(f, "{}", s)
     }
 }
+impl fmt::Display for QualifiedIdentifier {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match &self.table {
+            Some(t) => write!(f, "{}.{}", t, self.column),
+            None => write!(f, "{}", self.column),
+        }
+    }
+}
