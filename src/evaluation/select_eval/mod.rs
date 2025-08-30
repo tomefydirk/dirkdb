@@ -4,7 +4,7 @@ use crate::{
     error_lib::evaluation::EvalEror,
     evaluation::{select_eval::from_registry::make_tables, LgResult},
     general_struct::structure::{
-        Field, FieldRqst, SelectRqst, Table, TableCell, TableOrigin, TableWithAlias
+        Field, FieldRqst, SelectRqst, Table, TableAliasMap, TableCell, TableOrigin, TableWithAlias
     },
 };
 
@@ -13,18 +13,18 @@ pub mod condition_eval;
 
 pub trait FieldEval {
     fn static_eval(&self) -> LgResult<Table>;
-    fn eval(&self, ctx: &Table) -> LgResult<Table>;
+    fn eval(&self, ctx: &Table,aliases:&TableAliasMap) -> LgResult<Table>;
 }
 
 impl FieldEval for Vec<Field> {
-    fn eval(&self, ctx: &Table) -> LgResult<Table> {
+    fn eval(&self, ctx: &Table,aliases:&TableAliasMap) -> LgResult<Table> {
         let mut result = Vec::new();
 
         for row in ctx {
             let mut new_row = HashMap::new();
 
             for field in self {
-                let val = field.expr.eval(row)?;
+                let val = field.expr.eval(row,aliases)?;
                 let col_name = field
                     .alias
                     .clone()
@@ -77,20 +77,20 @@ impl TableWithAlias {
 }
 
 impl SelectRqst {
-    pub fn handle_fields(&self, ctx_where: Table) -> LgResult<Table> {
+    pub fn handle_fields(&self, ctx_where: Table,aliases:&TableAliasMap) -> LgResult<Table> {
         match &self.fields {
             FieldRqst::All => Ok(ctx_where),
 
-            FieldRqst::Selected(fields) => fields.eval(&ctx_where),
+            FieldRqst::Selected(fields) => fields.eval(&ctx_where,aliases),
         }
     }
-    pub fn eval_dyn(&self, ctx: &Table) -> LgResult<Table> {
+    pub fn eval_dyn(&self, ctx: &Table,aliases:&TableAliasMap) -> LgResult<Table> {
         match self.condition.as_ref() {
             Some(c) => {
                 let a = ctx
                     .iter()
                     .filter_map(|row| -> Option<LgResult<HashMap<String, TableCell>>> {
-                        match c.eval(row) {
+                        match c.eval(row,aliases) {
                             Ok(cell) => {
                                 if cell.as_bool() {
                                     Some(Ok(row.clone()))
@@ -103,14 +103,16 @@ impl SelectRqst {
                     })
                     .collect::<LgResult<Vec<_>>>()?;
 
-                self.handle_fields(a)
+                self.handle_fields(a,aliases)
             }
-            None => self.handle_fields(ctx.clone()),
+            None => self.handle_fields(ctx.clone(),aliases),
         }
     }
     pub fn eval(&self) -> LgResult<Table> {
         match &self.from {
-            Some(a) => self.eval_dyn(&a.eval()?),
+            Some(a) =>{
+                self.eval_dyn(&a.eval()?,&a.get_alias_map())
+            } ,
             None => self.static_eval(),
         }
     }

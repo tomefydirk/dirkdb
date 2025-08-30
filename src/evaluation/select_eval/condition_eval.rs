@@ -6,7 +6,7 @@ use crate::{
     evaluation::{helper::Comparator, LgResult},
     function::{self, helper::my_modulo, sql::FunctionRegistry},
     general_struct::structure::{
-        BinOp, CompareOp, Condition, LogicalOp, PrimitiveElement, TableCell
+        BinOp, CompareOp, Condition, LogicalOp, PrimitiveElement, TableAliasMap, TableCell
     },
 };
 
@@ -58,7 +58,7 @@ impl BinOp {
 }
 
 impl Condition {
-    fn eval_value(&self, ctx: &HashMap<String, TableCell>) -> LgResult<TableCell> {
+    fn eval_value(&self, ctx: &HashMap<String, TableCell>,aliases:&TableAliasMap) -> LgResult<TableCell> {
         /*
             FONCTION À MODIFIER AVEC LES ALIAS :
          */
@@ -70,43 +70,43 @@ impl Condition {
             Condition::Primitive(PrimitiveElement::Number(n)) => Ok(TableCell::Number(*n)),
             Condition::Primitive(PrimitiveElement::String(s)) => Ok(TableCell::String(s.clone())),
             Condition::Null => Ok(TableCell::Null),
-            a => Ok(a.eval(ctx)?),
+            a => Ok(a.eval(ctx,aliases)?),
         }
     }
 }
 
 impl Condition {
-    pub fn eval(&self, ctx: &HashMap<String, TableCell>) -> LgResult<TableCell> {
+    pub fn eval(&self, ctx: &HashMap<String, TableCell>,aliases:&TableAliasMap) -> LgResult<TableCell> {
         match self {
             Condition::Comparison { left, op, right } => {
-                let l = left.eval_value(ctx)?;
-                let r = right.eval_value(ctx)?;
+                let l = left.eval_value(ctx,aliases)?;
+                let r = right.eval_value(ctx,aliases)?;
 
                 let a = (op.default_apply(&l, &r)?).into();
                 Ok(a)
             }
             Condition::Logical { left, op, right } => {
-                let l: bool = left.eval(ctx)?.into();
-                let r: bool = right.eval(ctx)?.into();
+                let l: bool = left.eval(ctx,aliases)?.into();
+                let r: bool = right.eval(ctx,aliases)?.into();
                 Ok((op.default_apply(l, r)).into())
             }
             Condition::BinaryOp { left, op, right } => {
-                let l = left.eval(ctx)?.as_number();
-                let r = right.eval(ctx)?.as_number();
+                let l = left.eval(ctx,aliases)?.as_number();
+                let r = right.eval(ctx,aliases)?.as_number();
                 Ok(match (l, r) {
                     (Some(a), Some(b)) => TableCell::Number(op.default_apply(a, b)),
                     _ => TableCell::Null,
                 })
             }
-            Condition::Negate(inner) => match inner.eval(ctx)?.as_number() {
+            Condition::Negate(inner) => match inner.eval(ctx,aliases)?.as_number() {
                 Some(n) => Ok(TableCell::Number(-n)),
                 None => Ok(TableCell::Null),
             },
             Condition::Not(inner) => {
-                let val: bool = inner.eval(ctx)?.into();
+                let val: bool = inner.eval(ctx,aliases)?.into();
                 Ok((!val).into())
             }
-            Condition::Primitive(_) | Condition::Null => Ok(self.eval_value(ctx)?),
+            Condition::Primitive(_) | Condition::Null => Ok(self.eval_value(ctx,aliases)?),
 
             /*
                ÉVALUATION STATIQUE POUR LE MOMENT :
@@ -116,22 +116,23 @@ impl Condition {
             Condition::Func { name, parameter } => {
                 let func_list = FunctionRegistry::new();
 
-                func_list.call(name, change_args_type(parameter, ctx)?)
+                func_list.call(name, change_args_type(parameter, ctx,aliases)?)
             }
         }
     }
     pub fn static_eval(&self)-> LgResult<TableCell>{
         let ctx=HashMap::<String,TableCell>::new();
-        self.eval(&ctx)
+        self.eval(&ctx,&HashMap::new())
     }
 }
 pub fn change_args_type(
     args: &Vec<Condition>,
     ctx: &HashMap<String, TableCell>,
+    aliases:&TableAliasMap
 ) -> LgResult<Vec<TableCell>> {
     let mut retour = Vec::<TableCell>::new();
     for a in args {
-        retour.push(a.eval(ctx)?);
+        retour.push(a.eval(ctx,aliases)?);
     }
     Ok(retour)
 }
