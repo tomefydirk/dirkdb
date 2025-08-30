@@ -136,10 +136,12 @@ impl TableWithAlias {
         let mut retour = HashMap::<String, String>::new();
         match (&self.origin, &self.alias) {
             (TableOrigin::Name(n), Some(alias)) => {
-                retour.insert(n.clone(), alias.clone());
+                retour.insert( alias.clone(),n.clone());
                 retour
+
             }
             _ => retour,
         }
+        
     }
 }
