@@ -2,11 +2,10 @@
 use std::collections::HashMap;
 
 use crate::{
-    error_lib::evaluation::EvalEror,
-    evaluation::{helper::Comparator, LgResult},
+    evaluation::{helper::{Comparator, RowAlias}, LgResult},
     function::{self, helper::my_modulo, sql::FunctionRegistry},
     general_struct::structure::{
-        BinOp, CompareOp, Condition, LogicalOp, PrimitiveElement, TableAliasMap, TableCell
+        BinOp, CompareOp, Condition, LogicalOp, PrimitiveElement, QualifiedIdentifier, TableAliasMap, TableCell, TableRow
     },
 };
 
@@ -58,15 +57,12 @@ impl BinOp {
 }
 
 impl Condition {
-    fn eval_value(&self, ctx: &HashMap<String, TableCell>,aliases:&TableAliasMap) -> LgResult<TableCell> {
-        /*
-            FONCTION À MODIFIER AVEC LES ALIAS :
-         */
+    fn eval_value(&self, ctx: &TableRow,aliases:&TableAliasMap) -> LgResult<TableCell> {
         match self {
-            Condition::Primitive(PrimitiveElement::Identifier(name)) => ctx
-                .get(&name.column.clone())
-                .cloned()
-                .ok_or_else(|| EvalEror::field_notfound(name.column.to_string())),
+            Condition::Primitive(PrimitiveElement::Identifier(qid)) =>{
+                let a=ctx.get_column(qid, aliases)?;
+                Ok(a.clone())
+            },
             Condition::Primitive(PrimitiveElement::Number(n)) => Ok(TableCell::Number(*n)),
             Condition::Primitive(PrimitiveElement::String(s)) => Ok(TableCell::String(s.clone())),
             Condition::Null => Ok(TableCell::Null),
@@ -76,7 +72,7 @@ impl Condition {
 }
 
 impl Condition {
-    pub fn eval(&self, ctx: &HashMap<String, TableCell>,aliases:&TableAliasMap) -> LgResult<TableCell> {
+    pub fn eval(&self, ctx: &TableRow,aliases:&TableAliasMap) -> LgResult<TableCell> {
         match self {
             Condition::Comparison { left, op, right } => {
                 let l = left.eval_value(ctx,aliases)?;
@@ -121,13 +117,13 @@ impl Condition {
         }
     }
     pub fn static_eval(&self)-> LgResult<TableCell>{
-        let ctx=HashMap::<String,TableCell>::new();
+        let ctx=HashMap::<QualifiedIdentifier,TableCell>::new();
         self.eval(&ctx,&HashMap::new())
     }
 }
 pub fn change_args_type(
     args: &Vec<Condition>,
-    ctx: &HashMap<String, TableCell>,
+    ctx: &TableRow,
     aliases:&TableAliasMap
 ) -> LgResult<Vec<TableCell>> {
     let mut retour = Vec::<TableCell>::new();

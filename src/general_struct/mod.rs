@@ -51,11 +51,11 @@ impl Default for TableCell {
 }
 
 impl Field {
-    pub fn new(expr: Condition,default_name:String) -> Self {
+    pub fn new(expr: Condition,default_name:QualifiedIdentifier) -> Self {
         Field { expr,default_name,alias: None }
     }
 
-    pub fn with_alias(expr: Condition, default_name:String,alias: String) -> Self {
+    pub fn with_alias(expr: Condition, default_name:QualifiedIdentifier,alias: String) -> Self {
         Field {
             expr,
             default_name,

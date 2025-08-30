@@ -1,5 +1,4 @@
 use chrono::{Datelike, NaiveDate};
-
 use crate::{
     error_lib::evaluation::EvalEror,
     evaluation::LgResult,
@@ -126,11 +125,11 @@ impl Hash for QualifiedIdentifier {
     }
 }
 pub trait RowAlias {
-     fn get_column(&self, qid: &QualifiedIdentifier, aliases: &TableAliasMap) -> Option<&TableCell>;
+     fn get_column(&self, qid: &QualifiedIdentifier, aliases: &TableAliasMap) -> LgResult<&TableCell>;
 }
 
 impl RowAlias for TableRow {
-    fn get_column(&self, qid: &QualifiedIdentifier, aliases: &TableAliasMap) -> Option<&TableCell> {
+    fn get_column(&self, qid: &QualifiedIdentifier, aliases: &TableAliasMap) -> LgResult<&TableCell> {
         match &qid.table {
             Some(table_name) => {
                 
@@ -142,7 +141,13 @@ impl RowAlias for TableRow {
                     column: qid.column.clone(),
                 };
 
-                self.get(&normalized)
+               
+                match   self.get(&normalized) {
+                    Some(retour) => {
+                       Ok(retour) 
+                    },
+                    None =>Err(EvalEror::<String>::field_notfound(qid.column.to_string().clone())) ,
+                }
             }
             None => {
                
@@ -153,9 +158,9 @@ impl RowAlias for TableRow {
                     .collect();
 
                 match matches.len() {
-                    0 => None,
-                    1 => Some(matches.remove(0)),
-                    _ => None, 
+                    0 => Err(EvalEror::<String>::field_notfound(qid.column.to_string().clone())),
+                    1 => Ok(matches.remove(0)),
+                    _ => Err(EvalEror::<String>::ambiguous_name(qid.column.to_string().clone())), 
                 }
             }
         }

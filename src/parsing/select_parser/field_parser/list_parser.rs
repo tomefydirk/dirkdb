@@ -65,13 +65,13 @@ impl Field {
     match &expr.clone() {
       
         Condition::Primitive(PrimitiveElement::Identifier(qid)) => {
-            Field::new(expr, qid.column.clone()) 
+            Field::new(expr, qid.clone()) 
            
         }
 
         _ => {
             let default_name=expr.to_string() ;
-           Field::new(expr, default_name)
+           Field::new(expr, QualifiedIdentifier{table:None,column:default_name})
         }
     }
 }
