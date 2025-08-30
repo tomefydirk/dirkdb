@@ -139,6 +139,9 @@ impl TableWithAlias {
                 retour.insert( alias.clone(),n.clone());
                 retour
 
+            },
+            (TableOrigin::SubRequest(tay), Some(amany)) => {
+                todo!()
             }
             _ => retour,
         }
