@@ -109,7 +109,10 @@ pub enum FieldRqst {
     Selected(Vec<Field>),
 }
 
-
+pub enum TableSourceCtxEval{
+    Name(String),
+    Table(Table)
+}
 pub type Table = Vec<TableRow>;
 pub type TableRow=HashMap<QualifiedIdentifier,TableCell>;
-pub type TableAliasMap=HashMap<String,String>;
+pub type TableAliasMap=HashMap<String,TableSourceCtxEval>;

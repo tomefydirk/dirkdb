@@ -5,8 +5,7 @@ use crate::{
     error_lib::evaluation::EvalEror,
     evaluation::{select_eval::from_registry::make_tables, LgResult},
     general_struct::structure::{
-        Field, FieldRqst, QualifiedIdentifier, SelectRqst, Table, TableAliasMap,
-        TableOrigin, TableRow, TableWithAlias,
+        Field, FieldRqst, QualifiedIdentifier, SelectRqst, Table, TableAliasMap, TableOrigin, TableRow, TableSourceCtxEval, TableWithAlias
     },
 };
 
@@ -69,7 +68,6 @@ impl FieldEval for Vec<Field> {
     }
 }
 
-
 impl TableWithAlias {
     fn eval(&self) -> LgResult<Table> {
         match &self.origin {
@@ -78,7 +76,7 @@ impl TableWithAlias {
                 let a = g.get(n).unwrap();
                 Ok(a.clone())
             }
-            TableOrigin::SubRequest(select_rqst) => select_rqst.eval(),
+            TableOrigin::SubRequest(select_rqst) => CtxEvalSelect::new(*select_rqst.clone()).eval(),
         }
     }
 }
@@ -90,7 +88,6 @@ impl SelectRqst {
             FieldRqst::Selected(fields) => fields.eval(&ctx_where, aliases),
         }
     }
-
     pub fn eval_dyn(&self, ctx: &Table, aliases: &TableAliasMap) -> LgResult<Table> {
         match self.condition.as_ref() {
             Some(c) => {
@@ -115,14 +112,6 @@ impl SelectRqst {
             None => self.handle_fields(ctx.clone(), aliases),
         }
     }
-
-    pub fn eval(&self) -> LgResult<Table> {
-        match &self.from {
-            Some(a) => self.eval_dyn(&a.eval()?, &a.get_alias_map()),
-            None => self.static_eval(),
-        }
-    }
-
     pub fn static_eval(&self) -> LgResult<Table> {
         match &self.fields {
             FieldRqst::All => Err(EvalEror::<String>::not_static_variable()),
@@ -131,20 +120,41 @@ impl SelectRqst {
     }
 }
 
-impl TableWithAlias {
-    pub fn get_alias_map(&self) -> TableAliasMap {
-        let mut retour = HashMap::<String, String>::new();
-        match (&self.origin, &self.alias) {
-            (TableOrigin::Name(n), Some(alias)) => {
-                retour.insert( alias.clone(),n.clone());
-                retour
+pub struct CtxEvalSelect {
+    pub requete: SelectRqst,
+    pub aliases:TableAliasMap,
+}
 
+impl CtxEvalSelect {
+    pub fn new(requete: SelectRqst) -> Self {
+        Self {requete,aliases:HashMap::new() }
+    }
+    pub fn eval(&mut self) -> LgResult<Table> {
+        match &self.requete.from {
+            Some(a) =>{
+             self.aliases=a.get_alias_map()?;
+                 self.requete.eval_dyn(&a.eval()?, &self.aliases)
             },
-            (TableOrigin::SubRequest(tay), Some(amany)) => {
-                todo!()
-            }
-            _ => retour,
+            None => self.requete.static_eval(),
         }
-        
+    }
+}
+impl TableWithAlias {
+    pub fn get_alias_map(&self) -> LgResult<TableAliasMap> {
+        let mut retour = HashMap::<String, TableSourceCtxEval>::new();
+        match (&self.origin, &self.alias) {
+            (TableOrigin::Name(n),Some(alias))=>{
+                retour.insert(n.clone(), TableSourceCtxEval::Name(n.clone()));
+                retour.insert(alias.clone(), TableSourceCtxEval::Name(n.clone()));
+                Ok(retour)
+            },
+            (TableOrigin::SubRequest(query),Some(alias))=>{
+                let source=CtxEvalSelect::new(*query.clone()).eval()?;
+                retour.insert(alias.clone(),TableSourceCtxEval::Table(source));
+                Ok(retour)
+            }
+            _ => Ok(retour),
+        }
+        /*verifier si une alias corréspond a plusieur alias ou nom */
     }
 }

@@ -130,39 +130,6 @@ pub trait RowAlias {
 
 impl RowAlias for TableRow {
     fn get_column(&self, qid: &QualifiedIdentifier, aliases: &TableAliasMap) -> LgResult<&TableCell> {
-        match &qid.table {
-            Some(table_name) => {
-                
-                let real_table = aliases.get(table_name).unwrap_or(table_name);
-
-              
-                let normalized = QualifiedIdentifier {
-                    table: Some(real_table.clone()),
-                    column: qid.to_string().clone(),
-                };
-
-               
-                match   self.get(&normalized) {
-                    Some(retour) => {
-                       Ok(retour) 
-                    },
-                    None =>Err(EvalEror::<String>::field_notfound(qid.to_string())) ,
-                }
-            }
-            None => {
-               
-                let mut matches: Vec<&TableCell> = self.iter()
-                    .filter_map(|(k, v)| {
-                        if k.column == qid.column { Some(v) } else { None }
-                    })
-                    .collect();
-
-                match matches.len() {
-                    0 => Err(EvalEror::<String>::field_notfound(qid.to_string())),
-                    1 => Ok(matches.remove(0)),
-                    _ => Err(EvalEror::<String>::ambiguous_name(qid.to_string())), 
-                }
-            }
-        }
+       todo!()
     }
 }
