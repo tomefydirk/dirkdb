@@ -18,10 +18,10 @@ pub fn is_func_valid(input: &str) -> bool {
 }
 
 pub trait Factorable {
-     fn is_factor_parens(&self)->bool;
+    fn is_factor_parens(&self) -> bool;
 }
 impl Factorable for &str {
-    fn is_factor_parens(&self)->bool {
+    fn is_factor_parens(&self) -> bool {
         self.trim().starts_with(PARENS_0)
     }
 }

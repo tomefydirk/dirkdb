@@ -23,10 +23,10 @@ pub const NOT_SIGN: &str = "not";
 pub const NULL_SIGN: &str = "null";
 pub const AND_SIGN: &str = "and";
 pub const LIKE_SIGN: &str = "like";
-pub const AS_SIGN:&str="as";
-pub const SELECT_SIGN:&str="select";
-pub const FROM_SIGN:&str="from";
-pub const WHERE_SIGN:&str="where";
+pub const AS_SIGN: &str = "as";
+pub const SELECT_SIGN: &str = "select";
+pub const FROM_SIGN: &str = "from";
+pub const WHERE_SIGN: &str = "where";
 
 //--- virgule et point virugle
 pub const COMMA_SIGN: &str = ",";
@@ -44,6 +44,6 @@ pub fn key_word_list() -> Vec<String> {
         AS_SIGN.to_string(),
         FROM_SIGN.to_string(),
         SELECT_SIGN.to_string(),
-        WHERE_SIGN.to_string()
+        WHERE_SIGN.to_string(),
     ]
 }

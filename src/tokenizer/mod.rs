@@ -1,17 +1,17 @@
 pub mod helper;
 pub mod tag_func;
-use crate::general_struct::structure::QualifiedIdentifier;
 use crate::IResult;
 use crate::general_struct::constant::*;
+use crate::general_struct::structure::QualifiedIdentifier;
 use crate::tokenizer::tag_func::{
     tag_float, tag_function, tag_is_not, tag_key_word_logic, tag_name, tag_string,
 };
-use nom::combinator::opt;
 use nom::Parser;
 ///TOKENTOOL::
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::space0;
+use nom::combinator::opt;
 
 #[derive(Debug)]
 pub enum Token<'a> {
@@ -48,7 +48,7 @@ pub fn scan_float(input: &str) -> IResult<&str, Token> {
 }
 
 pub fn scan_name(input: &str) -> IResult<&str, Token> {
-   let (rest, current_field) = tag_name(input)?;
+    let (rest, current_field) = tag_name(input)?;
     let (rest2, point) = opt(tag(".")).parse(rest)?;
     match point {
         Some(_) => {

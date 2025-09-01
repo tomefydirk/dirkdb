@@ -105,7 +105,7 @@ pub struct SelectRqst {
 #[derive(Debug, Clone)]
 pub struct Field {
     pub expr: Condition,
-    pub default_name:QualifiedIdentifier,
+    pub default_name: QualifiedIdentifier,
     pub alias: Option<String>,
 }
 
@@ -116,6 +116,5 @@ pub enum FieldRqst {
 }
 
 pub type Table = Vec<TableRow>;
-pub type TableRow=HashMap<QualifiedIdentifier,TableCell>;
-pub type TableAliasMap=HashMap<String,String>;
-
+pub type TableRow = HashMap<QualifiedIdentifier, TableCell>;
+pub type TableAliasMap = HashMap<String, String>;

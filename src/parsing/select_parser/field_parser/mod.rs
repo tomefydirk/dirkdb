@@ -1,10 +1,10 @@
-use crate::parsing::select_parser::field_parser::list_parser::parse_fieldrqst_expr_list;
-use crate::tokenizer::helper::Factorable;
 use crate::IResult;
 use crate::error_lib::parsing::{factor_error, into_nom_failure};
-use crate::general_struct::constant::{PARENS_1};
+use crate::general_struct::constant::PARENS_1;
+use crate::parsing::select_parser::field_parser::list_parser::parse_fieldrqst_expr_list;
+use crate::tokenizer::helper::Factorable;
 use crate::{
-    general_struct::structure::{ FieldRqst},
+    general_struct::structure::FieldRqst,
     tokenizer::{Token, scan_token},
 };
 pub mod list_parser;
@@ -24,10 +24,9 @@ fn parse_fieldrqst_all(input: &str) -> IResult<&str, FieldRqst> {
     Ok((input, FieldRqst::All))
 }
 
-
 pub fn parse_fieldrqst(input: &str) -> IResult<&str, FieldRqst> {
     // Parenthèses
-    if input.is_factor_parens(){
+    if input.is_factor_parens() {
         return parse_fieldrqst_parens(input);
     }
 
@@ -43,9 +42,6 @@ pub fn parse_fieldrqst(input: &str) -> IResult<&str, FieldRqst> {
 mod tests {
     use super::*;
     use crate::general_struct::{ident, structure::FieldRqst};
-    
-
-   
 
     #[test]
     fn test_parse_all_fields() {
@@ -102,7 +98,7 @@ mod tests {
             _ => panic!("Expected FieldRqst::Selected"),
         }
     }
-      #[test]
+    #[test]
     fn test_field_with_alias_as() {
         let input = "name AS username";
         let (_, rqst) = parse_fieldrqst_expr_list(input).unwrap();
@@ -147,5 +143,4 @@ mod tests {
             _ => panic!("Expected Selected"),
         }
     }
-
 }

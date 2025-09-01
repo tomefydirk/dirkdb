@@ -7,7 +7,6 @@ use crate::parsing::other_parser::logic_parser::func::parse_logical;
 use crate::tokenizer::helper::codon_stop;
 use crate::tokenizer::{Token, scan_token};
 
-
 use crate::general_struct::constant::*;
 
 fn parse_binop_level<'a, F>(

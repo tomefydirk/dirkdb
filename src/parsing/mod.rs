@@ -1,4 +1,8 @@
-use crate::{error_lib::parsing::{factor_error, into_nom_failure}, tokenizer::{scan_token, Token}, IResult};
+use crate::{
+    IResult,
+    error_lib::parsing::{factor_error, into_nom_failure},
+    tokenizer::{Token, scan_token},
+};
 
 pub mod other_parser;
 pub mod select_parser;

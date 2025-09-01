@@ -1,8 +1,12 @@
 use crate::{
-    error_lib::parsing::{alias_not_valid, factor_error, into_nom_failure}, general_struct::{
+    IResult,
+    error_lib::parsing::{alias_not_valid, factor_error, into_nom_failure},
+    general_struct::{
         constant::{AS_SIGN, COMMA_SIGN},
         structure::{Condition, Field, FieldRqst, PrimitiveElement, QualifiedIdentifier},
-    }, parsing::other_parser::logic_parser::func::parse_logical, tokenizer::{scan_token, Token}, IResult
+    },
+    parsing::other_parser::logic_parser::func::parse_logical,
+    tokenizer::{Token, scan_token},
 };
 impl Field {
     pub fn apply_alias(&mut self, alias: QualifiedIdentifier) -> bool {
@@ -38,7 +42,7 @@ pub fn parse_fieldrqst_expr_list(input: &str) -> IResult<&str, FieldRqst> {
             }
 
             // alias explicite avec AS : SELECT name AS username
-            Token::Other(a) if a.eq_ignore_ascii_case(AS_SIGN)=> {
+            Token::Other(a) if a.eq_ignore_ascii_case(AS_SIGN) => {
                 let (after_as, alias_token) = scan_token(next_input)?;
                 match alias_token {
                     Token::FieldName(alias) => {
@@ -61,19 +65,22 @@ pub fn parse_fieldrqst_expr_list(input: &str) -> IResult<&str, FieldRqst> {
 }
 
 impl Field {
-    fn build_field(expr: Condition) ->  Self {
-    match &expr.clone() {
-      
-        Condition::Primitive(PrimitiveElement::Identifier(qid)) => {
-            Field::new(expr, qid.clone()) 
-           
-        }
+    fn build_field(expr: Condition) -> Self {
+        match &expr.clone() {
+            Condition::Primitive(PrimitiveElement::Identifier(qid)) => {
+                Field::new(expr, qid.clone())
+            }
 
-        _ => {
-            let default_name=expr.to_string() ;
-           Field::new(expr, QualifiedIdentifier{table:None,column:default_name})
+            _ => {
+                let default_name = expr.to_string();
+                Field::new(
+                    expr,
+                    QualifiedIdentifier {
+                        table: None,
+                        column: default_name,
+                    },
+                )
+            }
         }
     }
-}
-    
 }

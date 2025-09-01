@@ -11,7 +11,7 @@ pub enum EvalErrorkind {
     NotStaticVariable,
     AmbiguousName,
     AliasNeeded,
-    NotInDatabases
+    NotInDatabases,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -78,7 +78,7 @@ impl<I> EvalEror<I> {
             code: EvalErrorkind::AliasNeeded,
         }
     }
-    pub fn not_in_database(table:String)->EvalEror<String>{
+    pub fn not_in_database(table: String) -> EvalEror<String> {
         EvalEror::build(table, EvalErrorkind::NotInDatabases)
     }
 }

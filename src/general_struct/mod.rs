@@ -1,5 +1,6 @@
 use crate::general_struct::structure::{
-    BinOp, CompareOp, Condition, Field, FieldRqst, LogicalOp, PrimitiveElement, QualifiedIdentifier, SelectRqst, TableCell, TableWithAlias
+    BinOp, CompareOp, Condition, Field, FieldRqst, LogicalOp, PrimitiveElement,
+    QualifiedIdentifier, SelectRqst, TableCell, TableWithAlias,
 };
 
 pub mod constant;
@@ -51,11 +52,15 @@ impl Default for TableCell {
 }
 
 impl Field {
-    pub fn new(expr: Condition,default_name:QualifiedIdentifier) -> Self {
-        Field { expr,default_name,alias: None }
+    pub fn new(expr: Condition, default_name: QualifiedIdentifier) -> Self {
+        Field {
+            expr,
+            default_name,
+            alias: None,
+        }
     }
 
-    pub fn with_alias(expr: Condition, default_name:QualifiedIdentifier,alias: String) -> Self {
+    pub fn with_alias(expr: Condition, default_name: QualifiedIdentifier, alias: String) -> Self {
         Field {
             expr,
             default_name,
@@ -72,8 +77,16 @@ pub fn ident(column: &str) -> Condition {
 }
 
 impl SelectRqst {
-    pub fn new(fields: FieldRqst, from: Option<TableWithAlias>, condition: Option<Condition>) -> Self {
-        Self { fields, from, condition }
+    pub fn new(
+        fields: FieldRqst,
+        from: Option<TableWithAlias>,
+        condition: Option<Condition>,
+    ) -> Self {
+        Self {
+            fields,
+            from,
+            condition,
+        }
     }
 }
 

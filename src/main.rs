@@ -1,13 +1,9 @@
 use dirkdb::parsing::select_parser::func::parse_select;
 
+fn main() {
+    let a = "select * from (select * from p) p";
 
-fn main()  {
-    let a="select * from (select * from p) p";
-
-    let b=parse_select(a).expect("erreur illogique");
+    let b = parse_select(a).expect("erreur illogique");
     println!("{b:?}");
-    println!("{:#?}",b.1.eval());
-
-
-   
+    println!("{:#?}", b.1.eval());
 }
