@@ -7,6 +7,12 @@ pub struct QualifiedIdentifier {
     pub column: String,
 }
 
+impl QualifiedIdentifier {
+    pub fn new(table: Option<String>, column: String) -> Self {
+        Self { table, column }
+    }
+}
+
 #[derive(Debug, Clone, PartialEq)]
 pub enum PrimitiveElement {
     Identifier(QualifiedIdentifier),
@@ -109,10 +115,7 @@ pub enum FieldRqst {
     Selected(Vec<Field>),
 }
 
-pub enum TableSourceCtxEval{
-    Name(String),
-    Table(Table)
-}
 pub type Table = Vec<TableRow>;
 pub type TableRow=HashMap<QualifiedIdentifier,TableCell>;
-pub type TableAliasMap=HashMap<String,TableSourceCtxEval>;
+pub type TableAliasMap=HashMap<String,String>;
+

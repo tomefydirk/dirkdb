@@ -10,6 +10,7 @@ pub enum EvalErrorkind {
     IncompatibleType,
     NotStaticVariable,
     AmbiguousName,
+    AliasNeeded,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -68,6 +69,12 @@ impl<I> EvalEror<I> {
         EvalEror {
             input: field_name,
             code: EvalErrorkind::AmbiguousName,
+        }
+    }
+    pub fn alias_need() -> EvalEror<String> {
+        EvalEror {
+            input: "Every derived table must have its own alias".to_string(),
+            code: EvalErrorkind::AliasNeeded,
         }
     }
 }

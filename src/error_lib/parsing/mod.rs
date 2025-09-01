@@ -7,7 +7,8 @@ pub enum ErrorKind {
     Parens1Missing,
     TokenNotfound,
     AfterIsorIsnot(String),
-    Aliasnotvalid
+    Aliasnotvalid,
+    AliasNeeded
 }
 #[derive(Debug, Error)]
 #[error("{code:?} : '{input}' ")]
@@ -23,6 +24,9 @@ impl<I> ParserErr<I> {
 
 pub fn factor_error(input: &str) -> ParserErr<&str> {
     ParserErr::build(input, ErrorKind::Parens1Missing)
+}
+pub fn alias_needed_parsing() -> ParserErr<&'static str> {
+    ParserErr::build("Every derived table must have its own alias", ErrorKind::AliasNeeded)
 }
 pub fn token_not_found(input: &str) -> ParserErr<&str> {
     ParserErr::build(input, ErrorKind::TokenNotfound)
