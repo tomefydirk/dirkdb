@@ -1,33 +1,25 @@
-use std::collections::HashMap;
+pub mod condition_eval;
 
-pub mod from_registry;
 use crate::{
     error_lib::evaluation::EvalEror,
-    evaluation::{LgResult, select_eval::from_registry::make_tables},
+    evaluation::{EvaluableAsQuery, LgResult},
+    from_registry::make_tables,
     general_struct::structure::{
         Field, FieldRqst, QualifiedIdentifier, SelectRqst, Table, TableAliasMap, TableOrigin,
         TableRow, TableWithAlias,
     },
 };
+use std::collections::HashMap;
 
-pub mod condition_eval;
-
-pub trait FieldEval {
-    fn static_eval(&self) -> LgResult<Table>;
-    fn eval(&self, ctx: &Table, aliases: &TableAliasMap) -> LgResult<Table>;
-}
-
-impl FieldEval for Vec<Field> {
-    fn eval(&self, ctx: &Table, aliases: &TableAliasMap) -> LgResult<Table> {
+impl EvaluableAsQuery<Table, TableAliasMap, Table> for Vec<Field> {
+    fn eval_dyn(&self, ctx: &Table, aliases: &TableAliasMap) -> LgResult<Table> {
         let mut result: Table = Vec::new();
 
         for row in ctx {
             let mut new_row: TableRow = HashMap::new();
 
             for field in self {
-                let val = field.expr.eval(row, aliases)?;
-
-                // Si on a un alias, on le met comme "column" dans le QualifiedIdentifier
+                let val = field.expr.eval_dyn(row, aliases)?;
                 let qid = match &field.alias {
                     Some(alias) => QualifiedIdentifier {
                         table: field.default_name.table.clone(),
@@ -69,6 +61,57 @@ impl FieldEval for Vec<Field> {
     }
 }
 
+impl EvaluableAsQuery<Table, TableAliasMap, Table> for SelectRqst {
+    fn eval_dyn(&self, ctx: &Table, aliases: &TableAliasMap) -> LgResult<Table> {
+        match self.condition.as_ref() {
+            Some(c) => {
+                let a = ctx
+                    .iter()
+                    .filter_map(|row| -> Option<LgResult<TableRow>> {
+                        match c.eval_dyn(row, aliases) {
+                            Ok(cell) => {
+                                if cell.as_bool() {
+                                    Some(Ok(row.clone()))
+                                } else {
+                                    None
+                                }
+                            }
+                            Err(err) => Some(Err(err)),
+                        }
+                    })
+                    .collect::<LgResult<Vec<_>>>()?;
+
+                self.handle_fields(a, aliases)
+            }
+            None => self.handle_fields(ctx.clone(), aliases),
+        }
+    }
+    fn static_eval(&self) -> LgResult<Table> {
+        match &self.fields {
+            FieldRqst::All => Err(EvalEror::<String>::not_static_variable()),
+            FieldRqst::Selected(fields) => fields.static_eval(),
+        }
+    }
+}
+impl SelectRqst {
+    pub fn handle_fields(&self, ctx_where: Table, aliases: &TableAliasMap) -> LgResult<Table> {
+        match &self.fields {
+            FieldRqst::All => Ok(ctx_where),
+            FieldRqst::Selected(fields) => {
+                // println!("{ctx_where:?}");
+                fields.eval_dyn(&ctx_where, aliases)
+            }
+        }
+    }
+
+    pub fn eval(&self) -> LgResult<Table> {
+        match &self.from {
+            Some(t) => self.eval_dyn(&t.eval()?, &t.get_alias_map()),
+            None => self.static_eval(),
+        }
+    }
+}
+
 impl TableWithAlias {
     pub fn change_table_owner(table: Table, owner: String) -> LgResult<Table> {
         let mut result: Table = Vec::new();
@@ -87,9 +130,9 @@ impl TableWithAlias {
     }
     pub fn get_alias_map(&self) -> HashMap<String, String> {
         let mut retour = HashMap::<String, String>::new();
-        match ( &self.alias,&self.origin) {
-            ( Some(alias),TableOrigin::Name(n)) => {
-                retour.insert( alias.clone(),n.clone());
+        match (&self.alias, &self.origin) {
+            (Some(alias), TableOrigin::Name(n)) => {
+                retour.insert(alias.clone(), n.clone());
                 retour
             }
             _ => retour,
@@ -100,7 +143,6 @@ impl TableWithAlias {
         match &self.origin {
             TableOrigin::Name(n) => {
                 let g = make_tables();
-                /*todo!! */
                 let a = g.get(n).unwrap();
                 Ok(a.clone())
             }
@@ -110,54 +152,6 @@ impl TableWithAlias {
                 }
                 None => Err(EvalEror::<String>::alias_need()),
             },
-        }
-    }
-}
-
-impl SelectRqst {
-    pub fn handle_fields(&self, ctx_where: Table, aliases: &TableAliasMap) -> LgResult<Table> {
-        match &self.fields {
-            FieldRqst::All => Ok(ctx_where),
-            FieldRqst::Selected(fields) =>{
-               // println!("{ctx_where:?}");
-                fields.eval(&ctx_where, aliases)
-            } ,
-        }
-    }
-    pub fn eval_dyn(&self, ctx: &Table, aliases: &TableAliasMap) -> LgResult<Table> {
-        match self.condition.as_ref() {
-            Some(c) => {
-                let a = ctx
-                    .iter()
-                    .filter_map(|row| -> Option<LgResult<TableRow>> {
-                        match c.eval(row, aliases) {
-                            Ok(cell) => {
-                                if cell.as_bool() {
-                                    Some(Ok(row.clone()))
-                                } else {
-                                    None
-                                }
-                            }
-                            Err(err) => Some(Err(err)),
-                        }
-                    })
-                    .collect::<LgResult<Vec<_>>>()?;
-
-                self.handle_fields(a, aliases)
-            }
-            None => self.handle_fields(ctx.clone(), aliases),
-        }
-    }
-    pub fn static_eval(&self) -> LgResult<Table> {
-        match &self.fields {
-            FieldRqst::All => Err(EvalEror::<String>::not_static_variable()),
-            FieldRqst::Selected(fields) => fields.static_eval(),
-        }
-    }
-    pub fn eval(&self) -> LgResult<Table> {
-        match &self.from {
-            Some(t) => self.eval_dyn(&t.eval()?, &t.get_alias_map()),
-            None => self.static_eval(),
         }
     }
 }
