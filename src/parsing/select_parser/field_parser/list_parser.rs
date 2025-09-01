@@ -2,7 +2,7 @@ use crate::{
     error_lib::parsing::{alias_not_valid, factor_error, into_nom_failure}, general_struct::{
         constant::{AS_SIGN, COMMA_SIGN},
         structure::{Condition, Field, FieldRqst, PrimitiveElement, QualifiedIdentifier},
-    }, parsing::logic_parser::func::parse_logical, tokenizer::{scan_token, Token}, IResult
+    }, parsing::other_parser::logic_parser::func::parse_logical, tokenizer::{scan_token, Token}, IResult
 };
 impl Field {
     pub fn apply_alias(&mut self, alias: QualifiedIdentifier) -> bool {

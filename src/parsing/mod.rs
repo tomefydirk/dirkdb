@@ -1,7 +1,6 @@
 use crate::{error_lib::parsing::{factor_error, into_nom_failure}, tokenizer::{scan_token, Token}, IResult};
 
-pub mod atom_parser;
-pub mod logic_parser;
+pub mod other_parser;
 pub mod select_parser;
 
 //ALIAS FUNCTION :

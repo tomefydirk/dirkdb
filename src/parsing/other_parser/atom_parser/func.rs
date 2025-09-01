@@ -3,7 +3,7 @@ use std::str::FromStr;
 use crate::IResult;
 use crate::error_lib::parsing::{factor_error, into_nom_error, into_nom_failure, token_not_found};
 use crate::general_struct::structure::{BinOp, Condition};
-use crate::parsing::logic_parser::func::parse_logical;
+use crate::parsing::other_parser::logic_parser::func::parse_logical;
 use crate::tokenizer::helper::codon_stop;
 use crate::tokenizer::{Token, scan_token};
 
