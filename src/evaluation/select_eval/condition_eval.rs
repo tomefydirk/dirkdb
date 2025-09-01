@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use crate::{
     evaluation::{
-        EvaluableAsQuery, LgResult,
+        EvaluableAsQuery, LgResult, OperatorQuery,
         helper::{Comparator, RowAlias},
     },
     function::{self, helper::my_modulo, sql::FunctionRegistry},
@@ -11,18 +11,16 @@ use crate::{
         TableAliasMap, TableCell, TableRow,
     },
 };
-
-impl LogicalOp {
-    pub fn default_apply(&self, l: bool, r: bool) -> bool {
+impl OperatorQuery<bool, bool> for LogicalOp {
+    fn default_apply(&self, left: bool, right: bool) -> bool {
         match self {
-            LogicalOp::And => l && r,
-            LogicalOp::Or => l || r,
+            LogicalOp::And => left && right,
+            LogicalOp::Or => left || right,
         }
     }
 }
-
-impl CompareOp {
-    pub fn default_apply(&self, left: &TableCell, right: &TableCell) -> LgResult<bool> {
+impl OperatorQuery<&TableCell, LgResult<bool>> for CompareOp {
+    fn default_apply(&self, left: &TableCell, right: &TableCell) -> LgResult<bool> {
         match self {
             CompareOp::Like => {
                 let l_str = left.to_string_value();
@@ -46,8 +44,8 @@ impl CompareOp {
     }
 }
 
-impl BinOp {
-    pub fn default_apply(&self, left: f64, right: f64) -> f64 {
+impl OperatorQuery<f64, f64> for BinOp {
+    fn default_apply(&self, left: f64, right: f64) -> f64 {
         match self {
             BinOp::Add => left + right,
             BinOp::Sub => left - right,

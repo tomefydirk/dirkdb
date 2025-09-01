@@ -7,3 +7,7 @@ pub trait EvaluableAsQuery<Ctx,Aliases,O> {
     fn eval_dyn(&self,ctx:&Ctx,aliases:&Aliases)->LgResult<O>;
     fn static_eval(&self)->LgResult<O>;
 }
+
+pub trait OperatorQuery<T,O> {
+    fn default_apply(&self,left:T,right:T)->O;
+}
