@@ -13,16 +13,18 @@ pub fn parse_from(input: &str) -> IResult<&str, Box<TableWithAlias>> {
     let (input, alias) = parse_optional_alias(input)?;
     match (alias, origin) {
         (None, TableOrigin::SubRequest(_)) => {
-            println!("{input}");
             Err(into_nom_error(alias_needed_parsing()))
         }
-        (a, t) => Ok((
+        (a, t) =>{
+           // println!("{a:?}");
+            Ok((
             input,
             Box::new(TableWithAlias {
                 origin: t,
                 alias: a,
             }),
-        )),
+        ))
+        } ,
     }
 }
 fn parse_from_base1(input: &str) -> IResult<&str, TableOrigin> {

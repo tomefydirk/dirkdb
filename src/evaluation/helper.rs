@@ -1,10 +1,12 @@
-use chrono::{Datelike, NaiveDate};
 use crate::{
     error_lib::evaluation::EvalEror,
     evaluation::LgResult,
-    general_struct::structure::{CompareOp, QualifiedIdentifier, TableAliasMap, TableCell, TableRow},
-    tokenizer::{scan_float, Token},
+    general_struct::structure::{
+        CompareOp, QualifiedIdentifier, TableAliasMap, TableCell, TableRow,
+    },
+    tokenizer::{Token, scan_float},
 };
+use chrono::{Datelike, NaiveDate};
 impl PartialEq for TableCell {
     fn eq(&self, other: &Self) -> bool {
         match (self, other) {
@@ -114,7 +116,7 @@ impl TableCell {
         }
     }
 }
-use std::{ hash::{Hash, Hasher}};
+use std::hash::{Hash, Hasher};
 
 impl Hash for QualifiedIdentifier {
     fn hash<H: Hasher>(&self, state: &mut H) {
@@ -125,42 +127,52 @@ impl Hash for QualifiedIdentifier {
     }
 }
 pub trait RowAlias {
-     fn get_column(&self, qid: &QualifiedIdentifier, aliases: &TableAliasMap) -> LgResult<&TableCell>;
+    fn get_column(
+        &self,
+        qid: &QualifiedIdentifier,
+        aliases: &TableAliasMap,
+    ) -> LgResult<&TableCell>;
 }
 
 impl RowAlias for TableRow {
-    fn get_column(&self, qid: &QualifiedIdentifier, aliases: &TableAliasMap) -> LgResult<&TableCell> {
+    fn get_column(
+        &self,
+        qid: &QualifiedIdentifier,
+        aliases: &TableAliasMap,
+    ) -> LgResult<&TableCell> {
         match &qid.table {
             Some(table_name) => {
-                
                 let real_table = aliases.get(table_name).unwrap_or(table_name);
 
-              
                 let normalized = QualifiedIdentifier {
                     table: Some(real_table.clone()),
-                    column: qid.to_string().clone(),
+                    column: qid.column.to_string().clone(),
                 };
 
-               
-                match   self.get(&normalized) {
-                    Some(retour) => {
-                       Ok(retour) 
-                    },
-                    None =>Err(EvalEror::<String>::field_notfound(qid.to_string())) ,
+                match self.get(&normalized) {
+                    Some(retour) => Ok(retour),
+                    None => {
+                        println!("{normalized:?}");
+                        Err(EvalEror::<String>::field_notfound(qid.to_string()))
+                    }
                 }
             }
             None => {
-               
-                let mut matches: Vec<&TableCell> = self.iter()
+                let mut matches: Vec<&TableCell> = self
+                    .iter()
                     .filter_map(|(k, v)| {
-                        if k.column == qid.column { Some(v) } else { None }
+                        if k.column == qid.column {
+                            Some(v)
+                        } else {
+                            None
+                        }
                     })
                     .collect();
 
                 match matches.len() {
                     0 => Err(EvalEror::<String>::field_notfound(qid.to_string())),
                     1 => Ok(matches.remove(0)),
-                    _ => Err(EvalEror::<String>::ambiguous_name(qid.to_string())), 
+                    _ => Err(EvalEror::<String>::ambiguous_name(qid.to_string())),
                 }
             }
         }
