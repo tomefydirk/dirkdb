@@ -11,6 +11,7 @@ pub enum EvalErrorkind {
     NotStaticVariable,
     AmbiguousName,
     AliasNeeded,
+    NotInDatabases
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -76,5 +77,8 @@ impl<I> EvalEror<I> {
             input: "Every derived table must have its own alias".to_string(),
             code: EvalErrorkind::AliasNeeded,
         }
+    }
+    pub fn not_in_database(table:String)->EvalEror<String>{
+        EvalEror::build(table, EvalErrorkind::NotInDatabases)
     }
 }

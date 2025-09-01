@@ -143,8 +143,11 @@ impl TableWithAlias {
         match &self.origin {
             TableOrigin::Name(n) => {
                 let g = make_tables();
-                let a = g.get(n).unwrap();
-                Ok(a.clone())
+                if let Some(a)=g.get(n){
+                     Ok(a.clone())
+                }else {
+                    Err(EvalEror::<String>::not_in_database(n.clone()))
+                }
             }
             TableOrigin::SubRequest(select_rqst) => match &self.alias {
                 Some(owner) => {
