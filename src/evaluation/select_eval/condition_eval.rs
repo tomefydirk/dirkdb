@@ -57,21 +57,6 @@ impl OperatorQuery<f64, f64> for BinOp {
     }
 }
 
-impl Condition {
-    fn eval_value(&self, ctx: &TableRow, aliases: &TableAliasMap) -> LgResult<TableCell> {
-        match self {
-            Condition::Primitive(PrimitiveElement::Identifier(qid)) => {
-                let a = ctx.get_column(qid, aliases)?;
-                Ok(a.clone())
-            }
-            Condition::Primitive(PrimitiveElement::Number(n)) => Ok(TableCell::Number(*n)),
-            Condition::Primitive(PrimitiveElement::String(s)) => Ok(TableCell::String(s.clone())),
-            Condition::Null => Ok(TableCell::Null),
-            a => Ok(a.eval_dyn(ctx, aliases)?),
-        }
-    }
-}
-
 impl EvaluableAsQuery<TableRow, TableAliasMap, TableCell> for Condition {
     fn eval_dyn(&self, ctx: &TableRow, aliases: &TableAliasMap) -> LgResult<TableCell> {
         match self {
@@ -133,4 +118,19 @@ pub fn change_args_type(
         retour.push(a.eval_dyn(ctx, aliases)?);
     }
     Ok(retour)
+}
+
+impl Condition {
+    fn eval_value(&self, ctx: &TableRow, aliases: &TableAliasMap) -> LgResult<TableCell> {
+        match self {
+            Condition::Primitive(PrimitiveElement::Identifier(qid)) => {
+                let a = ctx.get_column(qid, aliases)?;
+                Ok(a.clone())
+            }
+            Condition::Primitive(PrimitiveElement::Number(n)) => Ok(TableCell::Number(*n)),
+            Condition::Primitive(PrimitiveElement::String(s)) => Ok(TableCell::String(s.clone())),
+            Condition::Null => Ok(TableCell::Null),
+            a => Ok(a.eval_dyn(ctx, aliases)?),
+        }
+    }
 }
