@@ -41,7 +41,7 @@ pub enum Condition {
     Not(Box<Condition>),
     Primitive(PrimitiveElement),
     Func {
-        name: String,
+        name: QualifiedIdentifier,
         parameter: Vec<Condition>,
     },
     Null,

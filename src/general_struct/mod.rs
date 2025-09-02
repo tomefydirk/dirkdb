@@ -91,7 +91,7 @@ impl SelectRqst {
 }
 
 //DISPLAY :
-use std::fmt;
+use std::{fmt};
 
 impl fmt::Display for Condition {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -190,5 +190,17 @@ impl fmt::Display for QualifiedIdentifier {
             Some(t) => write!(f, "{}.{}", t, self.column),
             None => write!(f, "{}", self.column),
         }
+    }
+}
+
+impl From<String> for QualifiedIdentifier{
+    fn from(value: String) -> Self {
+          QualifiedIdentifier::new(None, value)      
+    }
+}
+
+impl From<&str> for QualifiedIdentifier{
+    fn from(value: &str) -> Self {
+        value.to_string().into()
     }
 }

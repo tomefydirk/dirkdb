@@ -7,7 +7,7 @@ use crate::{
 pub fn sqrt(args: Vec<TableCell>) -> LgResult<TableCell> {
     if args.len() != 1 {
         return Err(EvalEror::<String>::function_not_found(Signature::new(
-            "sqrt".to_string(),
+            "sqrt".into(),
             args.len(),
         )));
     }
@@ -28,7 +28,7 @@ pub fn sqrt(args: Vec<TableCell>) -> LgResult<TableCell> {
 pub fn datediff(args: Vec<TableCell>) -> LgResult<TableCell> {
     if args.len() != 2 {
         return Err(EvalEror::<String>::function_not_found(Signature::new(
-            "datediff".to_string(),
+            "datediff".into(),
             args.len(),
         )));
     }
@@ -38,7 +38,7 @@ pub fn datediff(args: Vec<TableCell>) -> LgResult<TableCell> {
 pub fn now(args: Vec<TableCell>) -> LgResult<TableCell> {
     if !args.is_empty() {
         return Err(EvalEror::<String>::function_not_found(Signature::new(
-            "datediff".to_string(),
+            "datediff".into(),
             args.len(),
         )));
     }

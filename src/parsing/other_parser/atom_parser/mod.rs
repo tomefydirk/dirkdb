@@ -55,7 +55,7 @@ impl Condition {
     }
     pub fn result_func(
         input: &str,
-        f_name: String,
+        f_name: QualifiedIdentifier,
         args: Vec<Condition>,
     ) -> IResult<&str, Box<Condition>> {
         Ok((

@@ -2,7 +2,7 @@ use std::str::FromStr;
 
 use crate::IResult;
 use crate::error_lib::parsing::{factor_error, into_nom_error, into_nom_failure, token_not_found};
-use crate::general_struct::structure::{BinOp, Condition};
+use crate::general_struct::structure::{BinOp, Condition, QualifiedIdentifier};
 use crate::parsing::other_parser::logic_parser::func::parse_logical;
 use crate::tokenizer::helper::codon_stop;
 use crate::tokenizer::{Token, scan_token};
@@ -77,7 +77,7 @@ pub fn parse_factor(input: &str) -> IResult<&str, Box<Condition>> {
         Token::Func(f) => parse_func_factor(next_input, f),
     }
 }
-pub fn parse_func_factor(mut input: &str, f: String) -> IResult<&str, Box<Condition>> {
+pub fn parse_func_factor(mut input: &str, f: QualifiedIdentifier) -> IResult<&str, Box<Condition>> {
     let mut vec = Vec::<Condition>::new();
     if input.trim().starts_with(PARENS_1) {
         let (ipt, _) = scan_token(input)?;

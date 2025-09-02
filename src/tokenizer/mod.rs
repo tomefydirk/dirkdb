@@ -18,7 +18,7 @@ pub enum Token<'a> {
     Number(f64),
     String(String),
     Variable(QualifiedIdentifier),
-    Func(String),
+    Func(QualifiedIdentifier),
     Other(&'a str),
 }
 
@@ -118,8 +118,7 @@ pub fn scan_binop_token(input: &str) -> IResult<&str, Token> {
     Ok((a.0, Token::Other(a.1)))
 }
 pub fn scan_function(input: &str) -> IResult<&str, Token> {
-    let a = tag_function.parse(input)?;
-    Ok((a.0, Token::Func(a.1)))
+    todo!()
 }
 
 ///forcement en dernier !!!!!!
