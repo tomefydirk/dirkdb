@@ -103,7 +103,7 @@ pub fn scan_function(input: &str) -> IResult<&str, Token> {
     let (input, func_name) = tag_variable(input)?;
     let (input, token) = scan_token(input.trim())?;
     match token {
-        Token::Other(PARENS_0) if is_func_valid(&func_name.column) => Ok((input, Token::Func(func_name))),
+        Token::Other(PARENS_0) if is_func_valid(&func_name.name) => Ok((input, Token::Func(func_name))),
         _ => Err(nom::Err::Error(
             nom::error::Error::new(input, nom::error::ErrorKind::Tag).into(),
         )),

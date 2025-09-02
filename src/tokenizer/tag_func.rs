@@ -81,16 +81,16 @@ pub fn tag_variable(input: &str) -> IResult<&str, QualifiedIdentifier> {
             Ok((
                 rest3,
                QualifiedIdentifier {
-                    table: Some(current_field),
-                    column: second_part,
+                    src: Some(current_field),
+                    name: second_part,
                 },       
             ))
         }
         None => Ok((
             rest,
             QualifiedIdentifier {
-                table: None,
-                column: current_field,
+                src: None,
+                name: current_field,
             },
         )),
     }

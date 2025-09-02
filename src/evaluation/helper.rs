@@ -120,10 +120,10 @@ use std::hash::{Hash, Hasher};
 
 impl Hash for QualifiedIdentifier {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        if let Some(ref t) = self.table {
+        if let Some(ref t) = self.src {
             t.to_lowercase().hash(state);
         }
-        self.column.to_lowercase().hash(state);
+        self.name.to_lowercase().hash(state);
     }
 }
 pub trait RowAlias {
@@ -140,13 +140,13 @@ impl RowAlias for TableRow {
         qid: &QualifiedIdentifier,
         aliases: &TableAliasMap,
     ) -> LgResult<&TableCell> {
-        match &qid.table {
+        match &qid.src {
             Some(table_name) => {
                 let real_table = aliases.get(table_name).unwrap_or(table_name);
 
                 let normalized = QualifiedIdentifier {
-                    table: Some(real_table.clone()),
-                    column: qid.column.to_string().clone(),
+                    src: Some(real_table.clone()),
+                    name: qid.name.to_string().clone(),
                 };
 
                 match self.get(&normalized) {
@@ -161,7 +161,7 @@ impl RowAlias for TableRow {
                 let mut matches: Vec<&TableCell> = self
                     .iter()
                     .filter_map(|(k, v)| {
-                        if k.column == qid.column {
+                        if k.name == qid.name {
                             Some(v)
                         } else {
                             None

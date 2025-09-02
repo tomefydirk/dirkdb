@@ -13,15 +13,15 @@ pub fn make_tables() -> Database {
     let mut row1 = HashMap::new();
     row1.insert(
         QualifiedIdentifier {
-            table: Some("employee".into()),
-            column: "id".into(),
+            src: Some("employee".into()),
+            name: "id".into(),
         },
         TableCell::Number(1.0),
     );
     row1.insert(
         QualifiedIdentifier {
-            table: Some("employee".into()),
-            column: "nom".into(),
+            src: Some("employee".into()),
+            name: "nom".into(),
         },
         TableCell::String("Jean".into()),
     );
@@ -31,15 +31,15 @@ pub fn make_tables() -> Database {
     let mut row2 = HashMap::new();
     row2.insert(
         QualifiedIdentifier {
-            table: Some("employee".into()),
-            column: "id".into(),
+            src: Some("employee".into()),
+            name: "id".into(),
         },
         TableCell::Number(2.0),
     );
     row2.insert(
         QualifiedIdentifier {
-            table: Some("employee".into()),
-            column: "nom".into(),
+            src: Some("employee".into()),
+            name: "nom".into(),
         },
         TableCell::String("Alice".into()),
     );
@@ -53,15 +53,15 @@ pub fn make_tables() -> Database {
     let mut boss1 = HashMap::new();
     boss1.insert(
         QualifiedIdentifier {
-            table: Some("boss".into()),
-            column: "id".into(),
+            src: Some("boss".into()),
+            name: "id".into(),
         },
         TableCell::Number(1.0),
     );
     boss1.insert(
         QualifiedIdentifier {
-            table: Some("boss".into()),
-            column: "nom".into(),
+            src: Some("boss".into()),
+            name: "nom".into(),
         },
         TableCell::String("Patron de Jean".into()),
     );

@@ -16,7 +16,7 @@ pub fn parse_explicit_alias(input: &str) -> IResult<&str, Option<String>> {
         Token::Other(word) if word.eq_ignore_ascii_case("as") => {
             let (after_as, alias_tok) = scan_token(next_input)?;
             match alias_tok {
-                Token::Variable(qid) => Ok((after_as, Some(qid.column))),
+                Token::Variable(qid) => Ok((after_as, Some(qid.name))),
                 _ => Err(into_nom_failure(factor_error(next_input))),
             }
         }
@@ -28,7 +28,7 @@ pub fn parse_explicit_alias(input: &str) -> IResult<&str, Option<String>> {
 pub fn parse_implicit_alias(input: &str) -> IResult<&str, Option<String>> {
     let (next_input, tok) = scan_token(input)?;
     match tok {
-        Token::Variable(qid) => Ok((next_input, Some(qid.column))),
+        Token::Variable(qid) => Ok((next_input, Some(qid.name))),
         _ => Ok((input, None)),
     }
 }

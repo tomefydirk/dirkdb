@@ -10,10 +10,10 @@ use crate::{
 };
 impl Field {
     pub fn apply_alias(&mut self, alias: QualifiedIdentifier) -> bool {
-        if self.alias.is_some() || alias.table.is_some() {
+        if self.alias.is_some() || alias.src.is_some() {
             false
         } else {
-            self.alias = Some(alias.column);
+            self.alias = Some(alias.name);
             true
         }
     }
@@ -76,8 +76,8 @@ impl Field {
                 Field::new(
                     expr,
                     QualifiedIdentifier {
-                        table: None,
-                        column: default_name,
+                        src: None,
+                        name: default_name,
                     },
                 )
             }

@@ -22,8 +22,8 @@ impl EvaluableAsQuery<Table, TableAliasMap, Table> for Vec<Field> {
                 let val = field.expr.eval_dyn(row, aliases)?;
                 let qid = match &field.alias {
                     Some(alias) => QualifiedIdentifier {
-                        table: field.default_name.table.clone(),
-                        column: alias.clone(),
+                        src: field.default_name.src.clone(),
+                        name: alias.clone(),
                     },
                     None => field.default_name.clone(),
                 };
@@ -44,8 +44,8 @@ impl EvaluableAsQuery<Table, TableAliasMap, Table> for Vec<Field> {
 
             let qid = match &field.alias {
                 Some(alias) => QualifiedIdentifier {
-                    table: field.default_name.table.clone(),
-                    column: alias.clone(),
+                    src: field.default_name.src.clone(),
+                    name: alias.clone(),
                 },
                 None => field.default_name.clone(),
             };
@@ -120,7 +120,7 @@ impl TableWithAlias {
 
             for (name, value) in row.iter() {
                 new_row.insert(
-                    QualifiedIdentifier::new(Option::Some(owner.clone()), name.column.clone()),
+                    QualifiedIdentifier::new(Option::Some(owner.clone()), name.name.clone()),
                     value.clone(),
                 );
             }
