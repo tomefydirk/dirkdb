@@ -12,17 +12,11 @@ pub fn make_tables() -> Database {
     // ligne 1
     let mut row1 = HashMap::new();
     row1.insert(
-        QualifiedIdentifier {
-            src: Some("employee".into()),
-            name: "id".into(),
-        },
+        QualifiedIdentifier::new(Some("employee".into()), "id".into()),
         TableCell::Number(1.0),
     );
     row1.insert(
-        QualifiedIdentifier {
-            src: Some("employee".into()),
-            name: "nom".into(),
-        },
+        QualifiedIdentifier::new(Some("employee".into()),  "nom".into()),
         TableCell::String("Jean".into()),
     );
     employee_table.push(row1);
@@ -30,17 +24,11 @@ pub fn make_tables() -> Database {
     // ligne 2
     let mut row2 = HashMap::new();
     row2.insert(
-        QualifiedIdentifier {
-            src: Some("employee".into()),
-            name: "id".into(),
-        },
+        QualifiedIdentifier::new(Some("employee".into()), "id".into()),
         TableCell::Number(2.0),
     );
     row2.insert(
-        QualifiedIdentifier {
-            src: Some("employee".into()),
-            name: "nom".into(),
-        },
+        QualifiedIdentifier::new(Some("employee".into()),  "nom".into()),
         TableCell::String("Alice".into()),
     );
     employee_table.push(row2);
@@ -52,17 +40,11 @@ pub fn make_tables() -> Database {
 
     let mut boss1 = HashMap::new();
     boss1.insert(
-        QualifiedIdentifier {
-            src: Some("boss".into()),
-            name: "id".into(),
-        },
+        QualifiedIdentifier::new(Some("boss".into()), "id".into()) ,
         TableCell::Number(1.0),
     );
     boss1.insert(
-        QualifiedIdentifier {
-            src: Some("boss".into()),
-            name: "nom".into(),
-        },
+        QualifiedIdentifier::new(Some("boss".into()), "nom".into()) ,
         TableCell::String("Patron de Jean".into()),
     );
     boss_table.push(boss1);

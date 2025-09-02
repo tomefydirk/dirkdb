@@ -144,10 +144,7 @@ impl RowAlias for TableRow {
             Some(table_name) => {
                 let real_table = aliases.get(table_name).unwrap_or(table_name);
 
-                let normalized = QualifiedIdentifier {
-                    src: Some(real_table.clone()),
-                    name: qid.name.to_string().clone(),
-                };
+                let normalized = QualifiedIdentifier::new(Some(real_table.clone()), qid.name.to_string().clone());
 
                 match self.get(&normalized) {
                     Some(retour) => Ok(retour),

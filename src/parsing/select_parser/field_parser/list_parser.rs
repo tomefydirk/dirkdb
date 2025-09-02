@@ -75,10 +75,7 @@ impl Field {
                 let default_name = expr.to_string();
                 Field::new(
                     expr,
-                    QualifiedIdentifier {
-                        src: None,
-                        name: default_name,
-                    },
+                    QualifiedIdentifier::new(None,  default_name),
                 )
             }
         }

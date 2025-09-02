@@ -80,18 +80,12 @@ pub fn tag_variable(input: &str) -> IResult<&str, QualifiedIdentifier> {
             let (rest3, second_part) = tag_name(rest2)?;
             Ok((
                 rest3,
-               QualifiedIdentifier {
-                    src: Some(current_field),
-                    name: second_part,
-                },       
+                QualifiedIdentifier::new(Some(current_field),second_part),       
             ))
         }
         None => Ok((
             rest,
-            QualifiedIdentifier {
-                src: None,
-                name: current_field,
-            },
+            QualifiedIdentifier::new(None, current_field),
         )),
     }
 }
