@@ -5,10 +5,10 @@ use nom::{
     combinator::opt,
 };
 
-use crate::general_struct::constant::*;
+use crate::general_struct::{constant::*, structure::QualifiedIdentifier};
 use crate::{
     IResult,
-    tokenizer::helper::{is_func_valid, is_ident_char, is_ident_start},
+    tokenizer::helper::{ is_ident_char, is_ident_start},
 };
 
 pub fn tag_float(input: &str) -> IResult<&str, f64> {
@@ -72,16 +72,26 @@ pub fn tag_is_not(input: &str) -> IResult<&str, &str> {
         .parse(input)?;
     Ok((input, (IS_NOT_SIGN)))
 }
-pub fn tag_function(input: &str) -> IResult<&str, String> {
-    let (a, func_name) = tag_name(input)?;
-    let b = a.trim();
-    let (input_retour, _) = tag(PARENS_0).parse(b)?;
-
-    if is_func_valid(&func_name) {
-        Ok((input_retour, func_name))
-    } else {
-        Err(nom::Err::Error(
-            nom::error::Error::new(input, nom::error::ErrorKind::Tag).into(),
-        ))
+pub fn tag_variable(input: &str) -> IResult<&str, QualifiedIdentifier> {
+    let (rest, current_field) = tag_name(input)?;
+    let (rest2, point) = opt(tag(".")).parse(rest)?;
+    match point {
+        Some(_) => {
+            let (rest3, second_part) = tag_name(rest2)?;
+            Ok((
+                rest3,
+               QualifiedIdentifier {
+                    table: Some(current_field),
+                    column: second_part,
+                },       
+            ))
+        }
+        None => Ok((
+            rest,
+            QualifiedIdentifier {
+                table: None,
+                column: current_field,
+            },
+        )),
     }
 }

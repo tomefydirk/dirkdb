@@ -34,7 +34,7 @@ impl<I> EvalEror<I> {
         EvalEror::build(input, EvalErrorkind::FieldNotFound)
     }
     pub fn function_not_found(s: Signature) -> EvalEror<String> {
-        EvalEror::<String>::build(format!("{s:?}"), EvalErrorkind::FunctionNotFound)
+        EvalEror::<String>::build(s.to_string(), EvalErrorkind::FunctionNotFound)
     }
     pub fn function_error(msg: String) -> EvalEror<String> {
         EvalEror::<String>::build(msg, EvalErrorkind::FunctionError)

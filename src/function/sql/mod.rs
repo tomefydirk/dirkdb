@@ -1,7 +1,6 @@
 pub mod list_func;
 use std::{
-    collections::HashMap,
-    hash::{Hash, Hasher},
+    collections::HashMap, fmt::Display, hash::{Hash, Hasher}
 };
 
 use crate::{
@@ -13,13 +12,18 @@ use crate::{
 
 #[derive(Debug, Clone)]
 pub struct Signature {
-    name: QualifiedIdentifier,
+   name: QualifiedIdentifier,
     parameter: usize,
 }
 
 impl Signature {
     pub fn new(name: QualifiedIdentifier, parameter: usize) -> Self {
         Self { name, parameter }
+    }
+}
+impl Display for Signature {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f,"[ func_name : {} / parameter : {} ]",self.name,self.parameter)
     }
 }
 impl PartialEq for Signature {

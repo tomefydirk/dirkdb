@@ -1,17 +1,17 @@
 pub mod helper;
 pub mod tag_func;
+use crate::tokenizer::helper::is_func_valid;
 use crate::IResult;
 use crate::general_struct::constant::*;
 use crate::general_struct::structure::QualifiedIdentifier;
 use crate::tokenizer::tag_func::{
-    tag_float, tag_function, tag_is_not, tag_key_word_logic, tag_name, tag_string,
+    tag_float, tag_is_not, tag_key_word_logic, tag_string, tag_variable,
 };
 use nom::Parser;
 ///TOKENTOOL::
 use nom::branch::alt;
 use nom::bytes::complete::{tag, tag_no_case};
 use nom::character::complete::space0;
-use nom::combinator::opt;
 
 #[derive(Debug)]
 pub enum Token<'a> {
@@ -48,27 +48,9 @@ pub fn scan_float(input: &str) -> IResult<&str, Token> {
 }
 
 pub fn scan_name(input: &str) -> IResult<&str, Token> {
-    let (rest, current_field) = tag_name(input)?;
-    let (rest2, point) = opt(tag(".")).parse(rest)?;
-    match point {
-        Some(_) => {
-            let (rest3, second_part) = tag_name(rest2)?;
-            Ok((
-                rest3,
-                Token::Variable(QualifiedIdentifier {
-                    table: Some(current_field),
-                    column: second_part,
-                }),
-            ))
-        }
-        None => Ok((
-            rest,
-            Token::Variable(QualifiedIdentifier {
-                table: None,
-                column: current_field,
-            }),
-        )),
-    }
+    let a = tag_variable(input)?;
+
+    Ok((a.0, Token::Variable(a.1)))
 }
 
 pub fn scan_string(input: &str) -> IResult<&str, Token> {
@@ -118,7 +100,14 @@ pub fn scan_binop_token(input: &str) -> IResult<&str, Token> {
     Ok((a.0, Token::Other(a.1)))
 }
 pub fn scan_function(input: &str) -> IResult<&str, Token> {
-    todo!()
+    let (input, func_name) = tag_variable(input)?;
+    let (input, token) = scan_token(input.trim())?;
+    match token {
+        Token::Other(PARENS_0) if is_func_valid(&func_name.column) => Ok((input, Token::Func(func_name))),
+        _ => Err(nom::Err::Error(
+            nom::error::Error::new(input, nom::error::ErrorKind::Tag).into(),
+        )),
+    }
 }
 
 ///forcement en dernier !!!!!!
