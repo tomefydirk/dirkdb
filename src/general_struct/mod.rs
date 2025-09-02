@@ -71,8 +71,8 @@ impl Field {
 
 pub fn ident(column: &str) -> Condition {
     Condition::Primitive(PrimitiveElement::Identifier(QualifiedIdentifier {
-        table: None,
-        column: column.to_string(),
+        src: None,
+        name: column.to_string(),
     }))
 }
 
@@ -133,10 +133,10 @@ impl fmt::Display for PrimitiveElement {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             PrimitiveElement::Identifier(qid) => {
-                if let Some(table) = &qid.table {
-                    write!(f, "{}.{}", table, qid.column)
+                if let Some(table) = &qid.src {
+                    write!(f, "{}.{}", table, qid.name)
                 } else {
-                    write!(f, "{}", qid.column)
+                    write!(f, "{}", qid.name)
                 }
             }
             PrimitiveElement::Number(n) => write!(f, "{}", n),
@@ -186,9 +186,9 @@ impl fmt::Display for BinOp {
 }
 impl fmt::Display for QualifiedIdentifier {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match &self.table {
-            Some(t) => write!(f, "{}.{}", t, self.column),
-            None => write!(f, "{}", self.column),
+        match &self.src {
+            Some(t) => write!(f, "{}.{}", t, self.name),
+            None => write!(f, "{}", self.name),
         }
     }
 }

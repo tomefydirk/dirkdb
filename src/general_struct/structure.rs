@@ -3,13 +3,13 @@ use std::collections::HashMap;
 use chrono::NaiveDate;
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct QualifiedIdentifier {
-    pub table: Option<String>,
-    pub column: String,
+    pub src: Option<String>,
+    pub name: String,
 }
 
 impl QualifiedIdentifier {
-    pub fn new(table: Option<String>, column: String) -> Self {
-        Self { table, column }
+    pub fn new(src: Option<String>, name: String) -> Self {
+        Self { src, name }
     }
 }
 

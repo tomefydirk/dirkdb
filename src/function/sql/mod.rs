@@ -28,10 +28,10 @@ impl Display for Signature {
 }
 impl PartialEq for Signature {
     fn eq(&self, other: &Self) -> bool {
-        if self.name.column.eq_ignore_ascii_case(&other.name.column)
+        if self.name.name.eq_ignore_ascii_case(&other.name.name)
             && self.parameter == other.parameter
         {
-            match (&self.name.table, &other.name.table) {
+            match (&self.name.src, &other.name.src) {
                 (None, None) => true,
                 (Some(a), Some(b)) if a == b => true,
                 _ => false,
@@ -45,10 +45,10 @@ impl Eq for Signature {}
 
 impl Hash for Signature {
     fn hash<H: Hasher>(&self, state: &mut H) {
-        if let Some(a) = &self.name.table {
+        if let Some(a) = &self.name.src {
             a.hash(state);
         }
-        self.name.column.to_lowercase().hash(state);
+        self.name.name.to_lowercase().hash(state);
         self.parameter.hash(state);
     }
 }
