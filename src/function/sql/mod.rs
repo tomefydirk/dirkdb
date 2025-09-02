@@ -1,4 +1,22 @@
 pub mod list_func;
+
+/*   
+    Cette module se concenctre sur les function sql :
+
+    Chaque fonction a une signature : {
+        -qid : {
+            src : (la librairie de la fonction :
+                ex: std , nom , ...
+            
+            )
+            name : nom de la fonction (non sensible à la case)
+        }
+            ex de qid : std.ma_fonction , sqrt  
+    
+        -parameter : nombre de parametre
+    }
+ */
+
 use std::{
     collections::HashMap, fmt::Display, hash::{Hash, Hasher}
 };
