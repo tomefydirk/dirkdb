@@ -38,7 +38,7 @@ fn parse_from_base1(input: &str) -> IResult<&str, TableOrigin> {
     } else {
         let (input, token) = scan_token(input)?;
         match token {
-            Token::FieldName(qid) if qid.table.is_none() => {
+            Token::Variable(qid) if qid.table.is_none() => {
                 Ok((input, TableOrigin::Name(qid.column)))
             }
             _ => Err(into_nom_failure(factor_error(input))),

@@ -17,7 +17,7 @@ use nom::combinator::opt;
 pub enum Token<'a> {
     Number(f64),
     String(String),
-    FieldName(QualifiedIdentifier),
+    Variable(QualifiedIdentifier),
     Func(String),
     Other(&'a str),
 }
@@ -55,7 +55,7 @@ pub fn scan_name(input: &str) -> IResult<&str, Token> {
             let (rest3, second_part) = tag_name(rest2)?;
             Ok((
                 rest3,
-                Token::FieldName(QualifiedIdentifier {
+                Token::Variable(QualifiedIdentifier {
                     table: Some(current_field),
                     column: second_part,
                 }),
@@ -63,7 +63,7 @@ pub fn scan_name(input: &str) -> IResult<&str, Token> {
         }
         None => Ok((
             rest,
-            Token::FieldName(QualifiedIdentifier {
+            Token::Variable(QualifiedIdentifier {
                 table: None,
                 column: current_field,
             }),

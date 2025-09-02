@@ -61,7 +61,7 @@ pub fn parse_factor(input: &str) -> IResult<&str, Box<Condition>> {
     match token {
         Token::Number(n) => Condition::result_number(next_input, n),
         Token::String(s) => Condition::result_string(next_input, s),
-        Token::FieldName(f) => Condition::result_name(next_input, f),
+        Token::Variable(f) => Condition::result_name(next_input, f),
         Token::Other(str_token) => {
             if str_token == PARENS_0 {
                 parse_real_factor(next_input)

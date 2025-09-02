@@ -32,7 +32,7 @@ pub fn parse_fieldrqst_expr_list(input: &str) -> IResult<&str, FieldRqst> {
             }
 
             // alias implicite : SELECT name username
-            Token::FieldName(alias) => {
+            Token::Variable(alias) => {
                 if let Some(last) = fields.last_mut() {
                     if !last.apply_alias(alias) {
                         return Err(into_nom_failure(alias_not_valid(next_input)));
@@ -45,7 +45,7 @@ pub fn parse_fieldrqst_expr_list(input: &str) -> IResult<&str, FieldRqst> {
             Token::Other(a) if a.eq_ignore_ascii_case(AS_SIGN) => {
                 let (after_as, alias_token) = scan_token(next_input)?;
                 match alias_token {
-                    Token::FieldName(alias) => {
+                    Token::Variable(alias) => {
                         if let Some(last) = fields.last_mut() {
                             if !last.apply_alias(alias) {
                                 return Err(into_nom_failure(alias_not_valid(next_input)));
