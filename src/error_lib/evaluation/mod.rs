@@ -6,12 +6,12 @@ pub enum EvalErrorkind {
     RegexInvalid,
     IncorrectDateValue,
     FunctionNotFound,
-    NegativeintoSQRT,
     IncompatibleType,
     NotStaticVariable,
     AmbiguousName,
     AliasNeeded,
     NotInDatabases,
+    FunctionError,
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -25,58 +25,34 @@ impl<I> EvalEror<I> {
         Self { input, code }
     }
     pub fn incorrect_date_value(input: I) -> Self {
-        Self {
-            input,
-            code: EvalErrorkind::IncorrectDateValue,
-        }
+        EvalEror::build(input, EvalErrorkind::IncorrectDateValue)
     }
     pub fn regex_invalid(input: I) -> Self {
-        Self {
-            input,
-            code: EvalErrorkind::RegexInvalid,
-        }
+        EvalEror::build(input, EvalErrorkind::RegexInvalid)
     }
     pub fn field_notfound(input: I) -> Self {
-        Self {
-            input,
-            code: EvalErrorkind::FieldNotFound,
-        }
+        EvalEror::build(input, EvalErrorkind::FieldNotFound)
     }
     pub fn function_not_found(s: Signature) -> EvalEror<String> {
-        EvalEror {
-            input: format!("{s:?}"),
-            code: EvalErrorkind::FunctionNotFound,
-        }
+        EvalEror::<String>::build(format!("{s:?}"), EvalErrorkind::FunctionNotFound)
     }
-    pub fn negative_into_sqrt(number: f64) -> EvalEror<String> {
-        EvalEror {
-            input: number.to_string(),
-            code: EvalErrorkind::NegativeintoSQRT,
-        }
+    pub fn function_error(msg: String) -> EvalEror<String> {
+        EvalEror::<String>::build(msg, EvalErrorkind::FunctionError)
     }
     pub fn incompatible_type(t: &TableCell) -> EvalEror<String> {
-        EvalEror {
-            input: format!("{t:?}"),
-            code: EvalErrorkind::IncompatibleType,
-        }
+        EvalEror::<String>::build(format!("{t:?}"), EvalErrorkind::IncompatibleType)
     }
     pub fn not_static_variable() -> EvalEror<String> {
-        EvalEror {
-            input: "*".to_string(),
-            code: EvalErrorkind::NotStaticVariable,
-        }
+        EvalEror::<String>::build("*".to_string(), EvalErrorkind::NotStaticVariable)
     }
     pub fn ambiguous_name(field_name: String) -> EvalEror<String> {
-        EvalEror {
-            input: field_name,
-            code: EvalErrorkind::AmbiguousName,
-        }
+        EvalEror::<String>::build(field_name, EvalErrorkind::AmbiguousName)
     }
     pub fn alias_need() -> EvalEror<String> {
-        EvalEror {
-            input: "Every derived table must have its own alias".to_string(),
-            code: EvalErrorkind::AliasNeeded,
-        }
+        EvalEror::<String>::build(
+            "Every derived table must have its own alias".to_string(),
+            EvalErrorkind::AliasNeeded,
+        )
     }
     pub fn not_in_database(table: String) -> EvalEror<String> {
         EvalEror::build(table, EvalErrorkind::NotInDatabases)

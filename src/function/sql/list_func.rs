@@ -15,7 +15,9 @@ pub fn sqrt(args: Vec<TableCell>) -> LgResult<TableCell> {
     match &args[0] {
         TableCell::Number(f) => {
             if *f < 0.0 {
-                Err(EvalEror::<String>::negative_into_sqrt(*f))
+                Err(EvalEror::<String>::function_error(format!(
+                    "un nombre négative dans sqrt : {f}"
+                )))
             } else {
                 Ok(TableCell::Number(f.sqrt()))
             }
