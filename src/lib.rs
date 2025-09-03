@@ -6,4 +6,5 @@ pub mod general_struct;
 pub mod parsing;
 pub mod tokenizer;
 pub mod serealization;
+pub mod cli;
 pub(crate) use error_lib::parsing::IResult;
