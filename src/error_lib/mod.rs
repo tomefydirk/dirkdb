@@ -4,7 +4,7 @@ pub mod evaluation;
 pub mod parsing;
 
 #[derive(Debug, thiserror::Error)]
-pub enum   SqlError<I>{
-    Parsing(#[from] error_lib::parsing::Error<I>),
-    Evaluation(#[from] error_lib::evaluation::EvalEror<I>)
+pub enum   SqlError<T>{
+    Parsing(#[from] nom::Err<error_lib::parsing::Error<T>>),
+    Evaluation(#[from] error_lib::evaluation::EvalEror<T>)
 }

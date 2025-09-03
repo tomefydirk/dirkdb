@@ -6,7 +6,7 @@ use std::{
 use dialoguer::console::style;
 
 use crate::{
-     error_lib::SqlError, general_struct::constant::SEMICOLON_SIGN, parsing::select_parser::func::parse_select, tokenizer::scan_token
+     parsing::select_parser::func::parse_select
 };
 
 pub fn introduction() {
@@ -36,7 +36,7 @@ pub fn request_reader() -> io::Result<()> {
             return Ok(());
         }
 
-        handle_multi_request(&buffer);
+       ask_request(&buffer);
     }
 }
 fn print_erreur<T: Display>(statues: &str, e: &T) {
@@ -46,12 +46,7 @@ fn print_erreur<T: Display>(statues: &str, e: &T) {
         style("#").bold().dim()
     )
 }
-fn handle_multi_request(input: &str) {
-    while let Ok(next_input) = ask_request(input) {
-        todo!()
-    }
-}
-fn ask_request(input: &str) -> Result<&str, SqlError<String>> {
+fn ask_request(input: &str) {
     let b = parse_select(input);
     match b {
         Ok(result) => match result.1.eval() {
@@ -60,7 +55,4 @@ fn ask_request(input: &str) -> Result<&str, SqlError<String>> {
         },
         Err(e) => print_erreur("parsing", &e),
     }
-
-    println!();
-    todo!()
 }
