@@ -1,9 +1,11 @@
 pub mod helper;
 pub mod tag_func;
-use crate::tokenizer::helper::is_func_valid;
+use std::fmt::Display;
+
 use crate::IResult;
 use crate::general_struct::constant::*;
 use crate::general_struct::structure::QualifiedIdentifier;
+use crate::tokenizer::helper::is_func_valid;
 use crate::tokenizer::tag_func::{
     tag_float, tag_is_not, tag_key_word_logic, tag_string, tag_variable,
 };
@@ -27,7 +29,19 @@ impl<'a> From<&'a str> for Token<'a> {
         Token::Other(value)
     }
 }
-
+impl Display for Token<'_> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Token::Number(n) => write!(f, "\"{}\"", n),
+            Token::String(s) => write!(f, "\"{}\"", s),
+            Token::Variable(qualified_identifier) => {
+                write!(f, "{}", qualified_identifier)
+            }
+            Token::Func(qualified_identifier) => write!(f, "{}", qualified_identifier),
+            Token::Other(t) => write!(f, "{t}"),
+        }
+    }
+}
 impl From<String> for Token<'_> {
     fn from(value: String) -> Self {
         Token::String(value)
@@ -103,7 +117,9 @@ pub fn scan_function(input: &str) -> IResult<&str, Token> {
     let (input, func_name) = tag_variable(input)?;
     let (input, token) = scan_token(input.trim())?;
     match token {
-        Token::Other(PARENS_0) if is_func_valid(&func_name.name) => Ok((input, Token::Func(func_name))),
+        Token::Other(PARENS_0) if is_func_valid(&func_name.name) => {
+            Ok((input, Token::Func(func_name)))
+        }
         _ => Err(nom::Err::Error(
             nom::error::Error::new(input, nom::error::ErrorKind::Tag).into(),
         )),

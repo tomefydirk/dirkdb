@@ -55,4 +55,5 @@ fn ask_request(input: &str) {
         },
         Err(e) => print_erreur("parsing", &e),
     }
+    println!();
 }
