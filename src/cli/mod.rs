@@ -11,8 +11,9 @@ use crate::{
 
 pub fn introduction() {
     println!(
-        "\tBienvenue dans {} / Version : 1.0 ",
-        style("dirkdb").dim()
+        "\tBienvenue dans {}{}",
+        style("dirkdb").dim().bold(),
+        style("V1.0").bold().italic()
     );
     println!(
         "
@@ -32,7 +33,8 @@ pub fn request_reader() -> io::Result<()> {
         io::stdout().flush().unwrap();
         io::stdin().read_line(&mut buffer)?;
 
-        if buffer.trim().eq_ignore_ascii_case("QUIT") {
+        if buffer.trim().eq_ignore_ascii_case("QUIT") || buffer.trim().eq_ignore_ascii_case("EXIt"){
+            println!("Bye");
             return Ok(());
         }
 
