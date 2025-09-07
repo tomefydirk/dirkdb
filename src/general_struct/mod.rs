@@ -1,6 +1,7 @@
+use serde::de::value;
+
 use crate::general_struct::structure::{
-    BinOp, CompareOp, Condition, Field, FieldRqst, LogicalOp, PrimitiveElement,
-    QualifiedIdentifier, SelectRqst, TableCell, TableWithAlias,
+    BinOp, CompareOp, Condition, Field, FieldRqst, LogicalOp, ManyKeyWord, PrimitiveElement, QualifiedIdentifier, SelectRqst, TableCell, TableWithAlias
 };
 
 pub mod constant;
@@ -85,6 +86,7 @@ impl SelectRqst {
         Self {
             fields,
             from,
+            join:None,
             condition,
         }
     }
@@ -202,5 +204,17 @@ impl From<String> for QualifiedIdentifier{
 impl From<&str> for QualifiedIdentifier{
     fn from(value: &str) -> Self {
         value.to_string().into()
+    }
+}
+
+impl<I> PartialEq for ManyKeyWord<I> where I:PartialEq{
+    fn eq(&self, other: &Self) -> bool {
+        self.words == other.words
+    }
+}
+
+impl<I> ManyKeyWord<I> where I:PartialEq {
+    fn new(value:Vec<I>)->Self{
+        Self { words: value }
     }
 }

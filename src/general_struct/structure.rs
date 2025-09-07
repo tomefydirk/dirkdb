@@ -99,6 +99,7 @@ pub enum TableOrigin {
 pub struct SelectRqst {
     pub fields: FieldRqst,
     pub from: Option<TableWithAlias>,
+    pub join : Option<Vec<JoinElement>>,
     pub condition: Option<Condition>,
 }
 
@@ -115,6 +116,25 @@ pub enum FieldRqst {
     Selected(Vec<Field>),
 }
 
+#[derive(Debug, Clone)]
+pub enum JoinOp{
+    Full,
+    Inner,
+    Left,
+    Right
+}
+
+#[derive(Debug, Clone)]
+pub struct JoinElement{
+    op:JoinOp,
+    table:TableWithAlias
+}
+
 pub type Table = Vec<TableRow>;
 pub type TableRow = HashMap<QualifiedIdentifier, TableCell>;
 pub type TableAliasMap = HashMap<String, String>;
+
+//-->keywords
+pub struct ManyKeyWord<I:PartialEq>{
+    pub words:Vec<I>
+}

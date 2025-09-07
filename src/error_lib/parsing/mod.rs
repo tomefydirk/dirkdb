@@ -56,6 +56,14 @@ pub enum Error<I> {
     FromStrLgclOp(#[from] FromStrLogicalOpError),
 }
 
+//Token result
+pub type TokenResult<I, O, E = Error<I>> = nom::IResult<I, O, E>;
+
+//parsing result
+pub type ParsingResult<I,O,E = Error<String>>= nom::IResult<I, O, E>;
+
+
+//avant
 pub type IResult<I, O, E = Error<I>> = nom::IResult<I, O, E>;
 
 impl<I> nom::error::ParseError<I> for Error<I> {

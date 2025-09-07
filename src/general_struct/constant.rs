@@ -1,3 +1,5 @@
+use crate::general_struct::structure::ManyKeyWord;
+
 //binop const
 pub const PARENS_0: &str = "(";
 pub const PARENS_1: &str = ")";
@@ -28,10 +30,26 @@ pub const SELECT_SIGN: &str = "select";
 pub const FROM_SIGN: &str = "from";
 pub const WHERE_SIGN: &str = "where";
 
+pub const FULL: &str = "full";
+pub const INNER: &str = "inner";
+pub const RIGHT: &str = "right";
+pub const LEFT: &str = "left";
 //--- virgule et point virugle
 pub const COMMA_SIGN: &str = ",";
 pub const SEMICOLON_SIGN: &str = ";";
 
+pub fn full_join() -> ManyKeyWord<&'static str> {
+    ManyKeyWord::new(vec!["full", "join"])
+}
+pub fn right_join() -> ManyKeyWord<&'static str> {
+    ManyKeyWord::new(vec!["right", "join"])
+}
+pub fn left_join() -> ManyKeyWord<&'static str> {
+    ManyKeyWord::new(vec!["left", "join"])
+}
+pub fn inner_join() -> ManyKeyWord<&'static str> {
+    ManyKeyWord::new(vec!["inner", "join"])
+}
 pub fn key_word_list() -> Vec<String> {
     vec![
         IS_SIGN.to_string(),

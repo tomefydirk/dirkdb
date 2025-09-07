@@ -10,18 +10,10 @@ use crate::{
 };
 
 pub fn introduction() {
-    println!(
-        "\tBienvenue dans {}{}",
-        style("dirkdb").dim().bold(),
-        style("V1.0").bold().italic()
-    );
-    println!(
-        "
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo itaque consequatur
-     veritatis iste optio temporibus alias, dolor amet in sunt ad delectus
-      unde consequuntur reiciendis accusamus nemo. Mollitia, soluta non.
-    "
-    );
+    println!("Welcome to the DirkDB monitor.  Commands end with ;");
+    println!("Your version is 1.0 vanilla\n");
+    println!("Please if you have a problem due to this Version , signal Dirk Company with this link {}",style("https://github.com/tomefydirk/dirkdb").cyan());
+
     println!("\n\tColaborateur : tomefydirk tony_mushah\n");
 }
 

@@ -12,7 +12,7 @@ use crate::tokenizer::tag_func::{
 use nom::Parser;
 ///TOKENTOOL::
 use nom::branch::alt;
-use nom::bytes::complete::{tag, tag_no_case};
+use nom::bytes::complete::{tag};
 use nom::character::complete::space0;
 
 #[derive(Debug)]
@@ -89,9 +89,9 @@ pub fn scan_logic_token(input: &str) -> IResult<&str, Token> {
         tag_key_word_logic(AND_SIGN),
         tag_key_word_logic(NOT_SIGN),
         tag_key_word_logic(LIKE_SIGN),
-        tag_no_case(IS_SIGN),
-        tag_no_case(NULL_SIGN),
-        tag_no_case(AS_SIGN),
+        tag_key_word_logic(IS_SIGN),
+        tag_key_word_logic(NULL_SIGN),
+        tag_key_word_logic(AS_SIGN),
         tag_key_word_logic(SELECT_SIGN),
         tag_key_word_logic(FROM_SIGN),
         tag_key_word_logic(WHERE_SIGN),
@@ -134,9 +134,9 @@ pub fn default_token(input: &str) -> IResult<&str, Token> {
 
 pub fn scan_token(input: &str) -> IResult<&str, Token> {
     let a = alt((
+        scan_logic_token,
         scan_function,
         scan_float,
-        scan_logic_token,
         scan_binop_token,
         scan_name,
         scan_string,
