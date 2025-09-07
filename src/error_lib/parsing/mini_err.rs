@@ -3,7 +3,7 @@ use std::str::FromStr;
 use crate::general_struct::constant::*;
 use crate::general_struct::structure::{BinOp, CompareOp, LogicalOp};
 
-#[derive(Debug, thiserror::Error,Clone)]
+#[derive(Debug, thiserror::Error, Clone)]
 #[error("Invalid token bin-op {0}")]
 pub struct FromStrBinOpError(String);
 
@@ -23,7 +23,7 @@ impl FromStr for BinOp {
     }
 }
 
-#[derive(Debug, thiserror::Error,Clone)]
+#[derive(Debug, thiserror::Error, Clone)]
 #[error("Invalid token compare-op {0}")]
 pub struct FromStrCmpOpError(String);
 
@@ -45,7 +45,7 @@ impl FromStr for CompareOp {
     }
 }
 
-#[derive(Debug, thiserror::Error,Clone)]
+#[derive(Debug, thiserror::Error, Clone)]
 #[error("Invalid token logical-op {0}")]
 pub struct FromStrLogicalOpError(String);
 

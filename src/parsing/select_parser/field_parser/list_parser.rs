@@ -73,10 +73,7 @@ impl Field {
 
             _ => {
                 let default_name = expr.to_string();
-                Field::new(
-                    expr,
-                    QualifiedIdentifier::new(None,  default_name),
-                )
+                Field::new(expr, QualifiedIdentifier::new(None, default_name))
             }
         }
     }

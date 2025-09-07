@@ -75,6 +75,7 @@ pub fn parse_factor(input: &str) -> IResult<&str, Box<Condition>> {
             }
         }
         Token::Func(f) => parse_func_factor(next_input, f),
+        _=>  Err(into_nom_error(token_not_found(input))),
     }
 }
 pub fn parse_func_factor(mut input: &str, f: QualifiedIdentifier) -> IResult<&str, Box<Condition>> {

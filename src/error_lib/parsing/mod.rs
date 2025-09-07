@@ -3,14 +3,14 @@ use thiserror::Error;
 
 use crate::error_lib::parsing::mini_err::*;
 pub mod mini_err;
-#[derive(Debug,Clone)]
+#[derive(Debug, Clone)]
 pub enum ErrorKind {
     Parens1Missing,
     TokenNotfound,
     AfterIsorIsnot(String),
     Aliasnotvalid,
     AliasNeeded,
-    InputIncomplet
+    InputIncomplet,
 }
 #[derive(Debug, Error)]
 #[error("{code:?} : '{input}' ")]
@@ -60,8 +60,7 @@ pub enum Error<I> {
 pub type TokenResult<I, O, E = Error<I>> = nom::IResult<I, O, E>;
 
 //parsing result
-pub type ParsingResult<I,O,E = Error<String>>= nom::IResult<I, O, E>;
-
+pub type ParsingResult<I, O, E = Error<String>> = nom::IResult<I, O, E>;
 
 //avant
 pub type IResult<I, O, E = Error<I>> = nom::IResult<I, O, E>;
@@ -118,18 +117,22 @@ impl Error<&str> {
     fn to_string_err(&self) -> Error<String> {
         match &self {
             Error::Nom(error) => nom::error::Error::new(error.input.to_string(), error.code).into(),
-            Error::Parser(parser_err) =>parser_err.to_string_err().into(),
-            Error::Nested(_) => ParserErr::build("Erreur votre requete est littérament invalide".to_string(), ErrorKind::TokenNotfound).into(),
-            Error::FromStrBinOp(b) =>b.clone().into(),
+            Error::Parser(parser_err) => parser_err.to_string_err().into(),
+            Error::Nested(_) => ParserErr::build(
+                "Erreur votre requete est littérament invalide".to_string(),
+                ErrorKind::TokenNotfound,
+            )
+            .into(),
+            Error::FromStrBinOp(b) => b.clone().into(),
             Error::FromStrCmpOp(c) => c.clone().into(),
-            Error::FromStrLgclOp(l) =>l.clone().into(),
+            Error::FromStrLgclOp(l) => l.clone().into(),
         }
     }
 }
 impl ErreurStringable for nom::Err<Error<&str>> {
     fn to_string_err(&self) -> nom::Err<Error<String>> {
         match &self {
-            nom::Err::Incomplete(needed) =>into_nom_incomplete(*needed),
+            nom::Err::Incomplete(needed) => into_nom_incomplete(*needed),
             nom::Err::Error(a) => into_nom_error(a.to_string_err()),
             nom::Err::Failure(a) => into_nom_error(a.to_string_err()),
         }

@@ -4,7 +4,7 @@ use std::fmt::Display;
 
 use crate::IResult;
 use crate::general_struct::constant::*;
-use crate::general_struct::structure::QualifiedIdentifier;
+use crate::general_struct::structure::{ManyKeyWord, QualifiedIdentifier};
 use crate::tokenizer::helper::is_func_valid;
 use crate::tokenizer::tag_func::{
     tag_float, tag_is_not, tag_key_word_logic, tag_string, tag_variable,
@@ -12,7 +12,7 @@ use crate::tokenizer::tag_func::{
 use nom::Parser;
 ///TOKENTOOL::
 use nom::branch::alt;
-use nom::bytes::complete::{tag};
+use nom::bytes::complete::tag;
 use nom::character::complete::space0;
 
 #[derive(Debug)]
@@ -21,6 +21,7 @@ pub enum Token<'a> {
     String(String),
     Variable(QualifiedIdentifier),
     Func(QualifiedIdentifier),
+    Mkw(ManyKeyWord<&'a str>),
     Other(&'a str),
 }
 
@@ -39,6 +40,7 @@ impl Display for Token<'_> {
             }
             Token::Func(qualified_identifier) => write!(f, "{}", qualified_identifier),
             Token::Other(t) => write!(f, "{t}"),
+            Token::Mkw(many_key_word) =>write!(f, "{many_key_word:?}"),
         }
     }
 }

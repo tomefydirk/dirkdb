@@ -1,7 +1,8 @@
 use serde::de::value;
 
 use crate::general_struct::structure::{
-    BinOp, CompareOp, Condition, Field, FieldRqst, LogicalOp, ManyKeyWord, PrimitiveElement, QualifiedIdentifier, SelectRqst, TableCell, TableWithAlias
+    BinOp, CompareOp, Condition, Field, FieldRqst, LogicalOp, ManyKeyWord, PrimitiveElement,
+    QualifiedIdentifier, SelectRqst, TableCell, TableWithAlias,
 };
 
 pub mod constant;
@@ -86,14 +87,14 @@ impl SelectRqst {
         Self {
             fields,
             from,
-            join:None,
+            join: None,
             condition,
         }
     }
 }
 
 //DISPLAY :
-use std::{fmt};
+use std::fmt;
 
 impl fmt::Display for Condition {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -195,26 +196,32 @@ impl fmt::Display for QualifiedIdentifier {
     }
 }
 
-impl From<String> for QualifiedIdentifier{
+impl From<String> for QualifiedIdentifier {
     fn from(value: String) -> Self {
-          QualifiedIdentifier::new(None, value)      
+        QualifiedIdentifier::new(None, value)
     }
 }
 
-impl From<&str> for QualifiedIdentifier{
+impl From<&str> for QualifiedIdentifier {
     fn from(value: &str) -> Self {
         value.to_string().into()
     }
 }
 
-impl<I> PartialEq for ManyKeyWord<I> where I:PartialEq{
+impl<I> PartialEq for ManyKeyWord<I>
+where
+    I: PartialEq,
+{
     fn eq(&self, other: &Self) -> bool {
         self.words == other.words
     }
 }
 
-impl<I> ManyKeyWord<I> where I:PartialEq {
-    fn new(value:Vec<I>)->Self{
+impl<I> ManyKeyWord<I>
+where
+    I: PartialEq,
+{
+    fn new(value: Vec<I>) -> Self {
         Self { words: value }
     }
 }

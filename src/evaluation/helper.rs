@@ -144,7 +144,10 @@ impl RowAlias for TableRow {
             Some(table_name) => {
                 let real_table = aliases.get(table_name).unwrap_or(table_name);
 
-                let normalized = QualifiedIdentifier::new(Some(real_table.clone()), qid.name.to_string().clone());
+                let normalized = QualifiedIdentifier::new(
+                    Some(real_table.clone()),
+                    qid.name.to_string().clone(),
+                );
 
                 match self.get(&normalized) {
                     Some(retour) => Ok(retour),
@@ -157,13 +160,7 @@ impl RowAlias for TableRow {
             None => {
                 let mut matches: Vec<&TableCell> = self
                     .iter()
-                    .filter_map(|(k, v)| {
-                        if k.name == qid.name {
-                            Some(v)
-                        } else {
-                            None
-                        }
-                    })
+                    .filter_map(|(k, v)| if k.name == qid.name { Some(v) } else { None })
                     .collect();
 
                 match matches.len() {

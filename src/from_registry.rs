@@ -16,7 +16,7 @@ pub fn make_tables() -> Database {
         TableCell::Number(1.0),
     );
     row1.insert(
-        QualifiedIdentifier::new(Some("employee".into()),  "nom".into()),
+        QualifiedIdentifier::new(Some("employee".into()), "nom".into()),
         TableCell::String("Jean".into()),
     );
     employee_table.push(row1);
@@ -28,7 +28,7 @@ pub fn make_tables() -> Database {
         TableCell::Number(2.0),
     );
     row2.insert(
-        QualifiedIdentifier::new(Some("employee".into()),  "nom".into()),
+        QualifiedIdentifier::new(Some("employee".into()), "nom".into()),
         TableCell::String("Alice".into()),
     );
     employee_table.push(row2);
@@ -40,11 +40,11 @@ pub fn make_tables() -> Database {
 
     let mut boss1 = HashMap::new();
     boss1.insert(
-        QualifiedIdentifier::new(Some("boss".into()), "id".into()) ,
+        QualifiedIdentifier::new(Some("boss".into()), "id".into()),
         TableCell::Number(1.0),
     );
     boss1.insert(
-        QualifiedIdentifier::new(Some("boss".into()), "nom".into()) ,
+        QualifiedIdentifier::new(Some("boss".into()), "nom".into()),
         TableCell::String("Patron de Jean".into()),
     );
     boss_table.push(boss1);

@@ -1,10 +1,10 @@
+pub mod cli;
 pub mod error_lib;
 pub mod evaluation;
 pub mod from_registry;
 pub mod function;
 pub mod general_struct;
 pub mod parsing;
-pub mod tokenizer;
 pub mod serealization;
-pub mod cli;
+pub mod tokenizer;
 pub(crate) use error_lib::parsing::IResult;

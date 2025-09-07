@@ -5,14 +5,15 @@ use std::{
 
 use dialoguer::console::style;
 
-use crate::{
-     parsing::select_parser::func::parse_select
-};
+use crate::parsing::select_parser::func::parse_select;
 
 pub fn introduction() {
     println!("Welcome to the DirkDB monitor.  Commands end with ;");
     println!("Your version is 1.0 vanilla\n");
-    println!("Please if you have a problem due to this Version , signal Dirk Company with this link {}",style("https://github.com/tomefydirk/dirkdb").cyan());
+    println!(
+        "Please if you have a problem due to this Version , signal Dirk Company with this link {}",
+        style("https://github.com/tomefydirk/dirkdb").cyan()
+    );
 
     println!("\n\tColaborateur : tomefydirk tony_mushah\n");
 }
@@ -25,12 +26,13 @@ pub fn request_reader() -> io::Result<()> {
         io::stdout().flush().unwrap();
         io::stdin().read_line(&mut buffer)?;
 
-        if buffer.trim().eq_ignore_ascii_case("QUIT") || buffer.trim().eq_ignore_ascii_case("EXIt"){
+        if buffer.trim().eq_ignore_ascii_case("QUIT") || buffer.trim().eq_ignore_ascii_case("EXIt")
+        {
             println!("Bye");
             return Ok(());
         }
 
-       ask_request(&buffer);
+        ask_request(&buffer);
     }
 }
 fn print_erreur<T: Display>(statues: &str, e: &T) {

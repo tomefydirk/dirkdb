@@ -36,12 +36,10 @@ fn parse_from_base1(input: &str) -> IResult<&str, TableOrigin> {
         let (input, sub_select) = parse_select(input)?;
         Ok((input, TableOrigin::SubRequest(Box::new(sub_select))))
     } else {
-        let old_input=input;
+        let old_input = input;
         let (input, token) = scan_token(input)?;
         match token {
-            Token::Variable(qid) if qid.src.is_none() => {
-                Ok((input, TableOrigin::Name(qid.name)))
-            }
+            Token::Variable(qid) if qid.src.is_none() => Ok((input, TableOrigin::Name(qid.name))),
             _ => Err(into_nom_failure(token_not_found(old_input))),
         }
     }

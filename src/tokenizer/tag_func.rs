@@ -8,7 +8,7 @@ use nom::{
 use crate::general_struct::{constant::*, structure::QualifiedIdentifier};
 use crate::{
     IResult,
-    tokenizer::helper::{ is_ident_char, is_ident_start},
+    tokenizer::helper::{is_ident_char, is_ident_start},
 };
 
 pub fn tag_float(input: &str) -> IResult<&str, f64> {
@@ -80,12 +80,9 @@ pub fn tag_variable(input: &str) -> IResult<&str, QualifiedIdentifier> {
             let (rest3, second_part) = tag_name(rest2)?;
             Ok((
                 rest3,
-                QualifiedIdentifier::new(Some(current_field),second_part),       
+                QualifiedIdentifier::new(Some(current_field), second_part),
             ))
         }
-        None => Ok((
-            rest,
-            QualifiedIdentifier::new(None, current_field),
-        )),
+        None => Ok((rest, QualifiedIdentifier::new(None, current_field))),
     }
 }

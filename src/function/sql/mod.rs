@@ -1,24 +1,26 @@
 pub mod list_func;
 
-/*   
-    Cette module se concenctre sur les function sql :
+/*
+   Cette module se concenctre sur les function sql :
 
-    Chaque fonction a une signature : {
-        -qid : {
-            src : (la librairie de la fonction :
-                ex: std , nom , ...
-            
-            )
-            name : nom de la fonction (non sensible à la case)
-        }
-            ex de qid : std.ma_fonction , sqrt  
-    
-        -parameter : nombre de parametre
-    }
- */
+   Chaque fonction a une signature : {
+       -qid : {
+           src : (la librairie de la fonction :
+               ex: std , nom , ...
+
+           )
+           name : nom de la fonction (non sensible à la case)
+       }
+           ex de qid : std.ma_fonction , sqrt
+
+       -parameter : nombre de parametre
+   }
+*/
 
 use std::{
-    collections::HashMap, fmt::Display, hash::{Hash, Hasher}
+    collections::HashMap,
+    fmt::Display,
+    hash::{Hash, Hasher},
 };
 
 use crate::{
@@ -30,7 +32,7 @@ use crate::{
 
 #[derive(Debug, Clone)]
 pub struct Signature {
-   name: QualifiedIdentifier,
+    name: QualifiedIdentifier,
     parameter: usize,
 }
 
@@ -41,7 +43,11 @@ impl Signature {
 }
 impl Display for Signature {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f,"[ func_name : {} / parameter : {} ]",self.name,self.parameter)
+        write!(
+            f,
+            "[ func_name : {} / parameter : {} ]",
+            self.name, self.parameter
+        )
     }
 }
 impl PartialEq for Signature {
@@ -81,10 +87,7 @@ impl FunctionRegistry {
     pub fn new() -> Self {
         let mut funcs: HashMap<Signature, FuncSQL> = HashMap::new();
         funcs.insert(Signature::new("sqrt".into(), 1), sqrt as FuncSQL);
-        funcs.insert(
-            Signature::new("datediff".into(), 2),
-            datediff as FuncSQL,
-        );
+        funcs.insert(Signature::new("datediff".into(), 2), datediff as FuncSQL);
         funcs.insert(Signature::new("now".into(), 0), now as FuncSQL);
         Self { funcs }
     }
