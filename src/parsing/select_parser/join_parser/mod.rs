@@ -1,11 +1,17 @@
+use nom::{multi::many0, Parser};
+
 use crate::{
     error_lib::parsing::{into_nom_failure, token_not_found}, general_struct::{
         constant::{full_join, inner_join, left_join, right_join},
-        structure::{CompareOp, Condition, JoinElement, JoinOp, PrimitiveElement, TableOrigin},
+        structure::{ CompareOp, Condition, JoinElement, JoinOp, PrimitiveElement},
     }, parsing::select_parser::{from_parser::parse_from, where_parser::parse_where}, tokenizer::{scan_token, Token}, IResult
 };
 
-pub fn parse_join(input: &str) -> IResult<&str, JoinElement> {
+pub fn parse_joins(input: &str) -> IResult<&str, Vec<JoinElement>> {
+    many0(parse_single_join).parse(input)
+}
+
+pub fn parse_single_join(input: &str) -> IResult<&str, JoinElement> {
     let (input, token) = scan_token(input)?;
 
     let op = match token {
@@ -44,7 +50,7 @@ pub fn parse_on(input: &str)->IResult<&str,Box<Condition>>{
 #[test]
 fn test_parse_join() {
     let sql = "INNER JOIN employee AS e ON e.dept_id = dept.id";
-    let (rest, join) = parse_join(sql).unwrap();
+    let (rest, join) = parse_single_join(sql).unwrap();
 
     assert!(rest.trim().is_empty());
 
