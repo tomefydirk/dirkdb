@@ -116,7 +116,7 @@ pub enum FieldRqst {
     Selected(Vec<Field>),
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone,PartialEq)]
 pub enum JoinOp {
     Full,
     Inner,
@@ -126,9 +126,11 @@ pub enum JoinOp {
 
 #[derive(Debug, Clone)]
 pub struct JoinElement {
-    op: JoinOp,
-    table: TableWithAlias,
+    pub op: JoinOp,
+    pub table: TableWithAlias,
+    pub on_condition:Condition
 }
+
 
 pub type Table = Vec<TableRow>;
 pub type TableRow = HashMap<QualifiedIdentifier, TableCell>;

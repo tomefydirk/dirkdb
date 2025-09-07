@@ -29,26 +29,27 @@ pub const AS_SIGN: &str = "as";
 pub const SELECT_SIGN: &str = "select";
 pub const FROM_SIGN: &str = "from";
 pub const WHERE_SIGN: &str = "where";
-
+pub const ON_SIGN: &str = "on";
 pub const FULL: &str = "full";
 pub const INNER: &str = "inner";
 pub const RIGHT: &str = "right";
 pub const LEFT: &str = "left";
+pub const JOIN: &str = "join";
 //--- virgule et point virugle
 pub const COMMA_SIGN: &str = ",";
 pub const SEMICOLON_SIGN: &str = ";";
 
 pub fn full_join() -> ManyKeyWord<&'static str> {
-    ManyKeyWord::new(vec!["full", "join"])
+    ManyKeyWord::new(vec![FULL, JOIN])
 }
 pub fn right_join() -> ManyKeyWord<&'static str> {
-    ManyKeyWord::new(vec!["right", "join"])
+    ManyKeyWord::new(vec![RIGHT, JOIN])
 }
 pub fn left_join() -> ManyKeyWord<&'static str> {
-    ManyKeyWord::new(vec!["left", "join"])
+    ManyKeyWord::new(vec![LEFT, JOIN])
 }
 pub fn inner_join() -> ManyKeyWord<&'static str> {
-    ManyKeyWord::new(vec!["inner", "join"])
+    ManyKeyWord::new(vec![INNER, JOIN])
 }
 pub fn key_word_list() -> Vec<String> {
     vec![
@@ -64,4 +65,10 @@ pub fn key_word_list() -> Vec<String> {
         SELECT_SIGN.to_string(),
         WHERE_SIGN.to_string(),
     ]
+}
+
+impl ManyKeyWord<&str> {
+    pub fn is_join(&self) -> bool {
+        self.words.contains(&JOIN)
+    }
 }

@@ -86,3 +86,27 @@ pub fn tag_variable(input: &str) -> IResult<&str, QualifiedIdentifier> {
         None => Ok((rest, QualifiedIdentifier::new(None, current_field))),
     }
 }
+use crate::general_struct::structure::ManyKeyWord;
+
+pub fn tag_manykey_word_logic<'a>(
+    keywords: ManyKeyWord<&'static str>,
+) -> impl FnMut(&'a str) -> IResult<&'a str, Vec<&'a str>> {
+    move |mut input: &'a str| {
+        let mut matched = Vec::new();
+
+        for word in &keywords.words {
+            // parse chaque mot-clé (insensible à la casse)
+            let (new_input, m) = tag_no_case(*word).parse(input)?;
+            matched.push(m);
+
+            // avancer
+            input = new_input;
+
+                let (new_input, _) = multispace1(input)?;
+                input = new_input;
+            
+        }
+
+        Ok((input, matched))
+    }
+}

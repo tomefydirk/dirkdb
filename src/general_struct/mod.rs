@@ -1,8 +1,7 @@
 use serde::de::value;
 
 use crate::general_struct::structure::{
-    BinOp, CompareOp, Condition, Field, FieldRqst, LogicalOp, ManyKeyWord, PrimitiveElement,
-    QualifiedIdentifier, SelectRqst, TableCell, TableWithAlias,
+    BinOp, CompareOp, Condition, Field, FieldRqst, JoinElement, JoinOp, LogicalOp, ManyKeyWord, PrimitiveElement, QualifiedIdentifier, SelectRqst, TableCell, TableWithAlias
 };
 
 pub mod constant;
@@ -210,12 +209,19 @@ impl From<&str> for QualifiedIdentifier {
 
 impl<I> PartialEq for ManyKeyWord<I>
 where
-    I: PartialEq,
+    I: AsRef<str> + std::cmp::PartialEq,
 {
     fn eq(&self, other: &Self) -> bool {
-        self.words == other.words
+        if self.words.len() != other.words.len() {
+            return false;
+        }
+        self.words
+            .iter()
+            .zip(other.words.iter())
+            .all(|(a, b)| a.as_ref().eq_ignore_ascii_case(b.as_ref()))
     }
 }
+
 
 impl<I> ManyKeyWord<I>
 where
@@ -223,5 +229,17 @@ where
 {
     fn new(value: Vec<I>) -> Self {
         Self { words: value }
+    }
+}
+
+impl JoinElement {
+    pub fn new(op: JoinOp, table: TableWithAlias, on_condition: Condition) -> Self {
+        Self { op, table, on_condition }
+    }
+}
+
+impl<I:PartialEq> From<Vec<I>> for ManyKeyWord<I> {
+    fn from(value: Vec<I>) -> Self {
+        ManyKeyWord::<I>::new(value)
     }
 }
