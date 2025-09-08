@@ -12,6 +12,7 @@ pub enum EvalErrorkind {
     AliasNeeded,
     NotInDatabases,
     FunctionError,
+    NotUniqueTableorAlias
 }
 
 #[derive(Debug, thiserror::Error)]
@@ -56,5 +57,8 @@ impl<I> EvalEror<I> {
     }
     pub fn not_in_database(table: String) -> EvalEror<String> {
         EvalEror::build(table, EvalErrorkind::NotInDatabases)
+    }
+    pub fn not_unique_table(table: String) -> EvalEror<String> {
+        EvalEror::build(table, EvalErrorkind::NotUniqueTableorAlias)
     }
 }

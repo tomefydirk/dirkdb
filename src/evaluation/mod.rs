@@ -24,7 +24,10 @@ pub trait JoinOpperand {
     fn apply_as_join(&self,origin_table: Box<Table>, ctx: &CtxSELECT)->LgResult<Table>;  
 }
 
-pub trait AliasMap : AliasGetter {
-    fn extends_aliases<T: AliasMap>(&mut self,other:T);
-    fn get_original_name<K>(&self,alias:K)->&String;
+pub trait AliasMap<K> : AliasGetter {
+    fn extends_aliases<T: AliasMap<K>>(&mut self,other:T)->LgResult<()>;
+    fn get_original_name(&self,alias:&K)->Option<&String>;
+    fn contain_alias(&self,alias:&K)->bool{
+        self.get_original_name(alias).is_some()
+    }
 }
