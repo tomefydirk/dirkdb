@@ -92,7 +92,7 @@ impl SelectRqst {
 }
 
 //DISPLAY :
-use std::fmt;
+use std::fmt::{self, Debug};
 
 impl fmt::Display for Condition {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -206,18 +206,11 @@ impl From<&str> for QualifiedIdentifier {
     }
 }
 
-impl<I> PartialEq for ManyKeyWord<I>
-where
-    I: AsRef<str> + std::cmp::PartialEq,
+impl<I:PartialEq+Debug> PartialEq for ManyKeyWord<I>
+
 {
     fn eq(&self, other: &Self) -> bool {
-        if self.words.len() != other.words.len() {
-            return false;
-        }
-        self.words
-            .iter()
-            .zip(other.words.iter())
-            .all(|(a, b)| a.as_ref().eq_ignore_ascii_case(b.as_ref()))
+     self.words==other.words
     }
 }
 

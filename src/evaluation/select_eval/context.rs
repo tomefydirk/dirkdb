@@ -79,7 +79,7 @@ impl CtxSELECT {
         origin_table: &String,
         joinop: &Vec<JoinElement>,
     ) -> LgResult<Table> {
-        joinop.apply_as_join(Box::new(self.get_table(&origin_table)?.clone()), self)
+        joinop.apply_as_join(Box::new(self.get_table(origin_table)?.clone()), self)
     }
     pub fn get_new_table_from_rqst(&self, value: &SelectRqst) -> LgResult<Table> {
         match &value.from {

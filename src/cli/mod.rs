@@ -46,7 +46,10 @@ fn ask_request(input: &str) {
     let b = parse_select(input);
     match b {
         Ok(result) => match result.1.eval() {
-            Ok(a) => println!("{:?}", a),
+            Ok(a) =>{
+                println!("{}",result.0);
+                 println!("{:#?}", a);
+            },
             Err(e) => print_erreur("evaluation", &e),
         },
         Err(e) => print_erreur("parsing", &e),

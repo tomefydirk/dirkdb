@@ -1,19 +1,28 @@
-use nom::{multi::many0, Parser};
-
 use crate::{
-    error_lib::parsing::{into_nom_failure, token_not_found}, general_struct::{
+    IResult,
+    error_lib::parsing::{into_nom_failure, token_not_found},
+    general_struct::{
         constant::{full_join, inner_join, left_join, right_join},
         structure::*,
-    }, parsing::select_parser::{from_parser::parse_from, where_parser::parse_where}, tokenizer::{scan_token, Token}, IResult
+    },
+    parsing::select_parser::{from_parser::parse_from, where_parser::parse_where},
+    tokenizer::{Token, helper::codon_stop, scan_token},
 };
 
-pub fn parse_joins(input: &str) -> IResult<&str, Vec<JoinElement>> {
-    many0(parse_single_join).parse(input)
+pub fn parse_joins(mut input: &str) -> IResult<&str, Vec<JoinElement>> {
+    let mut retour = Vec::new();
+    while let Ok((current_input, join)) = parse_single_join(input) {
+        if codon_stop(input) {
+            break;
+        }
+        retour.push(join);
+        input = current_input;
+    }
+    Ok((input, retour))
 }
 
 pub fn parse_single_join(input: &str) -> IResult<&str, JoinElement> {
     let (input, token) = scan_token(input)?;
-
     let op = match token {
         Token::Mkw(mkw) if mkw == inner_join() => JoinOp::Inner,
         Token::Mkw(mkw) if mkw == left_join() => JoinOp::Left,
@@ -25,26 +34,21 @@ pub fn parse_single_join(input: &str) -> IResult<&str, JoinElement> {
         }
     };
 
+  //  println!("parse_from error");
     let (input, table) = parse_from(input)?;
+
     let (input, cond) = parse_on(input)?;
-    Ok((
-        input,
-        JoinElement ::new(op, *table, *cond),
-    ))
+
+  //  println!("cela retourne");
+    Ok((input, JoinElement::new(op, *table, *cond)))
 }
 
-pub fn parse_on(input: &str)->IResult<&str,Box<Condition>>{
+pub fn parse_on(input: &str) -> IResult<&str, Box<Condition>> {
     let (input, token) = scan_token(input)?;
     match token {
-        Token::Other(word) if word.eq_ignore_ascii_case("on") => {
-            parse_where(input)
-        }
-        _ => {
-           Err(into_nom_failure(token_not_found(input)))
-        }
+        Token::Other(word) if word.eq_ignore_ascii_case("on") => parse_where(input),
+        _ => Err(into_nom_failure(token_not_found(input))),
     }
-
-    
 }
 
 #[test]
@@ -59,7 +63,11 @@ fn test_parse_join() {
 
     // Vérifier la condition
     match join.on_condition {
-        Condition::Comparison { ref left, ref op, ref right } => {
+        Condition::Comparison {
+            ref left,
+            ref op,
+            ref right,
+        } => {
             assert_eq!(*op, CompareOp::Eq);
 
             // gauche = e.dept_id
