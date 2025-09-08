@@ -1,3 +1,4 @@
+use crate::parsing::select_parser::join_parser::parse_joins;
 use crate::IResult;
 use crate::error_lib::parsing::{into_nom_error, token_not_found};
 use crate::general_struct::constant::{FROM_SIGN, SELECT_SIGN, WHERE_SIGN};
@@ -17,10 +18,15 @@ pub fn parse_select(input: &str) -> IResult<&str, SelectRqst> {
             let (rest, from) = parse_optional_from(input)?;
             input = rest;
 
+            let (rest, join_clause) = parse_joins(input)?;
+            input = rest;
+
             let (rest, where_clause) = parse_optional_where(input)?;
             input = rest;
 
-            Ok((input, SelectRqst::new(fields, from, where_clause)))
+
+
+            Ok((input, SelectRqst::new(fields, from, join_clause,where_clause)))
         }
         _ => Err(into_nom_error(token_not_found(input))),
     }

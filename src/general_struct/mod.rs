@@ -79,12 +79,13 @@ impl SelectRqst {
     pub fn new(
         fields: FieldRqst,
         from: Option<TableWithAlias>,
+        join:Vec<JoinElement>,
         condition: Option<Condition>,
     ) -> Self {
         Self {
             fields,
             from,
-            join:Vec::new(),
+            join,
             condition,
         }
     }
