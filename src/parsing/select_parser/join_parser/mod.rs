@@ -3,7 +3,7 @@ use nom::{multi::many0, Parser};
 use crate::{
     error_lib::parsing::{into_nom_failure, token_not_found}, general_struct::{
         constant::{full_join, inner_join, left_join, right_join},
-        structure::{ CompareOp, Condition, JoinElement, JoinOp, PrimitiveElement},
+        structure::*,
     }, parsing::select_parser::{from_parser::parse_from, where_parser::parse_where}, tokenizer::{scan_token, Token}, IResult
 };
 
