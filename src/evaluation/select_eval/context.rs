@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use crate::{
     error_lib::evaluation::EvalEror,
     evaluation::{AliasGetter, JoinOpperand, LgResult},
-    from_registry::make_tables,
+    from_registry::{get_tables},
     general_struct::structure::{JoinElement, SelectRqst, Table, TableOrigin, TableWithAlias},
 };
 #[derive(Debug, Clone)]
@@ -14,13 +14,8 @@ pub struct CtxSELECT {
 impl TableWithAlias {
     pub fn get_source(&self) -> LgResult<(String, Table)> {
         match &self.origin {
-            TableOrigin::Name{name:e,id} => {
-                let g = make_tables();
-                if let Some(a) = g.get(e) {
-                    Ok((id.clone(), a.clone()))
-                } else {
-                    Err(EvalEror::<String>::not_in_database(e.clone()))
-                }
+            TableOrigin::Name{name,id} => {
+               get_tables(id.clone(), name)
             }
             TableOrigin::SubRequest { rqst, id } => match &self.alias {
                 Some(owner) => Ok((

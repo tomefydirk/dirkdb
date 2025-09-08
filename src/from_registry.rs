@@ -1,8 +1,20 @@
-use crate::general_struct::structure::{QualifiedIdentifier, Table, TableCell};
+use crate::{
+    error_lib::evaluation::EvalEror,
+    evaluation::LgResult,
+    general_struct::structure::{QualifiedIdentifier, Table, TableCell, TableWithAlias},
+};
 use std::collections::HashMap;
 
 pub type Database = HashMap<String, Table>;
-
+pub fn get_tables(id: String, name: &String) -> LgResult<(String,Table)> {
+    let g = make_tables();
+    if let Some(a) = g.get(name) {
+        let b = TableWithAlias::change_table_owner(a.clone(), id.clone())?;
+        Ok((id.clone(), b))
+    } else {
+        Err(EvalEror::<String>::not_in_database(name.clone()))
+    }
+}
 pub fn make_tables() -> Database {
     let mut db: Database = HashMap::new();
 
