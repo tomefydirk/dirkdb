@@ -84,7 +84,7 @@ impl SelectRqst {
         Self {
             fields,
             from,
-            join: None,
+            join:Vec::new(),
             condition,
         }
     }

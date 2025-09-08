@@ -15,5 +15,5 @@ pub trait OperatorQuery<T, O> {
 }
 
 pub trait AliasGetter {
-    fn get_alias_map(&self)->HashMap<String,String>;
+    fn get_alias_map(&self)->LgResult<HashMap<String,String>>;
 }

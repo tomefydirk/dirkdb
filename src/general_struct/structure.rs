@@ -99,7 +99,7 @@ pub enum TableOrigin {
 pub struct SelectRqst {
     pub fields: FieldRqst,
     pub from: Option<TableWithAlias>,
-    pub join: Option<Vec<JoinElement>>,
+    pub join:Vec<JoinElement>,
     pub condition: Option<Condition>,
 }
 

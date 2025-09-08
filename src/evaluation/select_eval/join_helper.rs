@@ -1,5 +1,5 @@
-use crate::general_struct::structure::{Condition, Table, TableAliasMap, TableRow};
 use crate::evaluation::{EvaluableAsQuery, LgResult};
+use crate::general_struct::structure::{Condition,  Table, TableAliasMap, TableRow};
 
 pub fn inner_join(
     t1: &Table,
@@ -11,7 +11,6 @@ pub fn inner_join(
 
     for row1 in t1 {
         for row2 in t2 {
-
             let mut combined: TableRow = row1.clone();
             for (k, v) in row2 {
                 combined.insert(k.clone(), v.clone());
@@ -19,7 +18,7 @@ pub fn inner_join(
 
             match cond.eval_dyn(&combined, aliases) {
                 Ok(val) if val.as_bool() => result.push(combined),
-                Ok(_) => {} 
+                Ok(_) => {}
                 Err(e) => return Err(e),
             }
         }
@@ -27,4 +26,3 @@ pub fn inner_join(
 
     Ok(result)
 }
-

@@ -1,5 +1,6 @@
 pub mod condition_eval;
 pub mod join_helper;
+pub mod context;
 use crate::{
     error_lib::evaluation::EvalEror,
     evaluation::{AliasGetter, EvaluableAsQuery, LgResult},
@@ -104,7 +105,7 @@ impl SelectRqst {
 
     pub fn eval(&self) -> LgResult<Table> {
         match &self.from {
-            Some(t) => self.eval_dyn(&t.eval()?, &t.get_alias_map()),
+            Some(t) => self.eval_dyn(&t.eval()?, &t.get_alias_map()?),
             None => self.static_eval(),
         }
     }
@@ -136,7 +137,7 @@ impl TableWithAlias {
                     Err(EvalEror::<String>::not_in_database(n.clone()))
                 }
             }
-            TableOrigin::SubRequest{rqst, id:_ } => match &self.alias {
+            TableOrigin::SubRequest { rqst, id: _ } => match &self.alias {
                 Some(owner) => {
                     TableWithAlias::change_table_owner(rqst.clone().eval()?, owner.clone())
                 }
@@ -146,29 +147,42 @@ impl TableWithAlias {
     }
 }
 impl AliasGetter for TableWithAlias {
-    fn get_alias_map(&self) -> HashMap<String, String> {
+    fn get_alias_map(&self) -> LgResult<HashMap<String, String>> {
         let mut retour = HashMap::<String, String>::new();
         match (&self.alias, &self.origin) {
             (Some(alias), TableOrigin::Name(n)) => {
                 retour.insert(alias.clone(), n.clone());
-                retour
+                Ok(retour)
             }
-            _ => retour,
+            (Some(alias), TableOrigin::SubRequest { rqst:_, id }) =>{
+                 retour.insert(alias.clone(), id.clone());
+                Ok(retour)
+            },
+            _ => Ok(retour),
         }
     }
 }
 impl AliasGetter for JoinElement {
-    fn get_alias_map(&self) -> HashMap<String, String> {
-        self.table.get_alias_map()
+    fn get_alias_map(&self) -> LgResult<HashMap<String, String>> {
+       self.table.get_alias_map()
     }
 }
 
 impl AliasGetter for Vec<JoinElement> {
-    fn get_alias_map(&self) -> HashMap<String, String> {
+    fn get_alias_map(&self) -> LgResult<HashMap<String, String>> {
         let mut retour = HashMap::<String, String>::new();
         for a in self {
-            retour.extend(a.get_alias_map());
+            retour.extend(a.get_alias_map()?);
         }
-        retour
+        Ok(retour)
+    }
+}
+
+impl AliasGetter for SelectRqst{
+    fn get_alias_map(&self)->LgResult<HashMap<String,String>> {
+        let mut retour = HashMap::<String, String>::new();
+        if let Some(t) = &self.from { retour.extend(t.get_alias_map()?) }
+        retour.extend(self.join.get_alias_map()?);
+        Ok(retour)
     }
 }
