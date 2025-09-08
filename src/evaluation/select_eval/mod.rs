@@ -59,9 +59,30 @@ impl EvaluableAsQuery<Table, TableAliasMap, Table> for Vec<Field> {
     }
 }
 
-impl EvaluableAsQuery<CtxSELECT, TableAliasMap, Table> for SelectRqst {
-    fn eval_dyn(&self, ctx: &CtxSELECT, aliases: &TableAliasMap) -> LgResult<Table> {
-        todo!()
+impl EvaluableAsQuery<Table, TableAliasMap, Table> for SelectRqst {
+    fn eval_dyn(&self, ctx: &Table, aliases: &TableAliasMap) -> LgResult<Table> {
+         match self.condition.as_ref() {
+            Some(c) => {
+                let a = ctx
+                    .iter()
+                    .filter_map(|row| -> Option<LgResult<TableRow>> {
+                        match c.eval_dyn(row, aliases) {
+                            Ok(cell) => {
+                                if cell.as_bool() {
+                                    Some(Ok(row.clone()))
+                                } else {
+                                    None
+                                }
+                            }
+                            Err(err) => Some(Err(err)),
+                        }
+                    })
+                    .collect::<LgResult<Vec<_>>>()?;
+
+                self.handle_fields(a, aliases)
+            }
+            None => self.handle_fields(ctx.clone(), aliases),
+        }
     }
     fn static_eval(&self) -> LgResult<Table> {
         match &self.fields {
@@ -82,10 +103,10 @@ impl SelectRqst {
     }
 
     pub fn eval(&self) -> LgResult<Table> {
+            let ctx=LgResult::<CtxSELECT>::from(self)?;
         match &self.from {
-            Some(t) =>{
-                let ctx=LgResult::<CtxSELECT>::from(self);
-                self.eval_dyn(&ctx?, &t.get_alias_map()?)
+            Some(_) =>{
+                self.eval_dyn(&ctx.get_new_table_from_rqst(self)?, &ctx.alias)
             } ,
             None => self.static_eval(),
         }

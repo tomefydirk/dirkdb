@@ -2,9 +2,9 @@ use std::collections::HashMap;
 
 use crate::{
     error_lib::evaluation::EvalEror,
-    evaluation::{AliasGetter, LgResult},
+    evaluation::{AliasGetter, JoinOpperand, LgResult},
     from_registry::make_tables,
-    general_struct::structure::{SelectRqst, Table, TableOrigin, TableWithAlias},
+    general_struct::structure::{JoinElement, SelectRqst, Table, TableOrigin, TableWithAlias},
 };
 #[derive(Debug, Clone)]
 pub struct CtxSELECT {
@@ -23,11 +23,12 @@ impl TableWithAlias {
                 }
             }
             TableOrigin::SubRequest { rqst, id } => match &self.alias {
-                Some(owner) => {
-                  Ok((id.clone(), TableWithAlias::change_table_owner(rqst.clone().eval()?, owner.clone())?)) 
-                }
+                Some(owner) => Ok((
+                    id.clone(),
+                    TableWithAlias::change_table_owner(rqst.clone().eval()?, owner.clone())?,
+                )),
                 None => Err(EvalEror::<String>::alias_need()),
-            }
+            },
         }
     }
 }
@@ -55,11 +56,11 @@ impl CtxSELECT {
     pub fn init_alias(rqst: &SelectRqst) -> LgResult<HashMap<String, String>> {
         rqst.get_alias_map()
     }
-    pub fn get_table(&self,name:&String)->LgResult<&Table>{
-       match  self.base.get(name){
-        Some(t) => Ok(t),
-        None => Err(EvalEror::<String>::not_in_database(name.clone())),
-           } 
+    pub fn get_table(&self, name: &String) -> LgResult<&Table> {
+        match self.base.get(name) {
+            Some(t) => Ok(t),
+            None => Err(EvalEror::<String>::not_in_database(name.clone())),
+        }
     }
 }
 
@@ -69,5 +70,21 @@ impl From<&SelectRqst> for LgResult<CtxSELECT> {
             CtxSELECT::init_base(value)?,
             CtxSELECT::init_alias(value)?,
         ))
+    }
+}
+
+impl CtxSELECT {
+    pub fn get_new_table(
+        &self,
+        origin_table: &String,
+        joinop: &Vec<JoinElement>,
+    ) -> LgResult<Table> {
+        joinop.apply_as_join(Box::new(self.get_table(&origin_table)?.clone()), self)
+    }
+    pub fn get_new_table_from_rqst(&self, value: &SelectRqst) -> LgResult<Table> {
+        match &value.from {
+            Some(t) => self.get_new_table(&t.get_name(), &value.join),
+            None => Ok(Vec::new()),
+        }
     }
 }
