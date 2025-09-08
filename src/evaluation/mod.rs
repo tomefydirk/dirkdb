@@ -1,5 +1,7 @@
 use std::collections::HashMap;
 
+use crate::{evaluation::select_eval::context::CtxSELECT, general_struct::structure::Table};
+
 pub mod helper;
 pub mod select_eval;
 pub type LgResult<T, E = crate::error_lib::evaluation::EvalEror<String>> =
@@ -16,4 +18,8 @@ pub trait OperatorQuery<T, O> {
 
 pub trait AliasGetter {
     fn get_alias_map(&self)->LgResult<HashMap<String,String>>;
+}
+
+pub trait JoinOpperand {
+    fn apply_as_join(&self,origin_table: Box<Table>, ctx: &CtxSELECT)->LgResult<Table>;  
 }

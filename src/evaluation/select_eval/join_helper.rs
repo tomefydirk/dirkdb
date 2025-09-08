@@ -1,5 +1,5 @@
 use crate::evaluation::select_eval::context::CtxSELECT;
-use crate::evaluation::{EvaluableAsQuery, LgResult};
+use crate::evaluation::{EvaluableAsQuery, JoinOpperand, LgResult};
 use crate::general_struct::structure::{
     Condition, JoinElement, JoinOp, Table, TableAliasMap, TableRow,
 };
@@ -29,16 +29,24 @@ pub fn inner_join(
 
     Ok(result)
 }
-impl JoinElement {
-    pub fn apply(&self, origin_table: &Table, ctx: &CtxSELECT) -> LgResult<Table> {
+impl JoinOpperand for JoinElement {
+    fn apply_as_join(&self, origin_table: Box<Table>, ctx: &CtxSELECT) -> LgResult<Table> {
         match self.op {
             JoinOp::Full => todo!(),
             JoinOp::Inner => {
                 let to_join=ctx.get_table(&self.table.get_name())?;
-                inner_join(origin_table,to_join, &self.on_condition, &ctx.alias)
+                inner_join(origin_table.as_ref(),to_join, &self.on_condition, &ctx.alias)
             },
             JoinOp::Left => todo!(),
             JoinOp::Right => todo!(),
         }
+    }
+}
+impl JoinOpperand for Vec<JoinElement> {
+    fn apply_as_join(&self,mut origin_table: Box<Table>, ctx: &CtxSELECT)->LgResult<Table> {
+        for j in self.iter(){
+            origin_table=Box::new(j.apply_as_join(origin_table, ctx)?);
+        }
+        Ok(*origin_table)
     }
 }
