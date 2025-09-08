@@ -14,10 +14,10 @@ pub struct CtxSELECT {
 impl TableWithAlias {
     pub fn get_source(&self) -> LgResult<(String, Table)> {
         match &self.origin {
-            TableOrigin::Name(e) => {
+            TableOrigin::Name{name:e,id} => {
                 let g = make_tables();
                 if let Some(a) = g.get(e) {
-                    Ok((e.clone(), a.clone()))
+                    Ok((id.clone(), a.clone()))
                 } else {
                     Err(EvalEror::<String>::not_in_database(e.clone()))
                 }
@@ -66,10 +66,12 @@ impl CtxSELECT {
 
 impl From<&SelectRqst> for LgResult<CtxSELECT> {
     fn from(value: &SelectRqst) -> Self {
-        Ok(CtxSELECT::new(
+        let a=CtxSELECT::new(
             CtxSELECT::init_base(value)?,
             CtxSELECT::init_alias(value)?,
-        ))
+        );
+        println!("{a:#?}");
+        Ok(a)
     }
 }
 
@@ -87,4 +89,12 @@ impl CtxSELECT {
             None => Ok(Vec::new()),
         }
     }
+}
+#[test]
+fn test_main(){
+    let mut a=HashMap::<String,String>::new();
+    a.insert("tay".to_string(), "be".to_string());
+    a.insert("tay".to_string(), "be".to_string());
+
+    println!("{a:?}");
 }

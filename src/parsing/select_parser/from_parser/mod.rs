@@ -39,7 +39,7 @@ fn parse_from_base1(input: &str) -> IResult<&str, TableOrigin> {
         let old_input = input;
         let (input, token) = scan_token(input)?;
         match token {
-            Token::Variable(qid) if qid.src.is_none() => Ok((input, TableOrigin::Name(qid.name))),
+            Token::Variable(qid) if qid.src.is_none() => Ok((input, TableOrigin::build_as_name(qid.name))),
             _ => Err(into_nom_failure(token_not_found(old_input))),
         }
     }

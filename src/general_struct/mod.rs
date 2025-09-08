@@ -241,3 +241,9 @@ impl From<SelectRqst> for TableOrigin{
         TableOrigin::SubRequest { rqst: Box::new(value), id: nanoid::nanoid!().to_string() }
     }
 }
+
+impl TableOrigin {
+    pub fn build_as_name(value:String)->Self{
+        TableOrigin::Name { name: value, id: nanoid::nanoid!().to_string() }
+    }
+}

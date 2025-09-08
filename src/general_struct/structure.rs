@@ -91,7 +91,7 @@ pub struct TableWithAlias {
 
 #[derive(Debug, Clone)]
 pub enum TableOrigin {
-    Name(String),
+    Name{name:String,id:String},
     SubRequest { rqst: Box<SelectRqst>, id: String },
 }
 

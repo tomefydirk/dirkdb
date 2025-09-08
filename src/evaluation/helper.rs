@@ -176,7 +176,7 @@ impl RowAlias for TableRow {
 impl TableWithAlias {
     pub fn get_name(&self)->String{
         match &self.origin {
-       TableOrigin::Name(t )=> t.clone(),
+       TableOrigin::Name{name:_ ,id}=> id.clone(),
          TableOrigin::SubRequest { rqst:_, id } => id.clone(),
         }
     }
@@ -186,8 +186,13 @@ impl AliasGetter for TableWithAlias {
     fn get_alias_map(&self) -> LgResult<HashMap<String, String>> {
         let mut retour = HashMap::<String, String>::new();
         match (&self.alias, &self.origin) {
-            (Some(alias), TableOrigin::Name(n)) => {
-                retour.insert(alias.clone(), n.clone());
+            (Some(alias), TableOrigin::Name{name,id}) => {
+                retour.insert(name.clone(), id.clone());
+                retour.insert(alias.clone(), id.clone());
+                Ok(retour)
+            },
+            (None, TableOrigin::Name{name,id})=>{
+                retour.insert(name.clone(), id.clone());
                 Ok(retour)
             }
             (Some(alias), TableOrigin::SubRequest { rqst:_, id }) =>{
@@ -217,7 +222,7 @@ impl AliasGetter for Vec<JoinElement> {
 impl AliasGetter for SelectRqst{
     fn get_alias_map(&self)->LgResult<HashMap<String,String>> {
         let mut retour = HashMap::<String, String>::new();
-        if let Some(t) = &self.from { retour.extend(t.get_alias_map()?) }
+        if let Some(t) = &self.from { retour.extends_aliases(t.get_alias_map()?)? }
         retour.extends_aliases(self.join.get_alias_map()?)?;
         Ok(retour)
     }
@@ -253,6 +258,7 @@ impl AliasMap<String> for TableAliasMap {
             if self.contains_key(&alias) {
                 return Err(EvalEror::<String>::not_unique_table(alias.clone()));
             }else {
+                println!("{alias}");
                 self.insert(alias.clone(), real_name);
             }   
         }

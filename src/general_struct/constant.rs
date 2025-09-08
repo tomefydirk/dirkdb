@@ -64,6 +64,7 @@ pub fn key_word_list() -> Vec<String> {
         FROM_SIGN.to_string(),
         SELECT_SIGN.to_string(),
         WHERE_SIGN.to_string(),
+        ON_SIGN.to_string()
     ]
 }
 
