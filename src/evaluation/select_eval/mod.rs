@@ -136,9 +136,9 @@ impl TableWithAlias {
                     Err(EvalEror::<String>::not_in_database(n.clone()))
                 }
             }
-            TableOrigin::SubRequest(select_rqst) => match &self.alias {
+            TableOrigin::SubRequest{rqst, id } => match &self.alias {
                 Some(owner) => {
-                    TableWithAlias::change_table_owner(select_rqst.clone().eval()?, owner.clone())
+                    TableWithAlias::change_table_owner(rqst.clone().eval()?, owner.clone())
                 }
                 None => Err(EvalEror::<String>::alias_need()),
             },

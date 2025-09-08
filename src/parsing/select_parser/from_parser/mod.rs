@@ -13,7 +13,7 @@ pub fn parse_from(input: &str) -> IResult<&str, Box<TableWithAlias>> {
     let (input, origin) = parse_from_base1(input)?;
     let (input, alias) = parse_optional_alias(input)?;
     match (alias, origin) {
-        (None, TableOrigin::SubRequest(_)) => Err(into_nom_error(alias_needed_parsing())),
+        (None, TableOrigin::SubRequest{ rqst: _, id:_ }) => Err(into_nom_error(alias_needed_parsing())),
         (a, t) => Ok((
             input,
             Box::new(TableWithAlias {
@@ -34,7 +34,7 @@ fn parse_from_base1(input: &str) -> IResult<&str, TableOrigin> {
         }
     } else if input.trim_start().starts_with(SELECT_SIGN) {
         let (input, sub_select) = parse_select(input)?;
-        Ok((input, TableOrigin::SubRequest(Box::new(sub_select))))
+        Ok((input,sub_select.into()))
     } else {
         let old_input = input;
         let (input, token) = scan_token(input)?;

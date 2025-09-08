@@ -92,7 +92,7 @@ pub struct TableWithAlias {
 #[derive(Debug, Clone)]
 pub enum TableOrigin {
     Name(String),
-    SubRequest(Box<SelectRqst>),
+    SubRequest { rqst: Box<SelectRqst>, id: String },
 }
 
 #[derive(Debug, Clone)]
@@ -116,7 +116,7 @@ pub enum FieldRqst {
     Selected(Vec<Field>),
 }
 
-#[derive(Debug, Clone,PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum JoinOp {
     Full,
     Inner,
@@ -128,9 +128,8 @@ pub enum JoinOp {
 pub struct JoinElement {
     pub op: JoinOp,
     pub table: TableWithAlias,
-    pub on_condition:Condition
+    pub on_condition: Condition,
 }
-
 
 pub type Table = Vec<TableRow>;
 pub type TableRow = HashMap<QualifiedIdentifier, TableCell>;

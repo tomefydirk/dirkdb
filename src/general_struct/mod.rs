@@ -1,5 +1,5 @@
 use crate::general_struct::structure::{
-    BinOp, CompareOp, Condition, Field, FieldRqst, JoinElement, JoinOp, LogicalOp, ManyKeyWord, PrimitiveElement, QualifiedIdentifier, SelectRqst, TableCell, TableWithAlias
+    BinOp, CompareOp, Condition, Field, FieldRqst, JoinElement, JoinOp, LogicalOp, ManyKeyWord, PrimitiveElement, QualifiedIdentifier, SelectRqst, TableCell, TableOrigin, TableWithAlias
 };
 
 pub mod constant;
@@ -239,5 +239,11 @@ impl JoinElement {
 impl<I:PartialEq> From<Vec<I>> for ManyKeyWord<I> {
     fn from(value: Vec<I>) -> Self {
         ManyKeyWord::<I>::new(value)
+    }
+}
+
+impl From<SelectRqst> for TableOrigin{
+    fn from(value: SelectRqst) -> Self {
+        TableOrigin::SubRequest { rqst: Box::new(value), id: nanoid::nanoid!().to_string() }
     }
 }
