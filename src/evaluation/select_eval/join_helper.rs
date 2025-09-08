@@ -1,5 +1,8 @@
+use crate::evaluation::select_eval::context::CtxSELECT;
 use crate::evaluation::{EvaluableAsQuery, LgResult};
-use crate::general_struct::structure::{Condition,  Table, TableAliasMap, TableRow};
+use crate::general_struct::structure::{
+    Condition, JoinElement, JoinOp, Table, TableAliasMap, TableRow,
+};
 
 pub fn inner_join(
     t1: &Table,
@@ -25,4 +28,17 @@ pub fn inner_join(
     }
 
     Ok(result)
+}
+impl JoinElement {
+    pub fn apply(&self, origin_table: &Table, ctx: &CtxSELECT) -> LgResult<Table> {
+        match self.op {
+            JoinOp::Full => todo!(),
+            JoinOp::Inner => {
+                let to_join=ctx.get_table(&self.table.get_name())?;
+                inner_join(origin_table,to_join, &self.on_condition, &ctx.alias)
+            },
+            JoinOp::Left => todo!(),
+            JoinOp::Right => todo!(),
+        }
+    }
 }

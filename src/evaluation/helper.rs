@@ -2,9 +2,9 @@ use crate::{
     error_lib::evaluation::EvalEror,
     evaluation::LgResult,
     general_struct::structure::{
-        CompareOp, QualifiedIdentifier, TableAliasMap, TableCell, TableRow,
+        CompareOp, QualifiedIdentifier, TableAliasMap, TableCell, TableOrigin, TableRow, TableWithAlias
     },
-    tokenizer::{Token, scan_float},
+    tokenizer::{scan_float, Token},
 };
 use chrono::{Datelike, NaiveDate};
 impl PartialEq for TableCell {
@@ -169,6 +169,15 @@ impl RowAlias for TableRow {
                     _ => Err(EvalEror::<String>::ambiguous_name(qid.to_string())),
                 }
             }
+        }
+    }
+}
+
+impl TableWithAlias {
+    pub fn get_name(&self)->String{
+        match &self.origin {
+       TableOrigin::Name(t )=> t.clone(),
+         TableOrigin::SubRequest { rqst:_, id } => id.clone(),
         }
     }
 }

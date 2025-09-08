@@ -50,6 +50,12 @@ impl CtxSELECT {
     pub fn init_alias(rqst: &SelectRqst) -> LgResult<HashMap<String, String>> {
         rqst.get_alias_map()
     }
+    pub fn get_table(&self,name:&String)->LgResult<&Table>{
+       match  self.base.get(name){
+        Some(t) => Ok(t),
+        None => Err(EvalEror::<String>::not_in_database(name.clone())),
+           } 
+    }
 }
 
 impl From<&SelectRqst> for LgResult<CtxSELECT> {
