@@ -2,7 +2,7 @@ use crate::parsing::select_parser::join_parser::parse_joins;
 use crate::IResult;
 use crate::error_lib::parsing::{into_nom_error, token_not_found};
 use crate::general_struct::constant::{FROM_SIGN, SELECT_SIGN, WHERE_SIGN};
-use crate::general_struct::structure::{Condition, JoinElement, SelectRqst, TableWithAlias};
+use crate::general_struct::structure::{Condition,  SelectRqst, TableWithAlias};
 use crate::parsing::select_parser::field_parser::parse_fieldrqst;
 use crate::parsing::select_parser::from_parser::parse_from;
 use crate::parsing::select_parser::where_parser::parse_where;
@@ -18,7 +18,7 @@ pub fn parse_select(input: &str) -> IResult<&str, SelectRqst> {
             let (rest, from) = parse_optional_from(input)?;
             input = rest;
 
-            let (rest, join_clause) = parse_default_join(input)?;
+            let (rest, join_clause) = parse_joins(input)?;
             input = rest;
 
             let (rest, where_clause) = parse_optional_where(input)?;
@@ -31,12 +31,7 @@ pub fn parse_select(input: &str) -> IResult<&str, SelectRqst> {
         _ => Err(into_nom_error(token_not_found(input))),
     }
 }
-fn parse_default_join(input: &str)->IResult<&str,Vec<JoinElement>>{
-    match parse_joins(input) {
-        Ok(t) =>Ok(t),
-        Err(_) => Ok((input,Vec::new())),
-    }
-}
+
 fn parse_optional_from(input: &str) -> IResult<&str, Option<TableWithAlias>> {
     let (maybe_input, tok) = scan_token(input)?;
     match tok {

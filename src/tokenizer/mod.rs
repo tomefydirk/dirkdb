@@ -25,6 +25,19 @@ pub enum Token<'a> {
     Other(&'a str),
 }
 
+impl PartialEq for Token<'_> {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::Number(l0), Self::Number(r0)) => l0 == r0,
+            (Self::String(l0), Self::String(r0)) => l0 == r0,
+            (Self::Variable(l0), Self::Variable(r0)) => l0 == r0,
+            (Self::Func(l0), Self::Func(r0)) => l0 == r0,
+            (Self::Mkw(l0), Self::Mkw(r0)) => l0 == r0,
+            (Self::Other(l0), Self::Other(r0)) => l0.eq_ignore_ascii_case(r0) ,
+            _ => false,
+        }
+    }
+}
 impl<'a> From<&'a str> for Token<'a> {
     fn from(value: &'a str) -> Self {
         Token::Other(value)

@@ -1,20 +1,17 @@
 use crate::{
-    IResult,
-    error_lib::parsing::{into_nom_failure, token_not_found},
-    general_struct::{
+    error_lib::parsing::{into_nom_failure, token_not_found}, general_struct::{
         constant::{full_join, inner_join, left_join, right_join},
         structure::*,
-    },
-    parsing::select_parser::{from_parser::parse_from, where_parser::parse_where},
-    tokenizer::{Token, helper::codon_stop, scan_token},
+    }, parsing::select_parser::{from_parser::parse_from, where_parser::parse_where}, tokenizer::{helper::{codon_stop, Tokenizable}, scan_token, Token}, IResult
 };
 
 pub fn parse_joins(mut input: &str) -> IResult<&str, Vec<JoinElement>> {
     let mut retour = Vec::new();
-    while let Ok((current_input, join)) = parse_single_join(input) {
-        if codon_stop(input) {
+    while !codon_stop(input)  {
+        if !input.starts_with_join_op(){
             break;
         }
+        let (current_input, join)= parse_single_join(input)?;
         retour.push(join);
         input = current_input;
     }
@@ -34,12 +31,10 @@ pub fn parse_single_join(input: &str) -> IResult<&str, JoinElement> {
         }
     };
 
-  //  println!("parse_from error");
     let (input, table) = parse_from(input)?;
 
     let (input, cond) = parse_on(input)?;
 
-  //  println!("cela retourne");
     Ok((input, JoinElement::new(op, *table, *cond)))
 }
 
@@ -50,7 +45,6 @@ pub fn parse_on(input: &str) -> IResult<&str, Box<Condition>> {
         _ => Err(into_nom_failure(token_not_found(input))),
     }
 }
-
 #[test]
 fn test_parse_join() {
     let sql = "INNER JOIN employee AS e ON e.dept_id = dept.id";
