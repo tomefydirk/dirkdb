@@ -2,11 +2,11 @@ pub mod condition_eval;
 pub mod join_helper;
 use crate::{
     error_lib::evaluation::EvalEror,
-    evaluation::{EvaluableAsQuery, LgResult},
+    evaluation::{AliasGetter, EvaluableAsQuery, LgResult},
     from_registry::make_tables,
     general_struct::structure::{
-        Field, FieldRqst, QualifiedIdentifier, SelectRqst, Table, TableAliasMap, TableOrigin,
-        TableRow, TableWithAlias,
+        Field, FieldRqst, JoinElement, QualifiedIdentifier, SelectRqst, Table, TableAliasMap,
+        TableOrigin, TableRow, TableWithAlias,
     },
 };
 use std::collections::HashMap;
@@ -126,17 +126,6 @@ impl TableWithAlias {
         }
         Ok(result)
     }
-    pub fn get_alias_map(&self) -> HashMap<String, String> {
-        let mut retour = HashMap::<String, String>::new();
-        match (&self.alias, &self.origin) {
-            (Some(alias), TableOrigin::Name(n)) => {
-                retour.insert(alias.clone(), n.clone());
-                retour
-            }
-            _ => retour,
-        }
-    }
-
     fn eval(&self) -> LgResult<Table> {
         match &self.origin {
             TableOrigin::Name(n) => {
@@ -154,5 +143,32 @@ impl TableWithAlias {
                 None => Err(EvalEror::<String>::alias_need()),
             },
         }
+    }
+}
+impl AliasGetter for TableWithAlias {
+    fn get_alias_map(&self) -> HashMap<String, String> {
+        let mut retour = HashMap::<String, String>::new();
+        match (&self.alias, &self.origin) {
+            (Some(alias), TableOrigin::Name(n)) => {
+                retour.insert(alias.clone(), n.clone());
+                retour
+            }
+            _ => retour,
+        }
+    }
+}
+impl AliasGetter for JoinElement {
+    fn get_alias_map(&self) -> HashMap<String, String> {
+        self.table.get_alias_map()
+    }
+}
+
+impl AliasGetter for Vec<JoinElement> {
+    fn get_alias_map(&self) -> HashMap<String, String> {
+        let mut retour = HashMap::<String, String>::new();
+        for a in self {
+            retour.extend(a.get_alias_map());
+        }
+        retour
     }
 }

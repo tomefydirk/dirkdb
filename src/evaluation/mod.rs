@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 pub mod helper;
 pub mod select_eval;
 pub type LgResult<T, E = crate::error_lib::evaluation::EvalEror<String>> =
@@ -10,4 +12,8 @@ pub trait EvaluableAsQuery<Ctx, Aliases, O> {
 
 pub trait OperatorQuery<T, O> {
     fn default_apply(&self, left: T, right: T) -> O;
+}
+
+pub trait AliasGetter {
+    fn get_alias_map(&self)->HashMap<String,String>;
 }
