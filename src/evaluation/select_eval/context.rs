@@ -22,7 +22,12 @@ impl TableWithAlias {
                     Err(EvalEror::<String>::not_in_database(e.clone()))
                 }
             }
-            TableOrigin::SubRequest { rqst, id } => Ok((id.clone(), rqst.eval()?)),
+            TableOrigin::SubRequest { rqst, id } => match &self.alias {
+                Some(owner) => {
+                  Ok((id.clone(), TableWithAlias::change_table_owner(rqst.clone().eval()?, owner.clone())?)) 
+                }
+                None => Err(EvalEror::<String>::alias_need()),
+            }
         }
     }
 }

@@ -3,8 +3,7 @@ pub mod join_helper;
 pub mod context;
 use crate::{
     error_lib::evaluation::EvalEror,
-    evaluation::{AliasGetter, EvaluableAsQuery, LgResult},
-    from_registry::make_tables,
+    evaluation::{select_eval::context::CtxSELECT, AliasGetter, EvaluableAsQuery, LgResult},
     general_struct::structure::{
         Field, FieldRqst, JoinElement, QualifiedIdentifier, SelectRqst, Table, TableAliasMap,
         TableOrigin, TableRow, TableWithAlias,
@@ -60,30 +59,9 @@ impl EvaluableAsQuery<Table, TableAliasMap, Table> for Vec<Field> {
     }
 }
 
-impl EvaluableAsQuery<Table, TableAliasMap, Table> for SelectRqst {
-    fn eval_dyn(&self, ctx: &Table, aliases: &TableAliasMap) -> LgResult<Table> {
-        match self.condition.as_ref() {
-            Some(c) => {
-                let a = ctx
-                    .iter()
-                    .filter_map(|row| -> Option<LgResult<TableRow>> {
-                        match c.eval_dyn(row, aliases) {
-                            Ok(cell) => {
-                                if cell.as_bool() {
-                                    Some(Ok(row.clone()))
-                                } else {
-                                    None
-                                }
-                            }
-                            Err(err) => Some(Err(err)),
-                        }
-                    })
-                    .collect::<LgResult<Vec<_>>>()?;
-
-                self.handle_fields(a, aliases)
-            }
-            None => self.handle_fields(ctx.clone(), aliases),
-        }
+impl EvaluableAsQuery<CtxSELECT, TableAliasMap, Table> for SelectRqst {
+    fn eval_dyn(&self, ctx: &CtxSELECT, aliases: &TableAliasMap) -> LgResult<Table> {
+        todo!()
     }
     fn static_eval(&self) -> LgResult<Table> {
         match &self.fields {
@@ -105,7 +83,10 @@ impl SelectRqst {
 
     pub fn eval(&self) -> LgResult<Table> {
         match &self.from {
-            Some(t) => self.eval_dyn(&t.eval()?, &t.get_alias_map()?),
+            Some(t) =>{
+                let ctx=LgResult::<CtxSELECT>::from(self);
+                self.eval_dyn(&ctx?, &t.get_alias_map()?)
+            } ,
             None => self.static_eval(),
         }
     }
@@ -127,24 +108,7 @@ impl TableWithAlias {
         }
         Ok(result)
     }
-    fn eval(&self) -> LgResult<Table> {
-        match &self.origin {
-            TableOrigin::Name(n) => {
-                let g = make_tables();
-                if let Some(a) = g.get(n) {
-                    Ok(a.clone())
-                } else {
-                    Err(EvalEror::<String>::not_in_database(n.clone()))
-                }
-            }
-            TableOrigin::SubRequest { rqst, id: _ } => match &self.alias {
-                Some(owner) => {
-                    TableWithAlias::change_table_owner(rqst.clone().eval()?, owner.clone())
-                }
-                None => Err(EvalEror::<String>::alias_need()),
-            },
-        }
-    }
+   
 }
 impl AliasGetter for TableWithAlias {
     fn get_alias_map(&self) -> LgResult<HashMap<String, String>> {
