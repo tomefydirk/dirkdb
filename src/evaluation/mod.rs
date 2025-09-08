@@ -23,3 +23,8 @@ pub trait AliasGetter {
 pub trait JoinOpperand {
     fn apply_as_join(&self,origin_table: Box<Table>, ctx: &CtxSELECT)->LgResult<Table>;  
 }
+
+pub trait AliasMap : AliasGetter {
+    fn extends_aliases<T: AliasMap>(&mut self,other:T);
+    fn get_original_name<K>(&self,alias:K)->&String;
+}
