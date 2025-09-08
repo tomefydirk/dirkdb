@@ -152,7 +152,6 @@ impl RowAlias for TableRow {
                 match self.get(&normalized) {
                     Some(retour) => Ok(retour),
                     None => {
-                        println!("{normalized:?}");
                         Err(EvalEror::<String>::field_notfound(qid.to_string()))
                     }
                 }
@@ -255,12 +254,17 @@ impl AliasGetter for TableAliasMap {
 impl AliasMap<String> for TableAliasMap {
     fn extends_aliases<T: AliasMap<String>>(&mut self,other:T) -> LgResult<()> {
         let new_aliases=other.get_alias_map()?;
-        for (alias,real_name) in new_aliases {
-             if self.contains_key(&alias) {
-                return Err(EvalEror::<String>::not_unique_table(alias.clone()));
+        for (alias,real_name) in &new_aliases {
+            if let Some(other_name)=self.get(alias){
+                if self.occurrence(other_name) >1 {
+                    continue;
+                } else if new_aliases.occurrence(real_name)==1  {
+                      return Err(EvalEror::<String>::not_unique_table(alias.clone()));
+                }else {
+                    continue;
+                }
             }else {
-                println!("{alias}");
-                self.insert(alias.clone(), real_name);
+                self.insert(alias.clone(), real_name.clone());
             }   
         }
         Ok(())

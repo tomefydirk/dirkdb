@@ -70,7 +70,6 @@ impl From<&SelectRqst> for LgResult<CtxSELECT> {
             CtxSELECT::init_base(value)?,
             CtxSELECT::init_alias(value)?,
         );
-        println!("{a:#?}");
         Ok(a)
     }
 }
@@ -89,12 +88,4 @@ impl CtxSELECT {
             None => Ok(Vec::new()),
         }
     }
-}
-#[test]
-fn test_main(){
-    let mut a=HashMap::<String,String>::new();
-    a.insert("tay".to_string(), "be".to_string());
-    a.insert("tay".to_string(), "be".to_string());
-
-    println!("{a:?}");
 }

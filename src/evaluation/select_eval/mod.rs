@@ -96,7 +96,6 @@ impl SelectRqst {
         match &self.fields {
             FieldRqst::All => Ok(ctx_where),
             FieldRqst::Selected(fields) => {
-                // println!("{ctx_where:?}");
                 fields.eval_dyn(&ctx_where, aliases)
             }
         }
@@ -112,3 +111,5 @@ impl SelectRqst {
         }
     }
 }
+
+
