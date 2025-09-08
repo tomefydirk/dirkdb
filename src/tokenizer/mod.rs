@@ -87,6 +87,7 @@ pub fn scan_join_operand(input: &str)->IResult<&str,Token>{
 }
 pub fn scan_key_word(input: &str)-> IResult<&str, Token>{
     let a=alt((
+         tag_key_word_logic(JOIN),
          tag_key_word_logic(ON_SIGN),
         tag_key_word_logic(OR_SIGN),
         tag_key_word_logic(AND_SIGN),

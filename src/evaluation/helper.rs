@@ -1,6 +1,6 @@
 use crate::{
     error_lib::evaluation::EvalEror,
-    evaluation::{AliasGetter, AliasMap, LgResult},
+    evaluation::{AliasGetter, AliasMap, KeyGettable, LgResult},
     general_struct::structure::{
         CompareOp, JoinElement, QualifiedIdentifier, SelectRqst, Table, TableAliasMap, TableCell, TableOrigin, TableRow, TableWithAlias
     },
@@ -223,6 +223,7 @@ impl AliasGetter for SelectRqst{
     fn get_alias_map(&self)->LgResult<HashMap<String,String>> {
         let mut retour = HashMap::<String, String>::new();
         if let Some(t) = &self.from { retour.extends_aliases(t.get_alias_map()?)? }
+        /*Verificatione entre self.from et self.join */
         retour.extends_aliases(self.join.get_alias_map()?)?;
         Ok(retour)
     }
@@ -255,7 +256,7 @@ impl AliasMap<String> for TableAliasMap {
     fn extends_aliases<T: AliasMap<String>>(&mut self,other:T) -> LgResult<()> {
         let new_aliases=other.get_alias_map()?;
         for (alias,real_name) in new_aliases {
-            if self.contains_key(&alias) {
+             if self.contains_key(&alias) {
                 return Err(EvalEror::<String>::not_unique_table(alias.clone()));
             }else {
                 println!("{alias}");
@@ -267,5 +268,26 @@ impl AliasMap<String> for TableAliasMap {
 
     fn get_original_name(&self,alias:&String)->Option<&String> {
        self.get(alias)
+    }
+}
+
+impl KeyGettable<String,String> for TableAliasMap {
+    fn get_key(&self,value:&String)->Option<&String> {
+        for t in self{
+            if t.1==value{
+                return Some(t.0);
+            }
+        }
+        None
+    }
+    
+    fn occurrence(&self,value:&String)->usize {
+        let mut retour=0;
+          for t in self{
+            if t.1==value{
+                retour+=1;
+            }
+        }
+        retour
     }
 }

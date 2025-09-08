@@ -31,3 +31,10 @@ pub trait AliasMap<K> : AliasGetter {
         self.get_original_name(alias).is_some()
     }
 }
+pub trait KeyGettable<K,V>  {
+    fn get_key(&self,value:&V)->Option<&K>;
+    fn occurrence(&self,value:&V)->usize;
+    fn contains_value(&self,value:&V)->bool{
+        self.get_key(value).is_some()
+    }
+}
