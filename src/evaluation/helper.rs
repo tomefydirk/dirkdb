@@ -116,7 +116,8 @@ impl TableCell {
         }
     }
 }
-use std::{collections::HashMap, hash::{Hash, Hasher}};
+use std::{ hash::{Hash, Hasher}};
+use indexmap::IndexMap;
 
 impl Hash for QualifiedIdentifier {
     fn hash<H: Hasher>(&self, state: &mut H) {
@@ -182,8 +183,8 @@ impl TableWithAlias {
 }
 
 impl AliasGetter for TableWithAlias {
-    fn get_alias_map(&self) -> LgResult<HashMap<String, String>> {
-        let mut retour = HashMap::<String, String>::new();
+    fn get_alias_map(&self) -> LgResult<IndexMap<String, String>> {
+        let mut retour = IndexMap::<String, String>::new();
         match (&self.alias, &self.origin) {
             (Some(alias), TableOrigin::Name{name,id}) => {
                 retour.insert(name.clone(), id.clone());
@@ -203,14 +204,14 @@ impl AliasGetter for TableWithAlias {
     }
 }
 impl AliasGetter for JoinElement {
-    fn get_alias_map(&self) -> LgResult<HashMap<String, String>> {
+    fn get_alias_map(&self) -> LgResult<IndexMap<String, String>> {
        self.table.get_alias_map()
     }
 }
 
 impl AliasGetter for Vec<JoinElement> {
-    fn get_alias_map(&self) -> LgResult<HashMap<String, String>> {
-        let mut retour = HashMap::<String, String>::new();
+    fn get_alias_map(&self) -> LgResult<IndexMap<String, String>> {
+        let mut retour = IndexMap::<String, String>::new();
         for a in self {
             retour.extends_aliases(a.get_alias_map()?)?;
         }
@@ -219,8 +220,8 @@ impl AliasGetter for Vec<JoinElement> {
 }
 
 impl AliasGetter for SelectRqst{
-    fn get_alias_map(&self)->LgResult<HashMap<String,String>> {
-        let mut retour = HashMap::<String, String>::new();
+    fn get_alias_map(&self)->LgResult<IndexMap<String,String>> {
+        let mut retour = IndexMap::<String, String>::new();
         if let Some(t) = &self.from { retour.extends_aliases(t.get_alias_map()?)? }
         retour.extends_aliases(self.join.get_alias_map()?)?;
         Ok(retour)
@@ -230,7 +231,7 @@ impl TableWithAlias {
     pub fn change_table_owner(table: Table, owner: String) -> LgResult<Table> {
         let mut result: Table = Vec::new();
         for row in table {
-            let mut new_row: TableRow = HashMap::new();
+            let mut new_row: TableRow = IndexMap::new();
 
             for (name, value) in row.iter() {
                 new_row.insert(
@@ -245,7 +246,7 @@ impl TableWithAlias {
    
 }
 impl AliasGetter for TableAliasMap {
-    fn get_alias_map(&self)->LgResult<HashMap<String,String>> {
+    fn get_alias_map(&self)->LgResult<IndexMap<String,String>> {
         Ok(self.clone())
     }
 }

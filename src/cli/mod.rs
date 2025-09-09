@@ -21,7 +21,7 @@ pub fn request_reader() -> io::Result<()> {
         let mut buffer = String::new();
 
         io::stdout().flush().unwrap();
-        print!("{}", style("|DirkDB> ").bold().bright());
+        print!("[{}> ", style(" DirkDB ").bold().bright());
         io::stdout().flush().unwrap();
 
         io::stdin().read_line(&mut buffer)?;
@@ -29,7 +29,7 @@ pub fn request_reader() -> io::Result<()> {
         if buffer.trim().eq_ignore_ascii_case("QUIT")
             || buffer.trim().eq_ignore_ascii_case("EXIT")
         {
-            println!("{}", style("Bye 👋").bold().green());
+            println!("Bye");
             return Ok(());
         }
 
@@ -56,13 +56,13 @@ fn ask_request(input: &str) {
     match parse_select(input) {
         Ok(result) => match result.1.eval() {
             Ok(a) => {
-                println!(
+                let to_affiche = PrettyTable(&a);
+                println!("\n{}", to_affiche);
+                 println!(
                     "{} {:#?}",
                     style("✔ Succès:").green().bold(),
                     start.elapsed()
                 );
-                let to_affiche = PrettyTable(&a);
-                println!("\n{}", to_affiche);
             }
             Err(e) => print_erreur("evaluation", &e),
         },

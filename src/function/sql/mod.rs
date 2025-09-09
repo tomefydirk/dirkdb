@@ -18,10 +18,10 @@ pub mod list_func;
 */
 
 use std::{
-    collections::HashMap,
     fmt::Display,
     hash::{Hash, Hasher},
 };
+use indexmap::IndexMap;
 
 use crate::{
     error_lib::evaluation::EvalEror,
@@ -80,12 +80,12 @@ impl Hash for Signature {
 type FuncSQL = fn(Vec<TableCell>) -> LgResult<TableCell>;
 
 pub struct FunctionRegistry {
-    funcs: HashMap<Signature, FuncSQL>,
+    funcs: IndexMap<Signature, FuncSQL>,
 }
 
 impl FunctionRegistry {
     pub fn new() -> Self {
-        let mut funcs: HashMap<Signature, FuncSQL> = HashMap::new();
+        let mut funcs: IndexMap<Signature, FuncSQL> = IndexMap::new();
         funcs.insert(Signature::new("sqrt".into(), 1), sqrt as FuncSQL);
         funcs.insert(Signature::new("datediff".into(), 2), datediff as FuncSQL);
         funcs.insert(Signature::new("now".into(), 0), now as FuncSQL);

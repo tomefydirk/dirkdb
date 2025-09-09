@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use indexmap::IndexMap;
 
 use crate::{evaluation::select_eval::context::CtxSELECT, general_struct::structure::Table};
 
@@ -17,7 +17,7 @@ pub trait OperatorQuery<T, O> {
 }
 
 pub trait AliasGetter {
-    fn get_alias_map(&self)->LgResult<HashMap<String,String>>;
+    fn get_alias_map(&self)->LgResult<IndexMap<String,String>>;
 }
 
 pub trait JoinOpperand {

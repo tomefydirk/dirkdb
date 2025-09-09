@@ -8,14 +8,14 @@ use crate::{
         Field, FieldRqst, QualifiedIdentifier, SelectRqst, Table, TableAliasMap, TableRow,
     },
 };
-use std::collections::HashMap;
+use indexmap::IndexMap;
 
 impl EvaluableAsQuery<Table, TableAliasMap, Table> for Vec<Field> {
     fn eval_dyn(&self, ctx: &Table, aliases: &TableAliasMap) -> LgResult<Table> {
         let mut result: Table = Vec::new();
 
         for row in ctx {
-            let mut new_row: TableRow = HashMap::new();
+            let mut new_row: TableRow = IndexMap::new();
 
             for field in self {
                 let val = field.expr.eval_dyn(row, aliases)?;
@@ -35,7 +35,7 @@ impl EvaluableAsQuery<Table, TableAliasMap, Table> for Vec<Field> {
     }
 
     fn static_eval(&self) -> LgResult<Table> {
-        let mut new_row: TableRow = HashMap::new();
+        let mut new_row: TableRow = IndexMap::new();
 
         for field in self {
             let val = field.expr.static_eval()?;

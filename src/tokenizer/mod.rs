@@ -7,7 +7,7 @@ use crate::general_struct::constant::*;
 use crate::general_struct::structure::{ManyKeyWord, QualifiedIdentifier};
 use crate::tokenizer::helper::is_func_valid;
 use crate::tokenizer::tag_func::{
-    tag_float, tag_is_not, tag_key_word_logic, tag_manykey_word_logic, tag_string, tag_variable,
+    tag_float, tag_is_not, tag_key_word_logic, tag_manykey_word_logic, tag_string_one, tag_string_two, tag_variable
 };
 use nom::Parser;
 ///TOKENTOOL::
@@ -83,7 +83,7 @@ pub fn scan_name(input: &str) -> IResult<&str, Token> {
 }
 
 pub fn scan_string(input: &str) -> IResult<&str, Token> {
-    let a = tag_string(input)?;
+    let a = alt((tag_string_one,tag_string_two)).parse(input)?;
     Ok((a.0, Token::String(a.1)))
 }
 pub fn scan_join_operand(input: &str) -> IResult<&str, Token> {
@@ -113,7 +113,6 @@ pub fn scan_key_word(input: &str) -> IResult<&str, Token> {
         tag_key_word_logic(WHERE_SIGN),
     ))
     .parse(input)?;
-    println!("ok {input}");
     Ok((a.0, Token::Other(a.1)))
 }
 pub fn scan_logic_token(input: &str) -> IResult<&str, Token> {

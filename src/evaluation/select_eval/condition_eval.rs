@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use indexmap::IndexMap;
 
 use crate::{
     evaluation::{
@@ -103,8 +103,8 @@ impl EvaluableAsQuery<TableRow, TableAliasMap, TableCell> for Condition {
         }
     }
     fn static_eval(&self) -> LgResult<TableCell> {
-        let ctx = HashMap::<QualifiedIdentifier, TableCell>::new();
-        self.eval_dyn(&ctx, &HashMap::new())
+        let ctx = IndexMap::<QualifiedIdentifier, TableCell>::new();
+        self.eval_dyn(&ctx, &IndexMap::new())
     }
 }
 

@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use indexmap::IndexMap;
 
 use crate::{
     error_lib::evaluation::EvalEror,
@@ -8,8 +8,8 @@ use crate::{
 };
 #[derive(Debug, Clone)]
 pub struct CtxSELECT {
-    pub base: HashMap<String, Table>,
-    pub alias: HashMap<String, String>,
+    pub base: IndexMap<String, Table>,
+    pub alias: IndexMap<String, String>,
 }
 impl TableWithAlias {
     pub fn get_source(&self) -> LgResult<(String, Table)> {
@@ -26,12 +26,12 @@ impl TableWithAlias {
     }
 }
 impl CtxSELECT {
-    pub fn new(base: HashMap<String, Table>, alias: HashMap<String, String>) -> Self {
+    pub fn new(base: IndexMap<String, Table>, alias: IndexMap<String, String>) -> Self {
         Self { base, alias }
     }
 
-    pub fn init_base(rqst: &SelectRqst) -> LgResult<HashMap<String, Table>> {
-        let mut a = HashMap::<String, Table>::new();
+    pub fn init_base(rqst: &SelectRqst) -> LgResult<IndexMap<String, Table>> {
+        let mut a = IndexMap::<String, Table>::new();
         if let Some(tb)= &rqst.from {
                let source = tb.get_source()?;
                 a.insert(source.0, source.1);
@@ -43,7 +43,7 @@ impl CtxSELECT {
         }
         Ok(a)
     }
-    pub fn init_alias(rqst: &SelectRqst) -> LgResult<HashMap<String, String>> {
+    pub fn init_alias(rqst: &SelectRqst) -> LgResult<IndexMap<String, String>> {
         rqst.get_alias_map()
     }
     pub fn get_table(&self, name: &String) -> LgResult<&Table> {

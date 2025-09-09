@@ -36,7 +36,7 @@ impl fmt::Display for PrettyTable<'_> {
         for row in table {
             let mut vals = Vec::new();
             for h in &headers {
-                match row.get(h) {
+                match row.get(*h) {
                     Some(v) => vals.push(format!("{}", v)),
                     None => vals.push("NULL".to_string()),
                 }

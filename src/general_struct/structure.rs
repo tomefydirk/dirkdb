@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use indexmap::IndexMap;
 
 use chrono::NaiveDate;
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -132,8 +132,8 @@ pub struct JoinElement {
 }
 
 pub type Table = Vec<TableRow>;
-pub type TableRow = HashMap<QualifiedIdentifier, TableCell>;
-pub type TableAliasMap = HashMap<String, String>;
+pub type TableRow = IndexMap<QualifiedIdentifier, TableCell>;
+pub type TableAliasMap = IndexMap<String, String>;
 
 //-->keywords
 #[derive(Debug, Clone)]

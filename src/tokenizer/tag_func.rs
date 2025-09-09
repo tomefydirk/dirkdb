@@ -41,13 +41,21 @@ pub fn tag_name(input: &str) -> IResult<&str, String> {
     }
 }
 
-pub fn tag_string(input: &str) -> IResult<&str, String> {
+pub fn tag_string_one(input: &str) -> IResult<&str, String> {
     let (rest, _) = tag("'")(input)?;
     let (rest, content) = take_while1(|c: char| c != '\'')(rest)?;
     let (rest, _) = tag("'")(rest)?;
     Ok((rest, content.to_string()))
+
+
 }
 
+pub fn tag_string_two(input: &str) -> IResult<&str, String> {
+    let (rest, _) = tag("\"")(input)?;
+    let (rest, content) = take_while1(|c: char| c != '"')(rest)?;
+    let (rest, _) = tag("\"")(rest)?;
+    Ok((rest, content.to_string()))
+}
 pub fn tag_key_word_logic<'a>(
     keyword: &'static str,
 ) -> impl FnMut(&'a str) -> IResult<&'a str, &'a str> {
