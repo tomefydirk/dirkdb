@@ -1,7 +1,7 @@
 use crate::{
     error_lib::evaluation::EvalEror,
     evaluation::LgResult,
-    general_struct::structure::{QualifiedIdentifier, Table, TableCell, TableWithAlias},
+    general_struct::structure::{QualifiedIdentifier, Table, TableCell, TableRow, TableWithAlias},
 };
 use std::collections::HashMap;
 
@@ -15,53 +15,61 @@ pub fn get_tables(id: String, name: &String) -> LgResult<(String,Table)> {
         Err(EvalEror::<String>::not_in_database(name.clone()))
     }
 }
+
 pub fn make_tables() -> Database {
     let mut db: Database = HashMap::new();
 
-    // ---------- Table employee ----------
-    let mut employee_table: Table = Vec::new();
+    // ---------------------------
+    // Table EMPLOYEE
+    // ---------------------------
+    let mut employee: Table = Vec::new();
 
-    // ligne 1
-    let mut row1 = HashMap::new();
-    row1.insert(
-        QualifiedIdentifier::new(Some("employee".into()), "id".into()),
-        TableCell::Number(1.0),
-    );
-    row1.insert(
-        QualifiedIdentifier::new(Some("employee".into()), "nom".into()),
-        TableCell::String("Jean".into()),
-    );
-    employee_table.push(row1);
+    let mut e1: TableRow = HashMap::new();
+    e1.insert(QualifiedIdentifier::new(Some("employee".into()), "id".into()), TableCell::Number(1.0));
+    e1.insert(QualifiedIdentifier::new(Some("employee".into()), "name".into()), TableCell::String("Jean".into()));
+    e1.insert(QualifiedIdentifier::new(Some("employee".into()), "age".into()), TableCell::Number(30.0));
+    e1.insert(QualifiedIdentifier::new(Some("employee".into()), "boss_id".into()), TableCell::Number(100.0));
+    employee.push(e1);
 
-    // ligne 2
-    let mut row2 = HashMap::new();
-    row2.insert(
-        QualifiedIdentifier::new(Some("employee".into()), "id".into()),
-        TableCell::Number(2.0),
-    );
-    row2.insert(
-        QualifiedIdentifier::new(Some("employee".into()), "nom".into()),
-        TableCell::String("Alice".into()),
-    );
-    employee_table.push(row2);
+    let mut e2: TableRow = HashMap::new();
+    e2.insert(QualifiedIdentifier::new(Some("employee".into()), "id".into()), TableCell::Number(2.0));
+    e2.insert(QualifiedIdentifier::new(Some("employee".into()), "name".into()), TableCell::String("Marie".into()));
+    e2.insert(QualifiedIdentifier::new(Some("employee".into()), "age".into()), TableCell::Number(28.0));
+    e2.insert(QualifiedIdentifier::new(Some("employee".into()), "boss_id".into()), TableCell::Number(100.0));
+    employee.push(e2);
 
-    db.insert("employee".into(), employee_table);
+    let mut e3: TableRow = HashMap::new();
+    e3.insert(QualifiedIdentifier::new(Some("employee".into()), "id".into()), TableCell::Number(3.0));
+    e3.insert(QualifiedIdentifier::new(Some("employee".into()), "name".into()), TableCell::String("Paul".into()));
+    e3.insert(QualifiedIdentifier::new(Some("employee".into()), "age".into()), TableCell::Null);
+    e3.insert(QualifiedIdentifier::new(Some("employee".into()), "boss_id".into()), TableCell::Number(200.0));
+    employee.push(e3);
 
-    // ---------- Table boss ----------
-    let mut boss_table: Table = Vec::new();
+    let mut e4: TableRow = HashMap::new();
+    e4.insert(QualifiedIdentifier::new(Some("employee".into()), "id".into()), TableCell::Number(4.0));
+    e4.insert(QualifiedIdentifier::new(Some("employee".into()), "name".into()), TableCell::String("Chloé".into()));
+    e4.insert(QualifiedIdentifier::new(Some("employee".into()), "age".into()), TableCell::Number(35.0));
+    e4.insert(QualifiedIdentifier::new(Some("employee".into()), "boss_id".into()), TableCell::Null);
+    employee.push(e4);
 
-    let mut boss1 = HashMap::new();
-    boss1.insert(
-        QualifiedIdentifier::new(Some("boss".into()), "id".into()),
-        TableCell::Number(1.0),
-    );
-    boss1.insert(
-        QualifiedIdentifier::new(Some("boss".into()), "nom".into()),
-        TableCell::String("Patron de Jean".into()),
-    );
-    boss_table.push(boss1);
+    db.insert("employee".into(), employee);
 
-    db.insert("boss".into(), boss_table);
+    // ---------------------------
+    // Table BOSS
+    // ---------------------------
+    let mut boss: Table = Vec::new();
+
+    let mut b1: TableRow = HashMap::new();
+    b1.insert(QualifiedIdentifier::new(Some("boss".into()), "id".into()), TableCell::Number(100.0));
+    b1.insert(QualifiedIdentifier::new(Some("boss".into()), "name".into()), TableCell::String("Patron A".into()));
+    boss.push(b1);
+
+    let mut b2: TableRow = HashMap::new();
+    b2.insert(QualifiedIdentifier::new(Some("boss".into()), "id".into()), TableCell::Number(200.0));
+    b2.insert(QualifiedIdentifier::new(Some("boss".into()), "name".into()), TableCell::String("Patron B".into()));
+    boss.push(b2);
+
+    db.insert("boss".into(), boss);
 
     db
 }
