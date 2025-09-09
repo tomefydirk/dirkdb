@@ -15,65 +15,27 @@ pub fn introduction() {
     println!("Enter QUIT or EXIT to quit.\n");
 }
 
+/// Main loop to read user input.
 pub fn request_reader() -> io::Result<()> {
-    let mut current_query = String::new(); // requête en cours
-    let mut in_single_quotes = false;
-    let mut in_double_quotes = false;
-
     loop {
         let mut buffer = String::new();
 
         io::stdout().flush().unwrap();
-
-        // Prompt différent selon qu'on attend une continuation ou une nouvelle requête
-        if current_query.is_empty() {
-            print!("{}", style("|DirkDB> ").bold().bright());
-        } else {
-            print!("{}", style("...> ").bold().bright());
-        }
-
+        print!("{}", style("|DirkDB> ").bold().bright());
         io::stdout().flush().unwrap();
-        io::stdin().read_line(&mut buffer)?;
-        let input = buffer.trim();
 
-        if input.eq_ignore_ascii_case("QUIT") || input.eq_ignore_ascii_case("EXIT") {
+        io::stdin().read_line(&mut buffer)?;
+
+        if buffer.trim().eq_ignore_ascii_case("QUIT")
+            || buffer.trim().eq_ignore_ascii_case("EXIT")
+        {
             println!("{}", style("Bye 👋").bold().green());
             return Ok(());
         }
 
-        // Ajouter la ligne lue à la requête courante
-        current_query.push_str(input);
-        current_query.push('\n');
-
-        let mut temp = String::new();
-        let mut chars = current_query.chars().peekable();
-
-        while let Some(c) = chars.next() {
-            match c {
-                '\'' if !in_double_quotes => {
-                    in_single_quotes = !in_single_quotes;
-                    temp.push(c);
-                }
-                '"' if !in_single_quotes => {
-                    in_double_quotes = !in_double_quotes;
-                    temp.push(c);
-                }
-                ';' if !in_single_quotes && !in_double_quotes => {
-                    let query = temp.trim();
-                    if !query.is_empty() {
-                        ask_request(query);
-                    }
-                    temp.clear(); // réinitialiser après exécution
-                }
-                _ => temp.push(c),
-            }
-        }
-
-        // Garder les caractères restants pour la prochaine ligne
-        current_query = temp;
+        ask_request(&buffer);
     }
 }
-
 
 
 /// Affiche une erreur formatée.

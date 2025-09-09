@@ -5,7 +5,7 @@ use nom::{
     combinator::opt,
 };
 
-use crate::general_struct::{constant::*, structure::QualifiedIdentifier};
+use crate::{general_struct::{constant::*, structure::QualifiedIdentifier}, tokenizer::helper::codon_stop};
 use crate::{
     IResult,
     tokenizer::helper::{is_ident_char, is_ident_start},
@@ -54,7 +54,7 @@ pub fn tag_key_word_logic<'a>(
     move |input: &'a str| {
         let (new_input, matched) = tag_no_case(keyword).parse(input)?;
 
-        if new_input.trim_start().starts_with(PARENS_0) {
+        if codon_stop(new_input){
             Ok((new_input, matched))
         } else {
             let (new_input, _) = multispace1(new_input)?;

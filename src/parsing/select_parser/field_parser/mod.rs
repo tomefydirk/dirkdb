@@ -54,7 +54,7 @@ mod tests {
 
     #[test]
     fn test_parse_multiple_fields() {
-        let input = "(name, age, city)";
+        let input = "(name), (age), ((city))";
         let (rest, rqst) = parse_fieldrqst(input).unwrap();
         assert!(rest.trim().is_empty());
         match rqst {

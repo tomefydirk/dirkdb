@@ -7,7 +7,7 @@ use crate::general_struct::constant::*;
 use crate::general_struct::structure::{ManyKeyWord, QualifiedIdentifier};
 use crate::tokenizer::helper::is_func_valid;
 use crate::tokenizer::tag_func::{
-    tag_float, tag_is_not, tag_key_word_logic, tag_manykey_word_logic, tag_string, tag_variable
+    tag_float, tag_is_not, tag_key_word_logic, tag_manykey_word_logic, tag_string, tag_variable,
 };
 use nom::Parser;
 ///TOKENTOOL::
@@ -33,7 +33,7 @@ impl PartialEq for Token<'_> {
             (Self::Variable(l0), Self::Variable(r0)) => l0 == r0,
             (Self::Func(l0), Self::Func(r0)) => l0 == r0,
             (Self::Mkw(l0), Self::Mkw(r0)) => l0 == r0,
-            (Self::Other(l0), Self::Other(r0)) => l0.eq_ignore_ascii_case(r0) ,
+            (Self::Other(l0), Self::Other(r0)) => l0.eq_ignore_ascii_case(r0),
             _ => false,
         }
     }
@@ -53,7 +53,7 @@ impl Display for Token<'_> {
             }
             Token::Func(qualified_identifier) => write!(f, "{}", qualified_identifier),
             Token::Other(t) => write!(f, "{t}"),
-            Token::Mkw(many_key_word) =>write!(f, "{many_key_word:?}"),
+            Token::Mkw(many_key_word) => write!(f, "{many_key_word:?}"),
         }
     }
 }
@@ -86,22 +86,21 @@ pub fn scan_string(input: &str) -> IResult<&str, Token> {
     let a = tag_string(input)?;
     Ok((a.0, Token::String(a.1)))
 }
-pub fn scan_join_operand(input: &str)->IResult<&str,Token>{
-    let a=alt((
+pub fn scan_join_operand(input: &str) -> IResult<&str, Token> {
+    let a = alt((
         tag_manykey_word_logic(right_join()),
         tag_manykey_word_logic(left_join()),
         tag_manykey_word_logic(inner_join()),
         tag_manykey_word_logic(full_join()),
-)).parse(input)?;
+    ))
+    .parse(input)?;
 
-    Ok((a.0,Token::Mkw(a.1.into())))
-
-
+    Ok((a.0, Token::Mkw(a.1.into())))
 }
-pub fn scan_key_word(input: &str)-> IResult<&str, Token>{
-    let a=alt((
-         tag_key_word_logic(JOIN),
-         tag_key_word_logic(ON_SIGN),
+pub fn scan_key_word(input: &str) -> IResult<&str, Token> {
+    let a = alt((
+        tag_key_word_logic(JOIN),
+        tag_key_word_logic(ON_SIGN),
         tag_key_word_logic(OR_SIGN),
         tag_key_word_logic(AND_SIGN),
         tag_key_word_logic(NOT_SIGN),
@@ -112,8 +111,9 @@ pub fn scan_key_word(input: &str)-> IResult<&str, Token>{
         tag_key_word_logic(SELECT_SIGN),
         tag_key_word_logic(FROM_SIGN),
         tag_key_word_logic(WHERE_SIGN),
-
-    )).parse(input)?;
+    ))
+    .parse(input)?;
+    println!("ok {input}");
     Ok((a.0, Token::Other(a.1)))
 }
 pub fn scan_logic_token(input: &str) -> IResult<&str, Token> {
@@ -129,9 +129,8 @@ pub fn scan_logic_token(input: &str) -> IResult<&str, Token> {
         tag(COMMA_SIGN),
         tag(SEMICOLON_SIGN),
         tag_is_not,
-       
     ))
-    .parse(input)?;
+    .parse(input.trim())?;
 
     Ok((a.0, Token::Other(a.1)))
 }
@@ -183,13 +182,22 @@ pub fn scan_token(input: &str) -> IResult<&str, Token> {
     Ok((a.0.trim(), a.1))
 }
 #[test]
-fn test_equality_token(){
-    let a=inner_join();
-    let b= ManyKeyWord {
-        words: vec![
-            "INNER",
-            "JOIN",
-        ],
+fn test_equality_token() {
+    let a = inner_join();
+    let b = ManyKeyWord {
+        words: vec!["INNER", "JOIN"],
     };
-    assert_eq!(a,b);
+    assert_eq!(a, b);
+}
+#[test]
+fn test_null_token() {
+
+    let a = scan_token("null");
+    match a {
+        Ok((input, t)) => {
+            println!("input reste : {input} {t:#?}");
+            assert!(matches!(t,Token::Other(t) if t.eq_ignore_ascii_case(NULL_SIGN)))
+        }
+        Err(e) => panic!("{e:?}"),
+    }
 }
