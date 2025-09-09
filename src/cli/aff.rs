@@ -22,13 +22,13 @@ impl fmt::Display for PrettyTable<'_> {
         let table = self.0;
 
         if table.is_empty() {
-            return writeln!(f, "∅ (empty table)");
+            return writeln!(f, "Empty table");
         }
 
        
-        let mut headers: Vec<String> = Vec::new();
+        let mut headers: Vec<&QualifiedIdentifier> = Vec::new();
         if let Some(first_row) = table.first() {
-            headers.extend(first_row.keys().map(|qid| qid.name.clone()));
+            headers.extend(first_row.keys());
         }
 
        
@@ -36,8 +36,7 @@ impl fmt::Display for PrettyTable<'_> {
         for row in table {
             let mut vals = Vec::new();
             for h in &headers {
-                let qid = QualifiedIdentifier::new(None, h.clone());
-                match row.get(&qid) {
+                match row.get(h) {
                     Some(v) => vals.push(format!("{}", v)),
                     None => vals.push("NULL".to_string()),
                 }
@@ -50,7 +49,7 @@ impl fmt::Display for PrettyTable<'_> {
             .iter()
             .enumerate()
             .map(|(i, h)| {
-                let header_len = h.len();
+                let header_len = h.name.len();
                 let col_max = rows_str.iter().map(|r| r[i].len()).max().unwrap_or(0);
                 header_len.max(col_max)
             })
@@ -69,7 +68,7 @@ impl fmt::Display for PrettyTable<'_> {
         print_sep(f)?;
         write!(f, "|")?;
         for (h, w) in headers.iter().zip(&widths) {
-            write!(f, " {:<width$} |", h, width = *w)?;
+            write!(f, " {:<width$} |", h.name, width = *w)?;
         }
         writeln!(f)?;
         print_sep(f)?;

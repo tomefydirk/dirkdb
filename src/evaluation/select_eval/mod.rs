@@ -3,7 +3,7 @@ pub mod join_helper;
 pub mod context;
 use crate::{
     error_lib::evaluation::EvalEror,
-    evaluation::{select_eval::context::CtxSELECT,  EvaluableAsQuery, LgResult},
+    evaluation::{select_eval::context::CtxSELECT, AliasGetter, EvaluableAsQuery, LgResult},
     general_struct::structure::{
         Field, FieldRqst,  QualifiedIdentifier, SelectRqst, Table, TableAliasMap,
         TableRow,
@@ -87,7 +87,9 @@ impl EvaluableAsQuery<Table, TableAliasMap, Table> for SelectRqst {
     fn static_eval(&self) -> LgResult<Table> {
         match &self.fields {
             FieldRqst::All => Err(EvalEror::<String>::not_static_variable()),
-            FieldRqst::Selected(fields) => fields.static_eval(),
+            FieldRqst::Selected(fields) =>{
+                self.eval_dyn(&fields.static_eval()?, &self.get_alias_map()?)
+            } ,
         }
     }
 }

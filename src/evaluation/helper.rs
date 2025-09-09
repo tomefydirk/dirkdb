@@ -222,7 +222,6 @@ impl AliasGetter for SelectRqst{
     fn get_alias_map(&self)->LgResult<HashMap<String,String>> {
         let mut retour = HashMap::<String, String>::new();
         if let Some(t) = &self.from { retour.extends_aliases(t.get_alias_map()?)? }
-        /*Verificatione entre self.from et self.join */
         retour.extends_aliases(self.join.get_alias_map()?)?;
         Ok(retour)
     }

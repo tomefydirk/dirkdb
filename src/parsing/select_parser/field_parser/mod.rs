@@ -1,23 +1,11 @@
 use crate::IResult;
-use crate::error_lib::parsing::{factor_error, into_nom_failure};
-use crate::general_struct::constant::PARENS_1;
 use crate::parsing::select_parser::field_parser::list_parser::parse_fieldrqst_expr_list;
-use crate::tokenizer::helper::Factorable;
 use crate::{
     general_struct::structure::FieldRqst,
-    tokenizer::{Token, scan_token},
+    tokenizer::{scan_token},
 };
 pub mod list_parser;
 
-fn parse_fieldrqst_parens(input: &str) -> IResult<&str, FieldRqst> {
-    let (input, _) = scan_token(input)?;
-    let (input, retour) = parse_fieldrqst(input)?;
-    let (input, next_token) = scan_token(input)?;
-    match next_token {
-        Token::Other(PARENS_1) => Ok((input, retour)),
-        _ => Err(into_nom_failure(factor_error(input))),
-    }
-}
 
 fn parse_fieldrqst_all(input: &str) -> IResult<&str, FieldRqst> {
     let (input, _) = scan_token(input)?;
@@ -25,11 +13,6 @@ fn parse_fieldrqst_all(input: &str) -> IResult<&str, FieldRqst> {
 }
 
 pub fn parse_fieldrqst(input: &str) -> IResult<&str, FieldRqst> {
-    // Parenthèses
-    if input.is_factor_parens() {
-        return parse_fieldrqst_parens(input);
-    }
-
     // Champ global "*"
     if input.trim_start().starts_with('*') {
         return parse_fieldrqst_all(input);

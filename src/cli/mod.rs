@@ -5,7 +5,7 @@ use std::{
 pub mod aff;
 use dialoguer::console::style;
 
-use crate::parsing::select_parser::func::parse_select;
+use crate::{cli::aff::PrettyTable, parsing::select_parser::func::parse_select};
 
 pub fn introduction() {
     println!("Welcome to the DirkDB monitor.  Commands end with ;");
@@ -47,8 +47,9 @@ fn ask_request(input: &str) {
     match b {
         Ok(result) => match result.1.eval() {
             Ok(a) =>{
-                println!("{}",result.0);
-                 println!("{:#?}", a);
+               // println!("input reste :{} ,{:#?}",result.0,result.1.condition);
+                let to_affiche=PrettyTable(&a);
+                 println!("{}", to_affiche);
             },
             Err(e) => print_erreur("evaluation", &e),
         },
