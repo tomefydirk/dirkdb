@@ -23,7 +23,6 @@ pub fn make_tables() -> Database {
     // Table EMPLOYEE
     // ---------------------------
     let mut employee: Table = Vec::new();
-
     let mut e1: TableRow = HashMap::new();
     e1.insert(QualifiedIdentifier::new(Some("employee".into()), "id".into()), TableCell::Number(1.0));
     e1.insert(QualifiedIdentifier::new(Some("employee".into()), "name".into()), TableCell::String("Jean".into()));
