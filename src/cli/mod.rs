@@ -2,7 +2,7 @@ use std::{
     fmt::Display,
     io::{self, Write},
 };
-
+pub mod aff;
 use dialoguer::console::style;
 
 use crate::parsing::select_parser::func::parse_select;
