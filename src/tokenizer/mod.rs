@@ -182,3 +182,14 @@ pub fn scan_token(input: &str) -> IResult<&str, Token> {
     .parse(input.trim())?;
     Ok((a.0.trim(), a.1))
 }
+#[test]
+fn test_equality_token(){
+    let a=inner_join();
+    let b= ManyKeyWord {
+        words: vec![
+            "INNER",
+            "JOIN",
+        ],
+    };
+    assert_eq!(a,b);
+}

@@ -92,7 +92,7 @@ impl SelectRqst {
 }
 
 //DISPLAY :
-use std::fmt::{self, Debug};
+use std::fmt::{self};
 
 impl fmt::Display for Condition {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

@@ -1,6 +1,6 @@
 use crate::{
     error_lib::parsing::{into_nom_failure, token_not_found}, general_struct::{
-        constant::{full_join, inner_join, left_join, right_join},
+        constant::{full_join, inner_join, left_join, right_join, JOIN, ON_SIGN},
         structure::*,
     }, parsing::select_parser::{from_parser::parse_from, where_parser::parse_where}, tokenizer::{helper::{codon_stop, Tokenizable}, scan_token, Token}, IResult
 };
@@ -25,7 +25,7 @@ pub fn parse_single_join(input: &str) -> IResult<&str, JoinElement> {
         Token::Mkw(mkw) if mkw == left_join() => JoinOp::Left,
         Token::Mkw(mkw) if mkw == right_join() => JoinOp::Right,
         Token::Mkw(mkw) if mkw == full_join() => JoinOp::Full,
-        Token::Other(word) if word.eq_ignore_ascii_case("join") => JoinOp::Inner,
+        Token::Other(word) if word.eq_ignore_ascii_case(JOIN) => JoinOp::Inner,
         a => {
             println!("{a:#?}");
             return Err(into_nom_failure(token_not_found(input)));
@@ -34,31 +34,34 @@ pub fn parse_single_join(input: &str) -> IResult<&str, JoinElement> {
 
     let (input, table) = parse_from(input)?;
 
-    let (input, cond) = parse_on(input)?;
+    let (input,cond)=parse_on(input)?;
+    
 
-    Ok((input, JoinElement::new(op, *table, Some(*cond))))
+    Ok((input, JoinElement::new(op, *table, cond)))
 }
 
-pub fn parse_on(input: &str) -> IResult<&str, Box<Condition>> {
-    let (input, token) = scan_token(input)?;
+pub fn parse_on(input: &str) -> IResult<&str, Option<Condition>> {
+    let (new_input, token) = scan_token(input)?;
     match token {
-        Token::Other(word) if word.eq_ignore_ascii_case("on") => parse_where(input),
-        _ => Err(into_nom_failure(token_not_found(input))),
+        Token::Other(word) if word.eq_ignore_ascii_case(ON_SIGN) =>{
+            let a=parse_where(new_input)?;
+            Ok((a.0,Some(*a.1)))
+        } ,
+        _ => Ok((input,None)),
     }
 }
 #[test]
-fn test_equality_token(){
-    let a=inner_join();
-    let b= ManyKeyWord {
-        words: vec![
-            "INNER",
-            "JOIN",
-        ],
-    };
-    assert_eq!(a,b);
+fn test_parse_join_non() {
+    let sql = "LEft JOIN employee";
+    let (rest, join) = parse_single_join(sql).unwrap();
+
+    assert!(rest.trim().is_empty());
+    assert_eq!(join.op,JoinOp::Left);
+    assert_eq!(join.table.alias, None);   
+    assert_eq!(join.on_condition,None);
 }
 #[test]
-fn test_parse_join() {
+fn test_parse_join_some() {
     let sql = "INNER JOIN employee AS e ON e.dept_id = dept.id";
     println!("{:#?}", parse_single_join(sql));
     let (rest, join) = parse_single_join(sql).unwrap();
