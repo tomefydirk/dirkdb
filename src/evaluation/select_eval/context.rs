@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use crate::{
     error_lib::evaluation::EvalEror,
     evaluation::{AliasGetter, JoinOpperand, LgResult},
-    from_registry::{get_tables},
+    from_registry::get_tables,
     general_struct::structure::{JoinElement, SelectRqst, Table, TableOrigin, TableWithAlias},
 };
 #[derive(Debug, Clone)]
@@ -14,9 +14,7 @@ pub struct CtxSELECT {
 impl TableWithAlias {
     pub fn get_source(&self) -> LgResult<(String, Table)> {
         match &self.origin {
-            TableOrigin::Name{name,id} => {
-               get_tables(id.clone(), name)
-            }
+            TableOrigin::Name { name, id } => get_tables(id.clone(), name),
             TableOrigin::SubRequest { rqst, id } => match &self.alias {
                 Some(owner) => Ok((
                     id.clone(),
@@ -34,12 +32,9 @@ impl CtxSELECT {
 
     pub fn init_base(rqst: &SelectRqst) -> LgResult<HashMap<String, Table>> {
         let mut a = HashMap::<String, Table>::new();
-        match &rqst.from {
-            Some(tb) => {
-                let source = tb.get_source()?;
+        if let Some(tb)= &rqst.from {
+               let source = tb.get_source()?;
                 a.insert(source.0, source.1);
-            }
-            None => return Ok(a),
         }
 
         for tb in rqst.join.iter() {
@@ -61,10 +56,7 @@ impl CtxSELECT {
 
 impl From<&SelectRqst> for LgResult<CtxSELECT> {
     fn from(value: &SelectRqst) -> Self {
-        let a=CtxSELECT::new(
-            CtxSELECT::init_base(value)?,
-            CtxSELECT::init_alias(value)?,
-        );
+        let a = CtxSELECT::new(CtxSELECT::init_base(value)?, CtxSELECT::init_alias(value)?);
         Ok(a)
     }
 }

@@ -47,7 +47,7 @@ fn ask_request(input: &str) {
     match b {
         Ok(result) => match result.1.eval() {
             Ok(a) =>{
-               // println!("input reste :{} ,{:#?}",result.0,result.1.condition);
+                println!("input reste :{} ,{:#?}",result.0,result.1.condition);
                 let to_affiche=PrettyTable(&a);
                  println!("{}", to_affiche);
             },

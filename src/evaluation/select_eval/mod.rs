@@ -1,12 +1,11 @@
 pub mod condition_eval;
-pub mod join_helper;
 pub mod context;
+pub mod join_helper;
 use crate::{
     error_lib::evaluation::EvalEror,
-    evaluation::{select_eval::context::CtxSELECT, AliasGetter, EvaluableAsQuery, LgResult},
+    evaluation::{EvaluableAsQuery, JoinOpperand, LgResult, select_eval::context::CtxSELECT},
     general_struct::structure::{
-        Field, FieldRqst,  QualifiedIdentifier, SelectRqst, Table, TableAliasMap,
-        TableRow,
+        Field, FieldRqst, QualifiedIdentifier, SelectRqst, Table, TableAliasMap, TableRow,
     },
 };
 use std::collections::HashMap;
@@ -61,7 +60,7 @@ impl EvaluableAsQuery<Table, TableAliasMap, Table> for Vec<Field> {
 
 impl EvaluableAsQuery<Table, TableAliasMap, Table> for SelectRqst {
     fn eval_dyn(&self, ctx: &Table, aliases: &TableAliasMap) -> LgResult<Table> {
-         match self.condition.as_ref() {
+        match self.condition.as_ref() {
             Some(c) => {
                 let a = ctx
                     .iter()
@@ -87,9 +86,11 @@ impl EvaluableAsQuery<Table, TableAliasMap, Table> for SelectRqst {
     fn static_eval(&self) -> LgResult<Table> {
         match &self.fields {
             FieldRqst::All => Err(EvalEror::<String>::not_static_variable()),
-            FieldRqst::Selected(fields) =>{
-                self.eval_dyn(&fields.static_eval()?, &self.get_alias_map()?)
-            } ,
+            FieldRqst::Selected(fields) => {
+                let ctx = LgResult::<CtxSELECT>::from(self)?;
+                let j = self.eval_dyn(&fields.static_eval()?, &ctx.alias)?;
+                self.join.apply_as_join(Box::new(j), &ctx)
+            }
         }
     }
 }
@@ -97,21 +98,15 @@ impl SelectRqst {
     pub fn handle_fields(&self, ctx_where: Table, aliases: &TableAliasMap) -> LgResult<Table> {
         match &self.fields {
             FieldRqst::All => Ok(ctx_where),
-            FieldRqst::Selected(fields) => {
-                fields.eval_dyn(&ctx_where, aliases)
-            }
+            FieldRqst::Selected(fields) => fields.eval_dyn(&ctx_where, aliases),
         }
     }
 
     pub fn eval(&self) -> LgResult<Table> {
-            let ctx=LgResult::<CtxSELECT>::from(self)?;
+        let ctx = LgResult::<CtxSELECT>::from(self)?;
         match &self.from {
-            Some(_) =>{
-                self.eval_dyn(&ctx.get_new_table_from_rqst(self)?, &ctx.alias)
-            } ,
+            Some(_) => self.eval_dyn(&ctx.get_new_table_from_rqst(self)?, &ctx.alias),
             None => self.static_eval(),
         }
     }
 }
-
-
