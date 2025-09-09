@@ -26,8 +26,7 @@ pub fn parse_single_join(input: &str) -> IResult<&str, JoinElement> {
         Token::Mkw(mkw) if mkw == right_join() => JoinOp::Right,
         Token::Mkw(mkw) if mkw == full_join() => JoinOp::Full,
         Token::Other(word) if word.eq_ignore_ascii_case(JOIN) => JoinOp::Inner,
-        a => {
-            println!("{a:#?}");
+        _ => {
             return Err(into_nom_failure(token_not_found(input)));
         }
     };
