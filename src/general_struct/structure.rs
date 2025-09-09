@@ -128,7 +128,7 @@ pub enum JoinOp {
 pub struct JoinElement {
     pub op: JoinOp,
     pub table: TableWithAlias,
-    pub on_condition: Condition,
+    pub on_condition: Option<Condition>,
 }
 
 pub type Table = Vec<TableRow>;

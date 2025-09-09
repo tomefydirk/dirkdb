@@ -7,7 +7,7 @@ use crate::general_struct::structure::{
 pub fn inner_join(
     t1: &Table,
     t2: &Table,
-    cond: &Condition,
+    cond: &Option<Condition>,
     aliases: &TableAliasMap,
 ) -> LgResult<Table> {
     let mut result: Table = Vec::new();
@@ -18,11 +18,13 @@ pub fn inner_join(
             for (k, v) in row2 {
                 combined.insert(k.clone(), v.clone());
             }
-
-            match cond.eval_dyn(&combined, aliases) {
-                Ok(val) if val.as_bool() => result.push(combined),
-                Ok(_) => {}
-                Err(e) => return Err(e),
+            match cond {
+                Some(on) => match on.eval_dyn(&combined, aliases) {
+                    Ok(val) if val.as_bool() => result.push(combined),
+                    Ok(_) => {}
+                    Err(e) => return Err(e),
+                },
+                None =>result.push(combined),
             }
         }
     }
@@ -34,18 +36,23 @@ impl JoinOpperand for JoinElement {
         match self.op {
             JoinOp::Full => todo!(),
             JoinOp::Inner => {
-                let to_join=ctx.get_table(&self.table.get_name())?;
-                inner_join(origin_table.as_ref(),to_join, &self.on_condition, &ctx.alias)
-            },
+                let to_join = ctx.get_table(&self.table.get_name())?;
+                inner_join(
+                    origin_table.as_ref(),
+                    to_join,
+                    &self.on_condition,
+                    &ctx.alias,
+                )
+            }
             JoinOp::Left => todo!(),
             JoinOp::Right => todo!(),
         }
     }
 }
 impl JoinOpperand for Vec<JoinElement> {
-    fn apply_as_join(&self,mut origin_table: Box<Table>, ctx: &CtxSELECT)->LgResult<Table> {
-        for j in self.iter(){
-            origin_table=Box::new(j.apply_as_join(origin_table, ctx)?);
+    fn apply_as_join(&self, mut origin_table: Box<Table>, ctx: &CtxSELECT) -> LgResult<Table> {
+        for j in self.iter() {
+            origin_table = Box::new(j.apply_as_join(origin_table, ctx)?);
         }
         Ok(*origin_table)
     }

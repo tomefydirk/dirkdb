@@ -26,7 +26,8 @@ pub fn parse_single_join(input: &str) -> IResult<&str, JoinElement> {
         Token::Mkw(mkw) if mkw == right_join() => JoinOp::Right,
         Token::Mkw(mkw) if mkw == full_join() => JoinOp::Full,
         Token::Other(word) if word.eq_ignore_ascii_case("join") => JoinOp::Inner,
-        _ => {
+        a => {
+            println!("{a:#?}");
             return Err(into_nom_failure(token_not_found(input)));
         }
     };
@@ -35,7 +36,7 @@ pub fn parse_single_join(input: &str) -> IResult<&str, JoinElement> {
 
     let (input, cond) = parse_on(input)?;
 
-    Ok((input, JoinElement::new(op, *table, *cond)))
+    Ok((input, JoinElement::new(op, *table, Some(*cond))))
 }
 
 pub fn parse_on(input: &str) -> IResult<&str, Box<Condition>> {
@@ -46,8 +47,20 @@ pub fn parse_on(input: &str) -> IResult<&str, Box<Condition>> {
     }
 }
 #[test]
+fn test_equality_token(){
+    let a=inner_join();
+    let b= ManyKeyWord {
+        words: vec![
+            "INNER",
+            "JOIN",
+        ],
+    };
+    assert_eq!(a,b);
+}
+#[test]
 fn test_parse_join() {
     let sql = "INNER JOIN employee AS e ON e.dept_id = dept.id";
+    println!("{:#?}", parse_single_join(sql));
     let (rest, join) = parse_single_join(sql).unwrap();
 
     assert!(rest.trim().is_empty());
@@ -57,11 +70,11 @@ fn test_parse_join() {
 
     // Vérifier la condition
     match join.on_condition {
-        Condition::Comparison {
+        Some(Condition::Comparison {
             ref left,
             ref op,
             ref right,
-        } => {
+        }) => {
             assert_eq!(*op, CompareOp::Eq);
 
             // gauche = e.dept_id

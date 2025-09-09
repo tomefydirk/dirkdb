@@ -206,14 +206,20 @@ impl From<&str> for QualifiedIdentifier {
     }
 }
 
-impl<I:PartialEq+Debug> PartialEq for ManyKeyWord<I>
-
+impl<I> PartialEq for ManyKeyWord<I>
+where
+    I: AsRef<str> + std::cmp::PartialEq,
 {
     fn eq(&self, other: &Self) -> bool {
-     self.words==other.words
+        if self.words.len() != other.words.len() {
+            return false;
+        }
+        self.words
+            .iter()
+            .zip(other.words.iter())
+            .all(|(a, b)| a.as_ref().eq_ignore_ascii_case(b.as_ref()))
     }
 }
-
 
 impl<I> ManyKeyWord<I>
 where
@@ -225,7 +231,7 @@ where
 }
 
 impl JoinElement {
-    pub fn new(op: JoinOp, table: TableWithAlias, on_condition: Condition) -> Self {
+    pub fn new(op: JoinOp, table: TableWithAlias, on_condition: Option<Condition>) -> Self {
         Self { op, table, on_condition }
     }
 }
