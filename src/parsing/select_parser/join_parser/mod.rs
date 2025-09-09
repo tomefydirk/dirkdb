@@ -52,7 +52,7 @@ pub fn parse_on(input: &str) -> IResult<&str, Option<Condition>> {
 }
 #[test]
 fn test_parse_join_non() {
-    let sql = "LEft JOIN employee";
+    let sql = "Left JOIN employee";
     let (rest, join) = parse_single_join(sql).unwrap();
 
     assert!(rest.trim().is_empty());

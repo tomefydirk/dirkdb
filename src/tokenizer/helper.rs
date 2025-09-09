@@ -34,7 +34,7 @@ pub trait Tokenizable {
         Self: Sized,
     {
         self.starts_with_token(&Token::Other(JOIN))
-            || matches!(self.scan_token(), Ok((_,Token::Mkw(mkw))) if (mkw == left_join() || mkw == right_join() || mkw == full_join()))
+            || matches!(self.scan_token(), Ok((_,Token::Mkw(mkw))) if (mkw == left_join() || mkw == right_join() || mkw == full_join() || mkw==inner_join()))
     }
 }
 impl Factorable for &str {
