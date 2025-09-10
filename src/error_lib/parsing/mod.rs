@@ -29,9 +29,9 @@ impl<I> ParserErr<I> {
 pub fn factor_error(input: String) -> ParserErr<String> {
     ParserErr::build(format!("une parenthèse n'est jamais fermé ! [à la place : '{}']",input), ErrorKind::Parens1Missing)
 }
-pub fn alias_needed_parsing() -> ParserErr<&'static str> {
+pub fn alias_needed_parsing() -> ParserErr<String> {
     ParserErr::build(
-        "Every derived table must have its own alias",
+        "Every derived table must have its own alias".to_string(),
         ErrorKind::AliasNeeded,
     )
 }
