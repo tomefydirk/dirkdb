@@ -2,7 +2,7 @@ use indexmap::IndexMap;
 
 use crate::{
     evaluation::{
-        EvaluableAsQuery, EvalResult, OperatorQuery,
+        EvalResult, EvaluableAsQuery, OperatorQuery,
         helper::{Comparator, RowAlias},
     },
     function::{self, helper::my_modulo, sql::FunctionRegistry},

@@ -1,8 +1,12 @@
 use crate::{
-    error_lib::parsing::{alias_not_valid, into_nom_failure, token_not_found}, general_struct::{
+    ParsingResult,
+    error_lib::parsing::{alias_not_valid, into_nom_failure, token_not_found},
+    general_struct::{
         constant::{AS_SIGN, COMMA_SIGN},
         structure::{Condition, Field, FieldRqst, PrimitiveElement, QualifiedIdentifier},
-    }, parsing::other_parser::logic_parser::func::parse_logical, tokenizer::{scan_token, Token}, ParsingResult
+    },
+    parsing::other_parser::logic_parser::func::parse_logical,
+    tokenizer::{Token, scan_token},
 };
 impl Field {
     pub fn apply_alias(&mut self, alias: &QualifiedIdentifier) -> bool {

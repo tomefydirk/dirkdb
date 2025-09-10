@@ -1,10 +1,10 @@
 use std::str::FromStr;
 
-use crate::parsing::other_parser::logic_parser::BuildCondition;
 use crate::ParsingResult;
 use crate::error_lib::parsing::{
-    after_is_or_isnot, and_ification_err, into_nom_error, into_nom_failure
+    after_is_or_isnot, and_ification_err, into_nom_error, into_nom_failure,
 };
+use crate::parsing::other_parser::logic_parser::BuildCondition;
 use crate::tokenizer::helper::codon_stop;
 
 use crate::{

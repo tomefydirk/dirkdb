@@ -118,9 +118,7 @@ impl TableCell {
     }
 }
 use indexmap::IndexMap;
-use std::{
-    hash::{Hash, Hasher},
-};
+use std::hash::{Hash, Hasher};
 
 impl Hash for QualifiedIdentifier {
     fn hash<H: Hasher>(&self, state: &mut H) {
@@ -288,7 +286,7 @@ impl KeyGettable<String, String> for TableAliasMap {
     }
 
     fn occurrence(&self, value: &String) -> usize {
-        self.values().occurence(value) 
+        self.values().occurence(value)
     }
 }
 impl<T, I> OccurenceAble<T> for I
@@ -297,12 +295,12 @@ where
     I: Iterator<Item = T>,
 {
     fn occurence(&mut self, value: T) -> usize {
-        let mut occ=0;
-       for item in self{
-            if item==value{
-                occ+=1;
+        let mut occ = 0;
+        for item in self {
+            if item == value {
+                occ += 1;
             }
-       }
-       occ
+        }
+        occ
     }
 }

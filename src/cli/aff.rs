@@ -1,7 +1,7 @@
 use std::fmt;
 
-use crate::general_struct::structure::{Table, TableCell, TableRow};
 use crate::general_struct::structure::QualifiedIdentifier;
+use crate::general_struct::structure::{Table, TableCell, TableRow};
 impl fmt::Display for TableCell {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -25,13 +25,11 @@ impl fmt::Display for PrettyTable<'_> {
             return writeln!(f, "Empty table");
         }
 
-       
         let mut headers: Vec<&QualifiedIdentifier> = Vec::new();
         if let Some(first_row) = table.first() {
             headers.extend(first_row.keys());
         }
 
-       
         let mut rows_str: Vec<Vec<String>> = Vec::new();
         for row in table {
             let mut vals = Vec::new();
@@ -44,7 +42,6 @@ impl fmt::Display for PrettyTable<'_> {
             rows_str.push(vals);
         }
 
-       
         let widths: Vec<usize> = headers
             .iter()
             .enumerate()
@@ -55,7 +52,6 @@ impl fmt::Display for PrettyTable<'_> {
             })
             .collect();
 
-       
         let print_sep = |f: &mut fmt::Formatter<'_>| -> fmt::Result {
             write!(f, "+")?;
             for w in &widths {
@@ -64,7 +60,6 @@ impl fmt::Display for PrettyTable<'_> {
             writeln!(f)
         };
 
-      
         print_sep(f)?;
         write!(f, "|")?;
         for (h, w) in headers.iter().zip(&widths) {
@@ -73,7 +68,6 @@ impl fmt::Display for PrettyTable<'_> {
         writeln!(f)?;
         print_sep(f)?;
 
-       
         for row in rows_str {
             write!(f, "|")?;
             for (val, w) in row.iter().zip(&widths) {

@@ -2,7 +2,7 @@ use indexmap::IndexMap;
 
 use crate::{
     error_lib::evaluation::EvalEror,
-    evaluation::{AliasGetter, JoinOpperand, EvalResult},
+    evaluation::{AliasGetter, EvalResult, JoinOpperand},
     from_registry::get_tables,
     general_struct::structure::{JoinElement, SelectRqst, Table, TableOrigin, TableWithAlias},
 };
@@ -32,9 +32,9 @@ impl CtxSELECT {
 
     pub fn init_base(rqst: &SelectRqst) -> EvalResult<IndexMap<String, Table>> {
         let mut a = IndexMap::<String, Table>::new();
-        if let Some(tb)= &rqst.from {
-               let source = tb.get_source()?;
-                a.insert(source.0, source.1);
+        if let Some(tb) = &rqst.from {
+            let source = tb.get_source()?;
+            a.insert(source.0, source.1);
         }
 
         for tb in rqst.join.iter() {

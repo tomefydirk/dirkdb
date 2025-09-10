@@ -1,5 +1,6 @@
 use crate::general_struct::structure::{
-    BinOp, CompareOp, Condition, Field, FieldRqst, JoinElement, JoinOp, LogicalOp, ManyKeyWord, PrimitiveElement, QualifiedIdentifier, SelectRqst, TableCell, TableOrigin, TableWithAlias
+    BinOp, CompareOp, Condition, Field, FieldRqst, JoinElement, JoinOp, LogicalOp, ManyKeyWord,
+    PrimitiveElement, QualifiedIdentifier, SelectRqst, TableCell, TableOrigin, TableWithAlias,
 };
 
 pub mod constant;
@@ -79,7 +80,7 @@ impl SelectRqst {
     pub fn new(
         fields: FieldRqst,
         from: Option<TableWithAlias>,
-        join:Vec<JoinElement>,
+        join: Vec<JoinElement>,
         condition: Option<Condition>,
     ) -> Self {
         Self {
@@ -232,24 +233,34 @@ where
 
 impl JoinElement {
     pub fn new(op: JoinOp, table: TableWithAlias, on_condition: Option<Condition>) -> Self {
-        Self { op, table, on_condition }
+        Self {
+            op,
+            table,
+            on_condition,
+        }
     }
 }
 
-impl<I:PartialEq> From<Vec<I>> for ManyKeyWord<I> {
+impl<I: PartialEq> From<Vec<I>> for ManyKeyWord<I> {
     fn from(value: Vec<I>) -> Self {
         ManyKeyWord::<I>::new(value)
     }
 }
 
-impl From<SelectRqst> for TableOrigin{
+impl From<SelectRqst> for TableOrigin {
     fn from(value: SelectRqst) -> Self {
-        TableOrigin::SubRequest { rqst: Box::new(value), id: nanoid::nanoid!().to_string() }
+        TableOrigin::SubRequest {
+            rqst: Box::new(value),
+            id: nanoid::nanoid!().to_string(),
+        }
     }
 }
 
 impl TableOrigin {
-    pub fn build_as_name(value:String)->Self{
-        TableOrigin::Name { name: value, id: nanoid::nanoid!().to_string() }
+    pub fn build_as_name(value: String) -> Self {
+        TableOrigin::Name {
+            name: value,
+            id: nanoid::nanoid!().to_string(),
+        }
     }
 }

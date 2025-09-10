@@ -1,12 +1,13 @@
 use std::{
     fmt::Display,
-    io::{self, Write}, time::Instant,
+    io::{self, Write},
+    time::Instant,
 };
 
 pub mod aff;
 
-use dialoguer::console::style;
 use crate::{cli::aff::PrettyTable, parsing::select_parser::func::parse_select};
+use dialoguer::console::style;
 
 pub fn introduction() {
     println!("{}\n", style("Welcome to DirkDB!").bold().cyan());
@@ -26,8 +27,7 @@ pub fn request_reader() -> io::Result<()> {
 
         io::stdin().read_line(&mut buffer)?;
 
-        if buffer.trim().eq_ignore_ascii_case("QUIT")
-            || buffer.trim().eq_ignore_ascii_case("EXIT")
+        if buffer.trim().eq_ignore_ascii_case("QUIT") || buffer.trim().eq_ignore_ascii_case("EXIT")
         {
             println!("Bye");
             return Ok(());
@@ -36,7 +36,6 @@ pub fn request_reader() -> io::Result<()> {
         ask_request(&buffer);
     }
 }
-
 
 /// Affiche une erreur formatée.
 fn print_erreur<T: Display>(statues: &str, e: &T) {
@@ -51,14 +50,14 @@ fn print_erreur<T: Display>(statues: &str, e: &T) {
 
 /// Parse et évalue une requête utilisateur.
 fn ask_request(input: &str) {
-   let start = Instant::now();
+    let start = Instant::now();
 
     match parse_select(input) {
         Ok(result) => match result.1.eval() {
             Ok(a) => {
                 let to_affiche = PrettyTable(&a);
                 println!("\n{}", to_affiche);
-                 println!(
+                println!(
                     "{} {:#?}",
                     style("✔ Succès:").green().bold(),
                     start.elapsed()

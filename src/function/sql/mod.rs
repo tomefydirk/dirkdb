@@ -17,11 +17,11 @@ pub mod list_func;
    }
 */
 
+use indexmap::IndexMap;
 use std::{
     fmt::Display,
     hash::{Hash, Hasher},
 };
-use indexmap::IndexMap;
 
 use crate::{
     error_lib::evaluation::EvalEror,

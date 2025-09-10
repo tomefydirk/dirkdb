@@ -13,7 +13,7 @@ pub enum EvalErrorkind {
     AliasNeeded,
     NotInDatabases,
     FunctionError,
-    NotUniqueTableorAlias
+    NotUniqueTableorAlias,
 }
 
 #[derive(Debug, thiserror::Error)]

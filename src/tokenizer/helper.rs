@@ -1,5 +1,7 @@
 use crate::{
-    general_struct::constant::*, tokenizer::{scan_token_base,Token}, TokenResult
+    TokenResult,
+    general_struct::constant::*,
+    tokenizer::{Token, scan_token_base},
 };
 
 pub(crate) fn is_ident_start(c: char) -> bool {

@@ -1,11 +1,7 @@
 use crate::ParsingResult;
 use crate::parsing::select_parser::field_parser::list_parser::parse_fieldrqst_expr_list;
-use crate::{
-    general_struct::structure::FieldRqst,
-    tokenizer::{scan_token},
-};
+use crate::{general_struct::structure::FieldRqst, tokenizer::scan_token};
 pub mod list_parser;
-
 
 fn parse_fieldrqst_all(input: &str) -> ParsingResult<&str, FieldRqst> {
     let (input, _) = scan_token(input)?;

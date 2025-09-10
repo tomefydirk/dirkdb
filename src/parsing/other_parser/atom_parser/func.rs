@@ -75,10 +75,13 @@ pub fn parse_factor(input: &str) -> ParsingResult<&str, Box<Condition>> {
             }
         }
         Token::Func(f) => parse_func_factor(next_input, f),
-        a=>  Err(into_nom_error(token_not_found(a.to_string()))),
+        a => Err(into_nom_error(token_not_found(a.to_string()))),
     }
 }
-pub fn parse_func_factor(mut input: &str, f: QualifiedIdentifier) -> ParsingResult<&str, Box<Condition>> {
+pub fn parse_func_factor(
+    mut input: &str,
+    f: QualifiedIdentifier,
+) -> ParsingResult<&str, Box<Condition>> {
     let mut vec = Vec::<Condition>::new();
     if input.trim().starts_with(PARENS_1) {
         let (ipt, _) = scan_token(input)?;
@@ -105,6 +108,6 @@ pub fn parse_real_factor(input: &str) -> ParsingResult<&str, Box<Condition>> {
 
     match token {
         Token::Other(PARENS_1) => Condition::result_from_current(after_paren, expr),
-        a=> Err(into_nom_failure(factor_error(a.to_string()))),
+        a => Err(into_nom_failure(factor_error(a.to_string()))),
     }
 }

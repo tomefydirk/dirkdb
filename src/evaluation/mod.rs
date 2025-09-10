@@ -17,32 +17,35 @@ pub trait OperatorQuery<T, O> {
 }
 
 pub trait AliasGetter {
-    fn get_alias_map(&self)->EvalResult<IndexMap<String,String>>;
+    fn get_alias_map(&self) -> EvalResult<IndexMap<String, String>>;
 }
 
 pub trait JoinOpperand {
-    fn apply_as_join(&self,origin_table: Box<Table>, ctx: &CtxSELECT)->EvalResult<Table>;  
+    fn apply_as_join(&self, origin_table: Box<Table>, ctx: &CtxSELECT) -> EvalResult<Table>;
 }
 
-pub trait AliasMap<K> : AliasGetter {
-    fn extends_aliases<T: AliasMap<K>>(&mut self,other:T)->EvalResult<()>;
-    fn get_original_name(&self,alias:&K)->Option<&String>;
-    fn contain_alias(&self,alias:&K)->bool{
+pub trait AliasMap<K>: AliasGetter {
+    fn extends_aliases<T: AliasMap<K>>(&mut self, other: T) -> EvalResult<()>;
+    fn get_original_name(&self, alias: &K) -> Option<&String>;
+    fn contain_alias(&self, alias: &K) -> bool {
         self.get_original_name(alias).is_some()
     }
 }
 
-pub trait KeyGettable<K,V>  {
-    fn get_key(&self,value:&V)->Option<&K>;
-    fn occurrence(&self,value:&V)->usize;
-    fn contains_value(&self,value:&V)->bool{
+pub trait KeyGettable<K, V> {
+    fn get_key(&self, value: &V) -> Option<&K>;
+    fn occurrence(&self, value: &V) -> usize;
+    fn contains_value(&self, value: &V) -> bool {
         self.get_key(value).is_some()
     }
 }
 
-pub trait OccurenceAble<T> where T:PartialEq{
-    fn occurence(&mut self,value:T)->usize;
+pub trait OccurenceAble<T>
+where
+    T: PartialEq,
+{
+    fn occurence(&mut self, value: T) -> usize;
 }
 pub trait VerifiableAsEvalResult {
-    fn verify(&self)->EvalResult<()>;
-} 
+    fn verify(&self) -> EvalResult<()>;
+}

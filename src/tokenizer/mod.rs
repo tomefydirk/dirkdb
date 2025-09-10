@@ -2,14 +2,15 @@ pub mod helper;
 pub mod tag_func;
 use std::fmt::Display;
 
-use crate::result::convert_tr;
-use crate::{ParsingResult, TokenResult};
 use crate::general_struct::constant::*;
 use crate::general_struct::structure::{ManyKeyWord, QualifiedIdentifier};
+use crate::result::convert_tr;
 use crate::tokenizer::helper::is_func_valid;
 use crate::tokenizer::tag_func::{
-    tag_float, tag_is_not, tag_key_word_logic, tag_manykey_word_logic, tag_string_one, tag_string_two, tag_variable
+    tag_float, tag_is_not, tag_key_word_logic, tag_manykey_word_logic, tag_string_one,
+    tag_string_two, tag_variable,
 };
+use crate::{ParsingResult, TokenResult};
 use nom::Parser;
 ///TOKENTOOL::
 use nom::branch::alt;
@@ -84,7 +85,7 @@ pub fn scan_name(input: &str) -> TokenResult<&str, Token> {
 }
 
 pub fn scan_string(input: &str) -> TokenResult<&str, Token> {
-    let a = alt((tag_string_one,tag_string_two)).parse(input)?;
+    let a = alt((tag_string_one, tag_string_two)).parse(input)?;
     Ok((a.0, Token::String(a.1)))
 }
 pub fn scan_join_operand(input: &str) -> TokenResult<&str, Token> {
@@ -181,7 +182,7 @@ pub fn scan_token_base(input: &str) -> TokenResult<&str, Token> {
     .parse(input.trim())?;
     Ok((a.0.trim(), a.1))
 }
-pub fn scan_token(input: &str)-> ParsingResult<&str, Token>{
+pub fn scan_token(input: &str) -> ParsingResult<&str, Token> {
     convert_tr(scan_token_base(input))
 }
 #[test]
@@ -194,7 +195,6 @@ fn test_equality_token() {
 }
 #[test]
 fn test_null_token() {
-
     let a = scan_token_base("null");
     match a {
         Ok((input, t)) => {

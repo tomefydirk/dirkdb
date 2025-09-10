@@ -1,5 +1,5 @@
 use crate::evaluation::select_eval::context::CtxSELECT;
-use crate::evaluation::{EvaluableAsQuery, JoinOpperand, EvalResult};
+use crate::evaluation::{EvalResult, EvaluableAsQuery, JoinOpperand};
 use crate::general_struct::structure::{
     Condition, JoinElement, JoinOp, Table, TableAliasMap, TableCell, TableRow,
 };

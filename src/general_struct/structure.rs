@@ -91,7 +91,7 @@ pub struct TableWithAlias {
 
 #[derive(Debug, Clone)]
 pub enum TableOrigin {
-    Name{name:String,id:String},
+    Name { name: String, id: String },
     SubRequest { rqst: Box<SelectRqst>, id: String },
 }
 
@@ -99,7 +99,7 @@ pub enum TableOrigin {
 pub struct SelectRqst {
     pub fields: FieldRqst,
     pub from: Option<TableWithAlias>,
-    pub join:Vec<JoinElement>,
+    pub join: Vec<JoinElement>,
     pub condition: Option<Condition>,
 }
 

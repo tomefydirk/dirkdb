@@ -1,7 +1,7 @@
 use nom::Needed;
 use thiserror::Error;
 
-use crate::{error_lib::parsing::mini_err::*};
+use crate::error_lib::parsing::mini_err::*;
 pub mod mini_err;
 #[derive(Debug, Clone)]
 pub enum ErrorKind {
@@ -12,9 +12,9 @@ pub enum ErrorKind {
     AliasNeeded,
     InputIncomplet,
     InputInvalid,
-    Andifiication
+    Andifiication,
 }
-#[derive(Debug, Error,Clone)]
+#[derive(Debug, Error, Clone)]
 #[error("{code:?} : '{input}' ")]
 pub struct ParserErr<I> {
     input: I,
@@ -27,7 +27,13 @@ impl<I> ParserErr<I> {
 }
 
 pub fn factor_error(input: String) -> ParserErr<String> {
-    ParserErr::build(format!("une parenthèse n'est jamais fermé ! [à la place : '{}']",input), ErrorKind::Parens1Missing)
+    ParserErr::build(
+        format!(
+            "une parenthèse n'est jamais fermé ! [à la place : '{}']",
+            input
+        ),
+        ErrorKind::Parens1Missing,
+    )
 }
 pub fn alias_needed_parsing() -> ParserErr<String> {
     ParserErr::build(
@@ -48,13 +54,19 @@ pub fn alias_not_valid(input: String) -> ParserErr<String> {
 pub fn input_incomplet(input: String) -> ParserErr<String> {
     ParserErr::build(input, ErrorKind::InputIncomplet)
 }
-pub fn input_invalide()->ParserErr<String>{
-    ParserErr::build("votre phrase contient des tokens invalide".to_string(), ErrorKind::InputInvalid)
+pub fn input_invalide() -> ParserErr<String> {
+    ParserErr::build(
+        "votre phrase contient des tokens invalide".to_string(),
+        ErrorKind::InputInvalid,
+    )
 }
-pub fn and_ification_err()->ParserErr<String>{
-    ParserErr::build("Le procéssus and_ification semble avoir eu un erreur".to_string(), ErrorKind::InputInvalid)
+pub fn and_ification_err() -> ParserErr<String> {
+    ParserErr::build(
+        "Le procéssus and_ification semble avoir eu un erreur".to_string(),
+        ErrorKind::InputInvalid,
+    )
 }
-#[derive(Debug, thiserror::Error,Clone)]
+#[derive(Debug, thiserror::Error, Clone)]
 pub enum Error<I> {
     Nom(#[from] nom::error::Error<I>),
     Parser(#[from] ParserErr<I>),
@@ -63,9 +75,6 @@ pub enum Error<I> {
     FromStrCmpOp(#[from] FromStrCmpOpError),
     FromStrLgclOp(#[from] FromStrLogicalOpError),
 }
-
-
-
 
 impl<I> nom::error::ParseError<I> for Error<I> {
     fn from_error_kind(input: I, kind: nom::error::ErrorKind) -> Self {

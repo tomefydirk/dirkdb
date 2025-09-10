@@ -3,7 +3,7 @@ pub mod context;
 pub mod join_helper;
 use crate::{
     error_lib::evaluation::EvalEror,
-    evaluation::{EvaluableAsQuery, JoinOpperand, EvalResult, select_eval::context::CtxSELECT},
+    evaluation::{EvalResult, EvaluableAsQuery, JoinOpperand, select_eval::context::CtxSELECT},
     general_struct::structure::{
         Field, FieldRqst, QualifiedIdentifier, SelectRqst, Table, TableAliasMap, TableRow,
     },

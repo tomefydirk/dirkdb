@@ -48,7 +48,10 @@ impl Condition {
         let result = (input, Box::new(Condition::Primitive(a)));
         ParsingResult::Ok(result)
     }
-    pub fn result_name(input: &str, str: QualifiedIdentifier) -> ParsingResult<&str, Box<Condition>> {
+    pub fn result_name(
+        input: &str,
+        str: QualifiedIdentifier,
+    ) -> ParsingResult<&str, Box<Condition>> {
         let a: PrimitiveElement = PrimitiveElement::from_id(str);
         let result = (input, Box::new(Condition::Primitive(a)));
         ParsingResult::Ok(result)
