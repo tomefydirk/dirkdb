@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 chrono = "0.4.41"
+ctrlc = "3.5.0"
 dialoguer = "0.12.0"
 indexmap = "2.11.1"
 nanoid = "0.4.0"

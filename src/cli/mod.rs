@@ -16,12 +16,10 @@ pub fn introduction() {
     println!("Enter QUIT or EXIT to quit.\n");
 }
 
-/// Main loop to read user input.
 pub fn request_reader() -> io::Result<()> {
     loop {
         let mut buffer = String::new();
 
-        io::stdout().flush().unwrap();
         print!("[{}> ", style(" DirkDB ").bold().bright());
         io::stdout().flush().unwrap();
 
@@ -37,9 +35,9 @@ pub fn request_reader() -> io::Result<()> {
     }
 }
 
-/// Affiche une erreur formatée.
+
 fn print_erreur<T: Display>(statues: &str, e: &T) {
-    eprintln!(
+    println!(
         "{} {}[{}] {}",
         style("✖").red(),
         style("Erreur").bold().red(),
@@ -48,7 +46,7 @@ fn print_erreur<T: Display>(statues: &str, e: &T) {
     );
 }
 
-/// Parse et évalue une requête utilisateur.
+
 fn ask_request(input: &str) {
     let start = Instant::now();
 

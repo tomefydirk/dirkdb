@@ -6,7 +6,6 @@ use crate::{
 
 pub mod other_parser;
 pub mod select_parser;
-
 //ALIAS FUNCTION :
 
 /// Parse un alias explicite : "AS alias"
