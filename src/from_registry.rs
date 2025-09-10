@@ -1,12 +1,12 @@
 use crate::{
     error_lib::evaluation::EvalEror,
-    evaluation::LgResult,
+    evaluation::EvalResult,
     general_struct::structure::{QualifiedIdentifier, Table, TableCell, TableRow, TableWithAlias},
 };
 use indexmap::IndexMap;
 
 pub type Database = IndexMap<String, Table>;
-pub fn get_tables(id: String, name: &String) -> LgResult<(String,Table)> {
+pub fn get_tables(id: String, name: &String) -> EvalResult<(String,Table)> {
     let g = make_tables();
     if let Some(a) = g.get(name) {
         let b = TableWithAlias::change_table_owner(a.clone(), id.clone())?;

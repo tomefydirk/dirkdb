@@ -1,5 +1,5 @@
 use crate::evaluation::select_eval::context::CtxSELECT;
-use crate::evaluation::{EvaluableAsQuery, JoinOpperand, LgResult};
+use crate::evaluation::{EvaluableAsQuery, JoinOpperand, EvalResult};
 use crate::general_struct::structure::{
     Condition, JoinElement, JoinOp, Table, TableAliasMap, TableCell, TableRow,
 };
@@ -9,7 +9,7 @@ pub fn inner_join(
     t2: &Table,
     cond: &Option<Condition>,
     aliases: &TableAliasMap,
-) -> LgResult<Table> {
+) -> EvalResult<Table> {
     let mut result: Table = Vec::new();
 
     for row1 in t1 {
@@ -36,7 +36,7 @@ pub fn left_join(
     t2: &Table,
     cond: &Option<Condition>,
     aliases: &TableAliasMap,
-) -> LgResult<Table> {
+) -> EvalResult<Table> {
     let mut result: Table = Vec::new();
 
     for row1 in t1 {
@@ -86,11 +86,11 @@ pub fn right_join(
     t2: &Table,
     cond: &Option<Condition>,
     aliases: &TableAliasMap,
-) -> LgResult<Table> {
+) -> EvalResult<Table> {
     left_join(t2, t1, cond, aliases)
 }
 impl JoinOpperand for JoinElement {
-    fn apply_as_join(&self, origin_table: Box<Table>, ctx: &CtxSELECT) -> LgResult<Table> {
+    fn apply_as_join(&self, origin_table: Box<Table>, ctx: &CtxSELECT) -> EvalResult<Table> {
         let to_join = ctx.get_table(&self.table.get_name())?;
         match self.op {
             JoinOp::Full => todo!(),
@@ -116,7 +116,7 @@ impl JoinOpperand for JoinElement {
     }
 }
 impl JoinOpperand for Vec<JoinElement> {
-    fn apply_as_join(&self, mut origin_table: Box<Table>, ctx: &CtxSELECT) -> LgResult<Table> {
+    fn apply_as_join(&self, mut origin_table: Box<Table>, ctx: &CtxSELECT) -> EvalResult<Table> {
         for j in self.iter() {
             origin_table = Box::new(j.apply_as_join(origin_table, ctx)?);
         }

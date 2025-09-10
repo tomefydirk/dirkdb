@@ -9,6 +9,7 @@ pub enum EvalErrorkind {
     IncompatibleType,
     NotStaticVariable,
     AmbiguousName,
+    AmbiguousFieldALias,
     AliasNeeded,
     NotInDatabases,
     FunctionError,

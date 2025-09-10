@@ -2,7 +2,7 @@ use indexmap::IndexMap;
 
 use crate::{
     evaluation::{
-        EvaluableAsQuery, LgResult, OperatorQuery,
+        EvaluableAsQuery, EvalResult, OperatorQuery,
         helper::{Comparator, RowAlias},
     },
     function::{self, helper::my_modulo, sql::FunctionRegistry},
@@ -19,8 +19,8 @@ impl OperatorQuery<bool, bool> for LogicalOp {
         }
     }
 }
-impl OperatorQuery<&TableCell, LgResult<bool>> for CompareOp {
-    fn default_apply(&self, left: &TableCell, right: &TableCell) -> LgResult<bool> {
+impl OperatorQuery<&TableCell, EvalResult<bool>> for CompareOp {
+    fn default_apply(&self, left: &TableCell, right: &TableCell) -> EvalResult<bool> {
         match self {
             CompareOp::Like => {
                 let l_str = left.to_string_value();
@@ -58,7 +58,7 @@ impl OperatorQuery<f64, f64> for BinOp {
 }
 
 impl EvaluableAsQuery<TableRow, TableAliasMap, TableCell> for Condition {
-    fn eval_dyn(&self, ctx: &TableRow, aliases: &TableAliasMap) -> LgResult<TableCell> {
+    fn eval_dyn(&self, ctx: &TableRow, aliases: &TableAliasMap) -> EvalResult<TableCell> {
         match self {
             Condition::Comparison { left, op, right } => {
                 let l = left.eval_value(ctx, aliases)?;
@@ -102,7 +102,7 @@ impl EvaluableAsQuery<TableRow, TableAliasMap, TableCell> for Condition {
             }
         }
     }
-    fn static_eval(&self) -> LgResult<TableCell> {
+    fn static_eval(&self) -> EvalResult<TableCell> {
         let ctx = IndexMap::<QualifiedIdentifier, TableCell>::new();
         self.eval_dyn(&ctx, &IndexMap::new())
     }
@@ -112,7 +112,7 @@ pub fn change_args_type(
     args: &Vec<Condition>,
     ctx: &TableRow,
     aliases: &TableAliasMap,
-) -> LgResult<Vec<TableCell>> {
+) -> EvalResult<Vec<TableCell>> {
     let mut retour = Vec::<TableCell>::new();
     for a in args {
         retour.push(a.eval_dyn(ctx, aliases)?);
@@ -121,7 +121,7 @@ pub fn change_args_type(
 }
 
 impl Condition {
-    fn eval_value(&self, ctx: &TableRow, aliases: &TableAliasMap) -> LgResult<TableCell> {
+    fn eval_value(&self, ctx: &TableRow, aliases: &TableAliasMap) -> EvalResult<TableCell> {
         match self {
             Condition::Primitive(PrimitiveElement::Identifier(qid)) => {
                 let a = ctx.get_column(qid, aliases)?;

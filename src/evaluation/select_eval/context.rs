@@ -2,7 +2,7 @@ use indexmap::IndexMap;
 
 use crate::{
     error_lib::evaluation::EvalEror,
-    evaluation::{AliasGetter, JoinOpperand, LgResult},
+    evaluation::{AliasGetter, JoinOpperand, EvalResult},
     from_registry::get_tables,
     general_struct::structure::{JoinElement, SelectRqst, Table, TableOrigin, TableWithAlias},
 };
@@ -12,7 +12,7 @@ pub struct CtxSELECT {
     pub alias: IndexMap<String, String>,
 }
 impl TableWithAlias {
-    pub fn get_source(&self) -> LgResult<(String, Table)> {
+    pub fn get_source(&self) -> EvalResult<(String, Table)> {
         match &self.origin {
             TableOrigin::Name { name, id } => get_tables(id.clone(), name),
             TableOrigin::SubRequest { rqst, id } => match &self.alias {
@@ -30,7 +30,7 @@ impl CtxSELECT {
         Self { base, alias }
     }
 
-    pub fn init_base(rqst: &SelectRqst) -> LgResult<IndexMap<String, Table>> {
+    pub fn init_base(rqst: &SelectRqst) -> EvalResult<IndexMap<String, Table>> {
         let mut a = IndexMap::<String, Table>::new();
         if let Some(tb)= &rqst.from {
                let source = tb.get_source()?;
@@ -43,10 +43,10 @@ impl CtxSELECT {
         }
         Ok(a)
     }
-    pub fn init_alias(rqst: &SelectRqst) -> LgResult<IndexMap<String, String>> {
+    pub fn init_alias(rqst: &SelectRqst) -> EvalResult<IndexMap<String, String>> {
         rqst.get_alias_map()
     }
-    pub fn get_table(&self, name: &String) -> LgResult<&Table> {
+    pub fn get_table(&self, name: &String) -> EvalResult<&Table> {
         match self.base.get(name) {
             Some(t) => Ok(t),
             None => Err(EvalEror::<String>::not_in_database(name.clone())),
@@ -54,7 +54,7 @@ impl CtxSELECT {
     }
 }
 
-impl From<&SelectRqst> for LgResult<CtxSELECT> {
+impl From<&SelectRqst> for EvalResult<CtxSELECT> {
     fn from(value: &SelectRqst) -> Self {
         let a = CtxSELECT::new(CtxSELECT::init_base(value)?, CtxSELECT::init_alias(value)?);
         Ok(a)
@@ -66,10 +66,10 @@ impl CtxSELECT {
         &self,
         origin_table: &String,
         joinop: &Vec<JoinElement>,
-    ) -> LgResult<Table> {
+    ) -> EvalResult<Table> {
         joinop.apply_as_join(Box::new(self.get_table(origin_table)?.clone()), self)
     }
-    pub fn get_new_table_from_rqst(&self, value: &SelectRqst) -> LgResult<Table> {
+    pub fn get_new_table_from_rqst(&self, value: &SelectRqst) -> EvalResult<Table> {
         match &value.from {
             Some(t) => self.get_new_table(&t.get_name(), &value.join),
             None => Ok(Vec::new()),

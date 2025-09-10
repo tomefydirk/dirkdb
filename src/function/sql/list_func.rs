@@ -1,10 +1,10 @@
 use chrono::Local;
 
 use crate::{
-    error_lib::evaluation::*, evaluation::LgResult, function::sql::Signature,
+    error_lib::evaluation::*, evaluation::EvalResult, function::sql::Signature,
     general_struct::structure::TableCell,
 };
-pub fn sqrt(args: Vec<TableCell>) -> LgResult<TableCell> {
+pub fn sqrt(args: Vec<TableCell>) -> EvalResult<TableCell> {
     if args.len() != 1 {
         return Err(EvalEror::<String>::function_not_found(Signature::new(
             "sqrt".into(),
@@ -25,7 +25,7 @@ pub fn sqrt(args: Vec<TableCell>) -> LgResult<TableCell> {
         other => Err(EvalEror::<String>::incompatible_type(other)),
     }
 }
-pub fn datediff(args: Vec<TableCell>) -> LgResult<TableCell> {
+pub fn datediff(args: Vec<TableCell>) -> EvalResult<TableCell> {
     if args.len() != 2 {
         return Err(EvalEror::<String>::function_not_found(Signature::new(
             "datediff".into(),
@@ -35,7 +35,7 @@ pub fn datediff(args: Vec<TableCell>) -> LgResult<TableCell> {
     let n = (args[0].convert_to_date()? - args[1].convert_to_date()?).num_days() as f64;
     Ok(TableCell::Number(n))
 }
-pub fn now(args: Vec<TableCell>) -> LgResult<TableCell> {
+pub fn now(args: Vec<TableCell>) -> EvalResult<TableCell> {
     if !args.is_empty() {
         return Err(EvalEror::<String>::function_not_found(Signature::new(
             "datediff".into(),

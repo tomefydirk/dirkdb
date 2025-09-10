@@ -25,7 +25,7 @@ use indexmap::IndexMap;
 
 use crate::{
     error_lib::evaluation::EvalEror,
-    evaluation::LgResult,
+    evaluation::EvalResult,
     function::sql::list_func::{datediff, now, sqrt},
     general_struct::structure::{QualifiedIdentifier, TableCell},
 };
@@ -77,7 +77,7 @@ impl Hash for Signature {
     }
 }
 
-type FuncSQL = fn(Vec<TableCell>) -> LgResult<TableCell>;
+type FuncSQL = fn(Vec<TableCell>) -> EvalResult<TableCell>;
 
 pub struct FunctionRegistry {
     funcs: IndexMap<Signature, FuncSQL>,
@@ -100,13 +100,13 @@ impl Default for FunctionRegistry {
 }
 
 impl FunctionRegistry {
-    pub fn match_with(&self, s: Signature) -> LgResult<FuncSQL> {
+    pub fn match_with(&self, s: Signature) -> EvalResult<FuncSQL> {
         match self.funcs.get(&s) {
             Some(f) => Ok(*f),
             None => Err(EvalEror::<String>::function_not_found(s)),
         }
     }
-    pub fn call(&self, name: &QualifiedIdentifier, args: Vec<TableCell>) -> LgResult<TableCell> {
+    pub fn call(&self, name: &QualifiedIdentifier, args: Vec<TableCell>) -> EvalResult<TableCell> {
         let sig = Signature::new(name.clone(), args.len());
         let func = self.match_with(sig)?;
         func(args.clone())

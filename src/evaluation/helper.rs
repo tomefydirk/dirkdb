@@ -1,10 +1,11 @@
 use crate::{
     error_lib::evaluation::EvalEror,
-    evaluation::{AliasGetter, AliasMap, KeyGettable, LgResult},
+    evaluation::{AliasGetter, AliasMap, EvalResult, KeyGettable, OccurenceAble},
     general_struct::structure::{
-        CompareOp, JoinElement, QualifiedIdentifier, SelectRqst, Table, TableAliasMap, TableCell, TableOrigin, TableRow, TableWithAlias
+        CompareOp, JoinElement, QualifiedIdentifier, SelectRqst, Table, TableAliasMap, TableCell,
+        TableOrigin, TableRow, TableWithAlias,
     },
-    tokenizer::{scan_float, Token},
+    tokenizer::{Token, scan_float},
 };
 use chrono::{Datelike, NaiveDate};
 impl PartialEq for TableCell {
@@ -68,7 +69,7 @@ impl TableCell {
         }
     }
 
-    pub fn convert_to_date(&self) -> LgResult<NaiveDate> {
+    pub fn convert_to_date(&self) -> EvalResult<NaiveDate> {
         match self {
             TableCell::String(v) => {
                 let a = (v)
@@ -116,8 +117,10 @@ impl TableCell {
         }
     }
 }
-use std::{ hash::{Hash, Hasher}};
 use indexmap::IndexMap;
+use std::{
+    hash::{Hash, Hasher},
+};
 
 impl Hash for QualifiedIdentifier {
     fn hash<H: Hasher>(&self, state: &mut H) {
@@ -132,7 +135,7 @@ pub trait RowAlias {
         &self,
         qid: &QualifiedIdentifier,
         aliases: &TableAliasMap,
-    ) -> LgResult<&TableCell>;
+    ) -> EvalResult<&TableCell>;
 }
 
 impl RowAlias for TableRow {
@@ -140,7 +143,7 @@ impl RowAlias for TableRow {
         &self,
         qid: &QualifiedIdentifier,
         aliases: &TableAliasMap,
-    ) -> LgResult<&TableCell> {
+    ) -> EvalResult<&TableCell> {
         match &qid.src {
             Some(table_name) => {
                 let real_table = aliases.get(table_name).unwrap_or(table_name);
@@ -152,9 +155,7 @@ impl RowAlias for TableRow {
 
                 match self.get(&normalized) {
                     Some(retour) => Ok(retour),
-                    None => {
-                        Err(EvalEror::<String>::field_notfound(qid.to_string()))
-                    }
+                    None => Err(EvalEror::<String>::field_notfound(qid.to_string())),
                 }
             }
             None => {
@@ -174,43 +175,43 @@ impl RowAlias for TableRow {
 }
 
 impl TableWithAlias {
-    pub fn get_name(&self)->String{
+    pub fn get_name(&self) -> String {
         match &self.origin {
-       TableOrigin::Name{name:_ ,id}=> id.clone(),
-         TableOrigin::SubRequest { rqst:_, id } => id.clone(),
+            TableOrigin::Name { name: _, id } => id.clone(),
+            TableOrigin::SubRequest { rqst: _, id } => id.clone(),
         }
     }
 }
 
 impl AliasGetter for TableWithAlias {
-    fn get_alias_map(&self) -> LgResult<IndexMap<String, String>> {
+    fn get_alias_map(&self) -> EvalResult<IndexMap<String, String>> {
         let mut retour = IndexMap::<String, String>::new();
         match (&self.alias, &self.origin) {
-            (Some(alias), TableOrigin::Name{name,id}) => {
+            (Some(alias), TableOrigin::Name { name, id }) => {
                 retour.insert(name.clone(), id.clone());
                 retour.insert(alias.clone(), id.clone());
                 Ok(retour)
-            },
-            (None, TableOrigin::Name{name,id})=>{
+            }
+            (None, TableOrigin::Name { name, id }) => {
                 retour.insert(name.clone(), id.clone());
                 Ok(retour)
             }
-            (Some(alias), TableOrigin::SubRequest { rqst:_, id }) =>{
-                 retour.insert(alias.clone(), id.clone());
+            (Some(alias), TableOrigin::SubRequest { rqst: _, id }) => {
+                retour.insert(alias.clone(), id.clone());
                 Ok(retour)
-            },
+            }
             _ => Ok(retour),
         }
     }
 }
 impl AliasGetter for JoinElement {
-    fn get_alias_map(&self) -> LgResult<IndexMap<String, String>> {
-       self.table.get_alias_map()
+    fn get_alias_map(&self) -> EvalResult<IndexMap<String, String>> {
+        self.table.get_alias_map()
     }
 }
 
 impl AliasGetter for Vec<JoinElement> {
-    fn get_alias_map(&self) -> LgResult<IndexMap<String, String>> {
+    fn get_alias_map(&self) -> EvalResult<IndexMap<String, String>> {
         let mut retour = IndexMap::<String, String>::new();
         for a in self {
             retour.extends_aliases(a.get_alias_map()?)?;
@@ -219,16 +220,18 @@ impl AliasGetter for Vec<JoinElement> {
     }
 }
 
-impl AliasGetter for SelectRqst{
-    fn get_alias_map(&self)->LgResult<IndexMap<String,String>> {
+impl AliasGetter for SelectRqst {
+    fn get_alias_map(&self) -> EvalResult<IndexMap<String, String>> {
         let mut retour = IndexMap::<String, String>::new();
-        if let Some(t) = &self.from { retour.extends_aliases(t.get_alias_map()?)? }
+        if let Some(t) = &self.from {
+            retour.extends_aliases(t.get_alias_map()?)?
+        }
         retour.extends_aliases(self.join.get_alias_map()?)?;
         Ok(retour)
     }
 }
 impl TableWithAlias {
-    pub fn change_table_owner(table: Table, owner: String) -> LgResult<Table> {
+    pub fn change_table_owner(table: Table, owner: String) -> EvalResult<Table> {
         let mut result: Table = Vec::new();
         for row in table {
             let mut new_row: TableRow = IndexMap::new();
@@ -243,55 +246,63 @@ impl TableWithAlias {
         }
         Ok(result)
     }
-   
 }
 impl AliasGetter for TableAliasMap {
-    fn get_alias_map(&self)->LgResult<IndexMap<String,String>> {
+    fn get_alias_map(&self) -> EvalResult<IndexMap<String, String>> {
         Ok(self.clone())
     }
 }
 
 impl AliasMap<String> for TableAliasMap {
-    fn extends_aliases<T: AliasMap<String>>(&mut self,other:T) -> LgResult<()> {
-        let new_aliases=other.get_alias_map()?;
-        for (alias,real_name) in &new_aliases {
-            if let Some(other_name)=self.get(alias){
-                if self.occurrence(other_name) >1 {
+    fn extends_aliases<T: AliasMap<String>>(&mut self, other: T) -> EvalResult<()> {
+        let new_aliases = other.get_alias_map()?;
+        for (alias, real_name) in &new_aliases {
+            if let Some(other_name) = self.get(alias) {
+                if self.occurrence(other_name) > 1 {
                     continue;
-                } else if new_aliases.occurrence(real_name)==1  {
-                      return Err(EvalEror::<String>::not_unique_table(alias.clone()));
-                }else {
+                } else if new_aliases.occurrence(real_name) == 1 {
+                    return Err(EvalEror::<String>::not_unique_table(alias.clone()));
+                } else {
                     continue;
                 }
-            }else {
+            } else {
                 self.insert(alias.clone(), real_name.clone());
-            }   
+            }
         }
         Ok(())
     }
 
-    fn get_original_name(&self,alias:&String)->Option<&String> {
-       self.get(alias)
+    fn get_original_name(&self, alias: &String) -> Option<&String> {
+        self.get(alias)
     }
 }
 
-impl KeyGettable<String,String> for TableAliasMap {
-    fn get_key(&self,value:&String)->Option<&String> {
-        for t in self{
-            if t.1==value{
+impl KeyGettable<String, String> for TableAliasMap {
+    fn get_key(&self, value: &String) -> Option<&String> {
+        for t in self {
+            if t.1 == value {
                 return Some(t.0);
             }
         }
         None
     }
-    
-    fn occurrence(&self,value:&String)->usize {
-        let mut retour=0;
-          for t in self{
-            if t.1==value{
-                retour+=1;
+
+    fn occurrence(&self, value: &String) -> usize {
+        self.values().occurence(value) 
+    }
+}
+impl<T, I> OccurenceAble<T> for I
+where
+    T: PartialEq,
+    I: Iterator<Item = T>,
+{
+    fn occurence(&mut self, value: T) -> usize {
+        let mut occ=0;
+       for item in self{
+            if item==value{
+                occ+=1;
             }
-        }
-        retour
+       }
+       occ
     }
 }
