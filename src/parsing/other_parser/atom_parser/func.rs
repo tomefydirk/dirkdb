@@ -1,7 +1,9 @@
 use std::str::FromStr;
 
 use crate::ParsingResult;
-use crate::error_lib::parsing::{factor_error, into_nom_error, into_nom_failure, token_wrong_place};
+use crate::error_lib::parsing::{
+    factor_error, into_nom_error, into_nom_failure, token_wrong_place,
+};
 use crate::general_struct::structure::{BinOp, Condition, QualifiedIdentifier};
 use crate::parsing::other_parser::logic_parser::func::parse_logical;
 use crate::tokenizer::helper::codon_stop;
