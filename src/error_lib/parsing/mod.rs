@@ -6,7 +6,7 @@ pub mod mini_err;
 #[derive(Debug, Clone)]
 pub enum ErrorKind {
     Parens1Missing,
-    TokenNotfound,
+    TokenWrongPlace,
     AfterIsorIsnot(String),
     Aliasnotvalid,
     AliasNeeded,
@@ -41,8 +41,8 @@ pub fn alias_needed_parsing() -> ParserErr<String> {
         ErrorKind::AliasNeeded,
     )
 }
-pub fn token_not_found(input: String) -> ParserErr<String> {
-    ParserErr::build(input, ErrorKind::TokenNotfound)
+pub fn token_wrong_place(input: String) -> ParserErr<String> {
+    ParserErr::build(input, ErrorKind::TokenWrongPlace)
 }
 pub fn after_is_or_isnot(input: String) -> ParserErr<String> {
     let msg = "Désolé aprés 'IS' ou 'IS NOT' est forçément 'NULL'".to_string();
@@ -131,7 +131,7 @@ impl Error<&str> {
             Error::Parser(parser_err) => parser_err.to_string_err().into(),
             Error::Nested(_) => ParserErr::build(
                 "Erreur votre requete est littérament invalide".to_string(),
-                ErrorKind::TokenNotfound,
+                ErrorKind::InputInvalid,
             )
             .into(),
             Error::FromStrBinOp(b) => b.clone().into(),

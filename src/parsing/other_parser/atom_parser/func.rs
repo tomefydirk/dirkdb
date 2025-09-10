@@ -1,7 +1,7 @@
 use std::str::FromStr;
 
 use crate::ParsingResult;
-use crate::error_lib::parsing::{factor_error, into_nom_error, into_nom_failure, token_not_found};
+use crate::error_lib::parsing::{factor_error, into_nom_error, into_nom_failure, token_wrong_place};
 use crate::general_struct::structure::{BinOp, Condition, QualifiedIdentifier};
 use crate::parsing::other_parser::logic_parser::func::parse_logical;
 use crate::tokenizer::helper::codon_stop;
@@ -71,11 +71,11 @@ pub fn parse_factor(input: &str) -> ParsingResult<&str, Box<Condition>> {
             } else if str_token.to_lowercase() == NULL_SIGN {
                 Ok((next_input, Box::new(Condition::Null)))
             } else {
-                Err(into_nom_error(token_not_found(str_token.to_string())))
+                Err(into_nom_error(token_wrong_place(str_token.to_string())))
             }
         }
         Token::Func(f) => parse_func_factor(next_input, f),
-        a => Err(into_nom_error(token_not_found(a.to_string()))),
+        a => Err(into_nom_error(token_wrong_place(a.to_string()))),
     }
 }
 pub fn parse_func_factor(

@@ -1,6 +1,6 @@
 use crate::{
     ParsingResult,
-    error_lib::parsing::{alias_not_valid, into_nom_failure, token_not_found},
+    error_lib::parsing::{alias_not_valid, into_nom_failure, token_wrong_place},
     general_struct::{
         constant::{AS_SIGN, COMMA_SIGN},
         structure::{Condition, Field, FieldRqst, PrimitiveElement, QualifiedIdentifier},
@@ -53,7 +53,7 @@ pub fn parse_fieldrqst_expr_list(input: &str) -> ParsingResult<&str, FieldRqst> 
                         }
                         input = after_as;
                     }
-                    a => return Err(into_nom_failure(token_not_found(a.to_string()))),
+                    a => return Err(into_nom_failure(token_wrong_place(a.to_string()))),
                 }
             }
 

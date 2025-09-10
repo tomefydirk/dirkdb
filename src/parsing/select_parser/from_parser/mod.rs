@@ -1,6 +1,6 @@
 use crate::ParsingResult;
 use crate::error_lib::parsing::{
-    alias_needed_parsing, factor_error, into_nom_error, into_nom_failure, token_not_found,
+    alias_needed_parsing, factor_error, into_nom_error, into_nom_failure, token_wrong_place,
 };
 use crate::general_struct::constant::{PARENS_1, SELECT_SIGN};
 use crate::general_struct::structure::{TableOrigin, TableWithAlias};
@@ -43,7 +43,7 @@ fn parse_from_base1(input: &str) -> ParsingResult<&str, TableOrigin> {
             Token::Variable(qid) if qid.src.is_none() => {
                 Ok((input, TableOrigin::build_as_name(qid.name)))
             }
-            a => Err(into_nom_failure(token_not_found(a.to_string()))),
+            a => Err(into_nom_failure(token_wrong_place(a.to_string()))),
         }
     }
 }

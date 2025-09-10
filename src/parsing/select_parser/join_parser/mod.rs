@@ -1,6 +1,6 @@
 use crate::{
     ParsingResult,
-    error_lib::parsing::{into_nom_failure, token_not_found},
+    error_lib::parsing::{into_nom_failure, token_wrong_place},
     general_struct::{
         constant::{JOIN, ON_SIGN, full_join, inner_join, left_join, right_join},
         structure::*,
@@ -35,7 +35,7 @@ pub fn parse_single_join(input: &str) -> ParsingResult<&str, JoinElement> {
         Token::Mkw(mkw) if mkw == full_join() => JoinOp::Full,
         Token::Other(word) if word.eq_ignore_ascii_case(JOIN) => JoinOp::Inner,
         a => {
-            return Err(into_nom_failure(token_not_found(a.to_string())));
+            return Err(into_nom_failure(token_wrong_place(a.to_string())));
         }
     };
 

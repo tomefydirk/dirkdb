@@ -1,5 +1,5 @@
 use crate::ParsingResult;
-use crate::error_lib::parsing::{into_nom_error, token_not_found};
+use crate::error_lib::parsing::{into_nom_error, token_wrong_place};
 use crate::general_struct::constant::{FROM_SIGN, SELECT_SIGN, WHERE_SIGN};
 use crate::general_struct::structure::{Condition, SelectRqst, TableWithAlias};
 use crate::parsing::select_parser::field_parser::parse_fieldrqst;
@@ -29,7 +29,7 @@ pub fn parse_select(input: &str) -> ParsingResult<&str, SelectRqst> {
                 SelectRqst::new(fields, from, join_clause, where_clause),
             ))
         }
-        a => Err(into_nom_error(token_not_found(a.to_string()))),
+        a => Err(into_nom_error(token_wrong_place(a.to_string()))),
     }
 }
 
