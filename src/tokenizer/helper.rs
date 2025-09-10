@@ -1,7 +1,5 @@
 use crate::{
-    TokenResult,
-    general_struct::constant::*,
-    tokenizer::{Token, scan_token},
+    general_struct::constant::*, tokenizer::{scan_token_base,Token}, TokenResult
 };
 
 pub(crate) fn is_ident_start(c: char) -> bool {
@@ -47,7 +45,7 @@ impl Tokenizable for &str {
     where
         Self: Sized,
     {
-        scan_token(self)
+        scan_token_base(self)
     }
     fn starts_with_token(&self, value: &Token) -> bool {
         let a = self.scan_token();

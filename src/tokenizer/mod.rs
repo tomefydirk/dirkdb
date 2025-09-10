@@ -2,7 +2,8 @@ pub mod helper;
 pub mod tag_func;
 use std::fmt::Display;
 
-use crate::TokenResult;
+use crate::result::convert_tr;
+use crate::{ParsingResult, TokenResult};
 use crate::general_struct::constant::*;
 use crate::general_struct::structure::{ManyKeyWord, QualifiedIdentifier};
 use crate::tokenizer::helper::is_func_valid;
@@ -148,7 +149,7 @@ pub fn scan_binop_token(input: &str) -> TokenResult<&str, Token> {
 }
 pub fn scan_function(input: &str) -> TokenResult<&str, Token> {
     let (input, func_name) = tag_variable(input)?;
-    let (input, token) = scan_token(input.trim())?;
+    let (input, token) = scan_token_base(input.trim())?;
     match token {
         Token::Other(PARENS_0) if is_func_valid(&func_name.name) => {
             Ok((input, Token::Func(func_name)))
@@ -165,7 +166,7 @@ pub fn default_token(input: &str) -> TokenResult<&str, Token> {
     Ok((a.0, Token::Other(a.1)))
 }
 
-pub fn scan_token(input: &str) -> TokenResult<&str, Token> {
+pub fn scan_token_base(input: &str) -> TokenResult<&str, Token> {
     let a = alt((
         scan_join_operand,
         scan_key_word,
@@ -180,6 +181,9 @@ pub fn scan_token(input: &str) -> TokenResult<&str, Token> {
     .parse(input.trim())?;
     Ok((a.0.trim(), a.1))
 }
+pub fn scan_token(input: &str)-> ParsingResult<&str, Token>{
+    convert_tr(scan_token_base(input))
+}
 #[test]
 fn test_equality_token() {
     let a = inner_join();
@@ -191,7 +195,7 @@ fn test_equality_token() {
 #[test]
 fn test_null_token() {
 
-    let a = scan_token("null");
+    let a = scan_token_base("null");
     match a {
         Ok((input, t)) => {
             println!("input reste : {input} {t:#?}");

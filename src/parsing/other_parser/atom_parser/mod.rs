@@ -1,7 +1,7 @@
 use crate::general_struct::constant::*;
 use crate::general_struct::structure::QualifiedIdentifier;
 use crate::{
-    IResult,
+    ParsingResult,
     general_struct::structure::{BinOp, Condition, PrimitiveElement},
 };
 
@@ -38,26 +38,26 @@ impl Condition {
         }
     }
 
-    pub fn result_number(input: &str, number: f64) -> crate::IResult<&str, Box<Condition>> {
+    pub fn result_number(input: &str, number: f64) -> crate::ParsingResult<&str, Box<Condition>> {
         let a: PrimitiveElement = number.into();
         let result = (input, Box::new(Condition::Primitive(a)));
         Ok(result)
     }
-    pub fn result_string(input: &str, str: String) -> IResult<&str, Box<Condition>> {
+    pub fn result_string(input: &str, str: String) -> ParsingResult<&str, Box<Condition>> {
         let a: PrimitiveElement = str.into();
         let result = (input, Box::new(Condition::Primitive(a)));
-        IResult::Ok(result)
+        ParsingResult::Ok(result)
     }
-    pub fn result_name(input: &str, str: QualifiedIdentifier) -> IResult<&str, Box<Condition>> {
+    pub fn result_name(input: &str, str: QualifiedIdentifier) -> ParsingResult<&str, Box<Condition>> {
         let a: PrimitiveElement = PrimitiveElement::from_id(str);
         let result = (input, Box::new(Condition::Primitive(a)));
-        IResult::Ok(result)
+        ParsingResult::Ok(result)
     }
     pub fn result_func(
         input: &str,
         f_name: QualifiedIdentifier,
         args: Vec<Condition>,
-    ) -> IResult<&str, Box<Condition>> {
+    ) -> ParsingResult<&str, Box<Condition>> {
         Ok((
             input,
             Box::new(Condition::Func {
@@ -69,8 +69,8 @@ impl Condition {
     pub fn result_from_current(
         input: &str,
         current_expr: Box<Condition>,
-    ) -> IResult<&str, Box<Condition>> {
-        IResult::Ok((input, current_expr))
+    ) -> ParsingResult<&str, Box<Condition>> {
+        ParsingResult::Ok((input, current_expr))
     }
 
     pub fn is_factor_op(str_token: &str) -> bool {

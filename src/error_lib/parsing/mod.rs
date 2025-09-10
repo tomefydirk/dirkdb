@@ -11,7 +11,8 @@ pub enum ErrorKind {
     Aliasnotvalid,
     AliasNeeded,
     InputIncomplet,
-    InputInvalid
+    InputInvalid,
+    Andifiication
 }
 #[derive(Debug, Error,Clone)]
 #[error("{code:?} : '{input}' ")]
@@ -25,8 +26,8 @@ impl<I> ParserErr<I> {
     }
 }
 
-pub fn factor_error(input: &str) -> ParserErr<&str> {
-    ParserErr::build(input, ErrorKind::Parens1Missing)
+pub fn factor_error(input: String) -> ParserErr<String> {
+    ParserErr::build(format!("une parenthèse n'est jamais fermé ! [à la place : '{}']",input), ErrorKind::Parens1Missing)
 }
 pub fn alias_needed_parsing() -> ParserErr<&'static str> {
     ParserErr::build(
@@ -34,21 +35,24 @@ pub fn alias_needed_parsing() -> ParserErr<&'static str> {
         ErrorKind::AliasNeeded,
     )
 }
-pub fn token_not_found(input: &str) -> ParserErr<&str> {
+pub fn token_not_found(input: String) -> ParserErr<String> {
     ParserErr::build(input, ErrorKind::TokenNotfound)
 }
-pub fn after_is_or_isnot(input: &str) -> ParserErr<&str> {
+pub fn after_is_or_isnot(input: String) -> ParserErr<String> {
     let msg = "Désolé aprés 'IS' ou 'IS NOT' est forçément 'NULL'".to_string();
     ParserErr::build(input, ErrorKind::AfterIsorIsnot(msg))
 }
-pub fn alias_not_valid(input: &str) -> ParserErr<&str> {
+pub fn alias_not_valid(input: String) -> ParserErr<String> {
     ParserErr::build(input, ErrorKind::Aliasnotvalid)
 }
-pub fn input_incomplet(input: &str) -> ParserErr<&str> {
+pub fn input_incomplet(input: String) -> ParserErr<String> {
     ParserErr::build(input, ErrorKind::InputIncomplet)
 }
 pub fn input_invalide()->ParserErr<String>{
     ParserErr::build("votre phrase contient des tokens invalide".to_string(), ErrorKind::InputInvalid)
+}
+pub fn and_ification_err()->ParserErr<String>{
+    ParserErr::build("Le procéssus and_ification semble avoir eu un erreur".to_string(), ErrorKind::InputInvalid)
 }
 #[derive(Debug, thiserror::Error,Clone)]
 pub enum Error<I> {

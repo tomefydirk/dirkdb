@@ -1,9 +1,9 @@
 use std::str::FromStr;
 
 use crate::parsing::other_parser::logic_parser::BuildCondition;
-use crate::IResult;
+use crate::ParsingResult;
 use crate::error_lib::parsing::{
-    after_is_or_isnot, into_nom_error, into_nom_failure, token_not_found,
+    after_is_or_isnot, and_ification_err, into_nom_error, into_nom_failure
 };
 use crate::tokenizer::helper::codon_stop;
 
@@ -16,7 +16,7 @@ use crate::{
     tokenizer::{Token, scan_token},
 };
 
-pub fn parse_logical(input: &str) -> IResult<&str, Box<Condition>> {
+pub fn parse_logical(input: &str) -> ParsingResult<&str, Box<Condition>> {
     let (mut input_rem, mut current) = parse_compare(input)?;
 
     while !codon_stop(input_rem) {
@@ -33,7 +33,7 @@ pub fn parse_logical(input: &str) -> IResult<&str, Box<Condition>> {
     Ok((input_rem, current))
 }
 
-pub fn parse_compare(input: &str) -> IResult<&str, Box<Condition>> {
+pub fn parse_compare(input: &str) -> ParsingResult<&str, Box<Condition>> {
     let (mut new_input, mut current) = parse_atom(input)?;
     let mut comparisons = Vec::<Condition>::new();
 
@@ -52,8 +52,8 @@ pub fn parse_compare(input: &str) -> IResult<&str, Box<Condition>> {
                             comparisons.push(*current.clone());
                             new_input = after_rhs;
                         }
-                        _ => {
-                            return Err(into_nom_error(after_is_or_isnot(input)));
+                        a => {
+                            return Err(into_nom_error(after_is_or_isnot(a.to_string())));
                         }
                     }
                 } else {
@@ -76,9 +76,9 @@ pub fn parse_compare(input: &str) -> IResult<&str, Box<Condition>> {
 pub fn and_ification(
     mut comparisons: Vec<Condition>,
     input: &str,
-) -> IResult<&str, Box<Condition>> {
+) -> ParsingResult<&str, Box<Condition>> {
     match comparisons.len() {
-        0 => Err(into_nom_failure(token_not_found(input))),
+        0 => Err(into_nom_failure(and_ification_err())),
         1 => Ok((input, Box::new(comparisons.pop().unwrap()))),
         _ => {
             let mut current = Box::new(comparisons.remove(0));

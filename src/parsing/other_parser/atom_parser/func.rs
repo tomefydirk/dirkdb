@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use crate::IResult;
+use crate::ParsingResult;
 use crate::error_lib::parsing::{factor_error, into_nom_error, into_nom_failure, token_not_found};
 use crate::general_struct::structure::{BinOp, Condition, QualifiedIdentifier};
 use crate::parsing::other_parser::logic_parser::func::parse_logical;
@@ -13,9 +13,9 @@ fn parse_binop_level<'a, F>(
     input: &'a str,
     lower_parser: F,
     ops: &[&str],
-) -> IResult<&'a str, Box<Condition>>
+) -> ParsingResult<&'a str, Box<Condition>>
 where
-    F: Fn(&'a str) -> IResult<&'a str, Box<Condition>>,
+    F: Fn(&'a str) -> ParsingResult<&'a str, Box<Condition>>,
 {
     let (mut input_rem, mut current_expr) = lower_parser(input)?;
 
@@ -42,21 +42,21 @@ where
     }
 }
 
-pub fn parse_atom(input: &str) -> IResult<&str, Box<Condition>> {
+pub fn parse_atom(input: &str) -> ParsingResult<&str, Box<Condition>> {
     parse_binop_level(input, parse_mod, &[ADD_SIGN, MINUS_SIGN])
 }
-pub fn parse_mod(input: &str) -> IResult<&str, Box<Condition>> {
+pub fn parse_mod(input: &str) -> ParsingResult<&str, Box<Condition>> {
     parse_binop_level(input, parse_term, &[MOD_SIGN])
 }
-pub fn parse_term(input: &str) -> IResult<&str, Box<Condition>> {
+pub fn parse_term(input: &str) -> ParsingResult<&str, Box<Condition>> {
     parse_binop_level(input, parse_power, &[MUL_SIGN, DIV_SIGN])
 }
 
-pub fn parse_power(input: &str) -> IResult<&str, Box<Condition>> {
+pub fn parse_power(input: &str) -> ParsingResult<&str, Box<Condition>> {
     parse_binop_level(input, parse_factor, &[POWER_SIGN])
 }
 
-pub fn parse_factor(input: &str) -> IResult<&str, Box<Condition>> {
+pub fn parse_factor(input: &str) -> ParsingResult<&str, Box<Condition>> {
     let (next_input, token) = scan_token(input)?;
     match token {
         Token::Number(n) => Condition::result_number(next_input, n),
@@ -71,14 +71,14 @@ pub fn parse_factor(input: &str) -> IResult<&str, Box<Condition>> {
             } else if str_token.to_lowercase() == NULL_SIGN {
                 Ok((next_input, Box::new(Condition::Null)))
             } else {
-                Err(into_nom_error(token_not_found(input)))
+                Err(into_nom_error(token_not_found(str_token.to_string())))
             }
         }
         Token::Func(f) => parse_func_factor(next_input, f),
-        _=>  Err(into_nom_error(token_not_found(input))),
+        a=>  Err(into_nom_error(token_not_found(a.to_string()))),
     }
 }
-pub fn parse_func_factor(mut input: &str, f: QualifiedIdentifier) -> IResult<&str, Box<Condition>> {
+pub fn parse_func_factor(mut input: &str, f: QualifiedIdentifier) -> ParsingResult<&str, Box<Condition>> {
     let mut vec = Vec::<Condition>::new();
     if input.trim().starts_with(PARENS_1) {
         let (ipt, _) = scan_token(input)?;
@@ -97,14 +97,14 @@ pub fn parse_func_factor(mut input: &str, f: QualifiedIdentifier) -> IResult<&st
         }
         input = ipt;
     }
-    Err(into_nom_error(token_not_found(input)))
+    Err(into_nom_error(factor_error("".to_string())))
 }
-pub fn parse_real_factor(input: &str) -> IResult<&str, Box<Condition>> {
+pub fn parse_real_factor(input: &str) -> ParsingResult<&str, Box<Condition>> {
     let (after_expr, expr) = parse_logical(input)?;
     let (after_paren, token) = scan_token(after_expr)?;
 
     match token {
         Token::Other(PARENS_1) => Condition::result_from_current(after_paren, expr),
-        _ => Err(into_nom_failure(factor_error(input))),
+        a=> Err(into_nom_failure(factor_error(a.to_string()))),
     }
 }
