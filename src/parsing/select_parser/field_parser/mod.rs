@@ -1,4 +1,4 @@
-use crate::IResult;
+use crate::ParsingResult;
 use crate::parsing::select_parser::field_parser::list_parser::parse_fieldrqst_expr_list;
 use crate::{
     general_struct::structure::FieldRqst,
@@ -7,12 +7,12 @@ use crate::{
 pub mod list_parser;
 
 
-fn parse_fieldrqst_all(input: &str) -> IResult<&str, FieldRqst> {
+fn parse_fieldrqst_all(input: &str) -> ParsingResult<&str, FieldRqst> {
     let (input, _) = scan_token(input)?;
     Ok((input, FieldRqst::All))
 }
 
-pub fn parse_fieldrqst(input: &str) -> IResult<&str, FieldRqst> {
+pub fn parse_fieldrqst(input: &str) -> ParsingResult<&str, FieldRqst> {
     // Champ global "*"
     if input.trim_start().starts_with('*') {
         return parse_fieldrqst_all(input);

@@ -1,24 +1,20 @@
 use crate::{
-    IResult,
-    error_lib::parsing::{alias_not_valid, factor_error, into_nom_failure},
-    general_struct::{
+    error_lib::parsing::{alias_not_valid, into_nom_failure, token_not_found}, general_struct::{
         constant::{AS_SIGN, COMMA_SIGN},
         structure::{Condition, Field, FieldRqst, PrimitiveElement, QualifiedIdentifier},
-    },
-    parsing::other_parser::logic_parser::func::parse_logical,
-    tokenizer::{Token, scan_token},
+    }, parsing::other_parser::logic_parser::func::parse_logical, tokenizer::{scan_token, Token}, ParsingResult
 };
 impl Field {
-    pub fn apply_alias(&mut self, alias: QualifiedIdentifier) -> bool {
+    pub fn apply_alias(&mut self, alias: &QualifiedIdentifier) -> bool {
         if self.alias.is_some() || alias.src.is_some() {
             false
         } else {
-            self.alias = Some(alias.name);
+            self.alias = Some(alias.name.clone());
             true
         }
     }
 }
-pub fn parse_fieldrqst_expr_list(input: &str) -> IResult<&str, FieldRqst> {
+pub fn parse_fieldrqst_expr_list(input: &str) -> ParsingResult<&str, FieldRqst> {
     let (mut input, first_expr) = parse_logical(input)?;
     let mut fields = vec![Field::build_field(*first_expr)];
 
@@ -34,8 +30,8 @@ pub fn parse_fieldrqst_expr_list(input: &str) -> IResult<&str, FieldRqst> {
             // alias implicite : SELECT name username
             Token::Variable(alias) => {
                 if let Some(last) = fields.last_mut() {
-                    if !last.apply_alias(alias) {
-                        return Err(into_nom_failure(alias_not_valid(next_input)));
+                    if !last.apply_alias(&alias) {
+                        return Err(into_nom_failure(alias_not_valid(alias.to_string())));
                     }
                 }
                 input = next_input;
@@ -47,13 +43,13 @@ pub fn parse_fieldrqst_expr_list(input: &str) -> IResult<&str, FieldRqst> {
                 match alias_token {
                     Token::Variable(alias) => {
                         if let Some(last) = fields.last_mut() {
-                            if !last.apply_alias(alias) {
-                                return Err(into_nom_failure(alias_not_valid(next_input)));
+                            if !last.apply_alias(&alias) {
+                                return Err(into_nom_failure(alias_not_valid(alias.to_string())));
                             }
                         }
                         input = after_as;
                     }
-                    _ => return Err(into_nom_failure(factor_error(next_input))),
+                    a => return Err(into_nom_failure(token_not_found(a.to_string()))),
                 }
             }
 
