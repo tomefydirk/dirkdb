@@ -1,5 +1,5 @@
 use crate::{
-    IResult,
+    TokenResult,
     general_struct::constant::*,
     tokenizer::{Token, scan_token},
 };
@@ -25,7 +25,7 @@ pub trait Factorable {
     fn is_factor_parens(&self) -> bool;
 }
 pub trait Tokenizable {
-    fn scan_token(&self) -> IResult<Self, Token>
+    fn scan_token(&self) -> TokenResult<Self, Token>
     where
         Self: Sized;
     fn starts_with_token(&self, value: &Token) -> bool;
@@ -43,7 +43,7 @@ impl Factorable for &str {
     }
 }
 impl Tokenizable for &str {
-    fn scan_token(&self) -> IResult<Self, Token>
+    fn scan_token(&self) -> TokenResult<Self, Token>
     where
         Self: Sized,
     {

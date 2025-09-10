@@ -2,7 +2,7 @@ pub mod helper;
 pub mod tag_func;
 use std::fmt::Display;
 
-use crate::IResult;
+use crate::TokenResult;
 use crate::general_struct::constant::*;
 use crate::general_struct::structure::{ManyKeyWord, QualifiedIdentifier};
 use crate::tokenizer::helper::is_func_valid;
@@ -71,22 +71,22 @@ impl From<f64> for Token<'_> {
 
 // ----------- Parsers de tokens --------------
 
-pub fn scan_float(input: &str) -> IResult<&str, Token> {
+pub fn scan_float(input: &str) -> TokenResult<&str, Token> {
     let a = tag_float(input)?;
     Ok((a.0, Token::Number(a.1)))
 }
 
-pub fn scan_name(input: &str) -> IResult<&str, Token> {
+pub fn scan_name(input: &str) -> TokenResult<&str, Token> {
     let a = tag_variable(input)?;
 
     Ok((a.0, Token::Variable(a.1)))
 }
 
-pub fn scan_string(input: &str) -> IResult<&str, Token> {
+pub fn scan_string(input: &str) -> TokenResult<&str, Token> {
     let a = alt((tag_string_one,tag_string_two)).parse(input)?;
     Ok((a.0, Token::String(a.1)))
 }
-pub fn scan_join_operand(input: &str) -> IResult<&str, Token> {
+pub fn scan_join_operand(input: &str) -> TokenResult<&str, Token> {
     let a = alt((
         tag_manykey_word_logic(right_join()),
         tag_manykey_word_logic(left_join()),
@@ -97,7 +97,7 @@ pub fn scan_join_operand(input: &str) -> IResult<&str, Token> {
 
     Ok((a.0, Token::Mkw(a.1.into())))
 }
-pub fn scan_key_word(input: &str) -> IResult<&str, Token> {
+pub fn scan_key_word(input: &str) -> TokenResult<&str, Token> {
     let a = alt((
         tag_key_word_logic(JOIN),
         tag_key_word_logic(ON_SIGN),
@@ -115,7 +115,7 @@ pub fn scan_key_word(input: &str) -> IResult<&str, Token> {
     .parse(input)?;
     Ok((a.0, Token::Other(a.1)))
 }
-pub fn scan_logic_token(input: &str) -> IResult<&str, Token> {
+pub fn scan_logic_token(input: &str) -> TokenResult<&str, Token> {
     let a = alt((
         tag(LT_E_SIGN),
         tag(GT_E_SIGN),
@@ -133,7 +133,7 @@ pub fn scan_logic_token(input: &str) -> IResult<&str, Token> {
 
     Ok((a.0, Token::Other(a.1)))
 }
-pub fn scan_binop_token(input: &str) -> IResult<&str, Token> {
+pub fn scan_binop_token(input: &str) -> TokenResult<&str, Token> {
     let a = alt((
         tag(MINUS_SIGN),
         tag(ADD_SIGN),
@@ -146,7 +146,7 @@ pub fn scan_binop_token(input: &str) -> IResult<&str, Token> {
 
     Ok((a.0, Token::Other(a.1)))
 }
-pub fn scan_function(input: &str) -> IResult<&str, Token> {
+pub fn scan_function(input: &str) -> TokenResult<&str, Token> {
     let (input, func_name) = tag_variable(input)?;
     let (input, token) = scan_token(input.trim())?;
     match token {
@@ -160,12 +160,12 @@ pub fn scan_function(input: &str) -> IResult<&str, Token> {
 }
 
 ///forcement en dernier !!!!!!
-pub fn default_token(input: &str) -> IResult<&str, Token> {
+pub fn default_token(input: &str) -> TokenResult<&str, Token> {
     let a = space0(input)?;
     Ok((a.0, Token::Other(a.1)))
 }
 
-pub fn scan_token(input: &str) -> IResult<&str, Token> {
+pub fn scan_token(input: &str) -> TokenResult<&str, Token> {
     let a = alt((
         scan_join_operand,
         scan_key_word,

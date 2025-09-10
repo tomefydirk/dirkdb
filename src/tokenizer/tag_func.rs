@@ -7,11 +7,11 @@ use nom::{
 
 use crate::{general_struct::{constant::*, structure::QualifiedIdentifier}, tokenizer::helper::codon_stop};
 use crate::{
-    IResult,
+    TokenResult,
     tokenizer::helper::{is_ident_char, is_ident_start},
 };
 
-pub fn tag_float(input: &str) -> IResult<&str, f64> {
+pub fn tag_float(input: &str) -> TokenResult<&str, f64> {
     let (rest, first_part) = digit1(input)?;
     let (rest2, point) = opt(tag(".")).parse(rest)?;
     if point.is_some() {
@@ -32,7 +32,7 @@ pub fn tag_float(input: &str) -> IResult<&str, f64> {
     }
 }
 
-pub fn tag_name(input: &str) -> IResult<&str, String> {
+pub fn tag_name(input: &str) -> TokenResult<&str, String> {
     let (rest, first) = take_while1(is_ident_start)(input)?;
     let (rest, rest_chars) = opt(take_while1(is_ident_char)).parse(rest)?;
     match rest_chars {
@@ -41,7 +41,7 @@ pub fn tag_name(input: &str) -> IResult<&str, String> {
     }
 }
 
-pub fn tag_string_one(input: &str) -> IResult<&str, String> {
+pub fn tag_string_one(input: &str) -> TokenResult<&str, String> {
     let (rest, _) = tag("'")(input)?;
     let (rest, content) = take_while1(|c: char| c != '\'')(rest)?;
     let (rest, _) = tag("'")(rest)?;
@@ -50,7 +50,7 @@ pub fn tag_string_one(input: &str) -> IResult<&str, String> {
 
 }
 
-pub fn tag_string_two(input: &str) -> IResult<&str, String> {
+pub fn tag_string_two(input: &str) -> TokenResult<&str, String> {
     let (rest, _) = tag("\"")(input)?;
     let (rest, content) = take_while1(|c: char| c != '"')(rest)?;
     let (rest, _) = tag("\"")(rest)?;
@@ -58,7 +58,7 @@ pub fn tag_string_two(input: &str) -> IResult<&str, String> {
 }
 pub fn tag_key_word_logic<'a>(
     keyword: &'static str,
-) -> impl FnMut(&'a str) -> IResult<&'a str, &'a str> {
+) -> impl FnMut(&'a str) -> TokenResult<&'a str, &'a str> {
     move |input: &'a str| {
         let (new_input, matched) = tag_no_case(keyword).parse(input)?;
 
@@ -70,7 +70,7 @@ pub fn tag_key_word_logic<'a>(
         }
     }
 }
-pub fn tag_is_not(input: &str) -> IResult<&str, &str> {
+pub fn tag_is_not(input: &str) -> TokenResult<&str, &str> {
     let (input, _) = (
         tag_no_case(IS_SIGN),
         multispace1,
@@ -80,7 +80,7 @@ pub fn tag_is_not(input: &str) -> IResult<&str, &str> {
         .parse(input)?;
     Ok((input, (IS_NOT_SIGN)))
 }
-pub fn tag_variable(input: &str) -> IResult<&str, QualifiedIdentifier> {
+pub fn tag_variable(input: &str) -> TokenResult<&str, QualifiedIdentifier> {
     let (rest, current_field) = tag_name(input)?;
     let (rest2, point) = opt(tag(".")).parse(rest)?;
     match point {
@@ -98,7 +98,7 @@ use crate::general_struct::structure::ManyKeyWord;
 
 pub fn tag_manykey_word_logic<'a>(
     keywords: ManyKeyWord<&'static str>,
-) -> impl FnMut(&'a str) -> IResult<&'a str, Vec<&'a str>> {
+) -> impl FnMut(&'a str) -> TokenResult<&'a str, Vec<&'a str>> {
     move |mut input: &'a str| {
         let mut matched = Vec::new();
 

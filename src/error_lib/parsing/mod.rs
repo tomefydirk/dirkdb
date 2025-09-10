@@ -1,7 +1,7 @@
 use nom::Needed;
 use thiserror::Error;
 
-use crate::error_lib::parsing::mini_err::*;
+use crate::{error_lib::parsing::mini_err::*};
 pub mod mini_err;
 #[derive(Debug, Clone)]
 pub enum ErrorKind {
@@ -11,8 +11,9 @@ pub enum ErrorKind {
     Aliasnotvalid,
     AliasNeeded,
     InputIncomplet,
+    InputInvalid
 }
-#[derive(Debug, Error)]
+#[derive(Debug, Error,Clone)]
 #[error("{code:?} : '{input}' ")]
 pub struct ParserErr<I> {
     input: I,
@@ -46,7 +47,10 @@ pub fn alias_not_valid(input: &str) -> ParserErr<&str> {
 pub fn input_incomplet(input: &str) -> ParserErr<&str> {
     ParserErr::build(input, ErrorKind::InputIncomplet)
 }
-#[derive(Debug, thiserror::Error)]
+pub fn input_invalide()->ParserErr<String>{
+    ParserErr::build("votre phrase contient des tokens invalide".to_string(), ErrorKind::InputInvalid)
+}
+#[derive(Debug, thiserror::Error,Clone)]
 pub enum Error<I> {
     Nom(#[from] nom::error::Error<I>),
     Parser(#[from] ParserErr<I>),
@@ -56,14 +60,8 @@ pub enum Error<I> {
     FromStrLgclOp(#[from] FromStrLogicalOpError),
 }
 
-//Token result
-pub type TokenResult<I, O, E = Error<I>> = nom::IResult<I, O, E>;
 
-//parsing result
-pub type ParsingResult<I, O, E = Error<String>> = nom::IResult<I, O, E>;
 
-//avant
-pub type IResult<I, O, E = Error<I>> = nom::IResult<I, O, E>;
 
 impl<I> nom::error::ParseError<I> for Error<I> {
     fn from_error_kind(input: I, kind: nom::error::ErrorKind) -> Self {
